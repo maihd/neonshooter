@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Art">
+      <UniqueIdentifier>{2df2c36a-a1c7-4dd9-b201-6cdd9309c275}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Audios">
+      <UniqueIdentifier>{edc077f1-c414-4c15-98e5-7cfcf7ae548b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -29,5 +35,96 @@
     <ClCompile Include="NeonShooter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Art\Black Hole.png">
+      <Filter>Art</Filter>
+    </Image>
+    <Image Include="Art\Bullet.png">
+      <Filter>Art</Filter>
+    </Image>
+    <Image Include="Art\Glow.png">
+      <Filter>Art</Filter>
+    </Image>
+    <Image Include="Art\Laser.png">
+      <Filter>Art</Filter>
+    </Image>
+    <Image Include="Art\Player.png">
+      <Filter>Art</Filter>
+    </Image>
+    <Image Include="Art\Pointer.png">
+      <Filter>Art</Filter>
+    </Image>
+    <Image Include="Art\Seeker.png">
+      <Filter>Art</Filter>
+    </Image>
+    <Image Include="Art\Wanderer.png">
+      <Filter>Art</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="Audios\explosion-01.wav">
+      <Filter>Audios</Filter>
+    </Media>
+    <Media Include="Audios\explosion-02.wav">
+      <Filter>Audios</Filter>
+    </Media>
+    <Media Include="Audios\explosion-03.wav">
+      <Filter>Audios</Filter>
+    </Media>
+    <Media Include="Audios\explosion-04.wav">
+      <Filter>Audios</Filter>
+    </Media>
+    <Media Include="Audios\explosion-05.wav">
+      <Filter>Audios</Filter>
+    </Media>
+    <Media Include="Audios\explosion-06.wav">
+      <Filter>Audios</Filter>
+    </Media>
+    <Media Include="Audios\explosion-07.wav">
+      <Filter>Audios</Filter>
+    </Media>
+    <Media Include="Audios\explosion-08.wav">
+      <Filter>Audios</Filter>
+    </Media>
+    <Media Include="Audios\Music.mp3">
+      <Filter>Audios</Filter>
+    </Media>
+    <Media Include="Audios\shoot-01.wav">
+      <Filter>Audios</Filter>
+    </Media>
+    <Media Include="Audios\shoot-02.wav">
+      <Filter>Audios</Filter>
+    </Media>
+    <Media Include="Audios\shoot-03.wav">
+      <Filter>Audios</Filter>
+    </Media>
+    <Media Include="Audios\shoot-04.wav">
+      <Filter>Audios</Filter>
+    </Media>
+    <Media Include="Audios\spawn-01.wav">
+      <Filter>Audios</Filter>
+    </Media>
+    <Media Include="Audios\spawn-02.wav">
+      <Filter>Audios</Filter>
+    </Media>
+    <Media Include="Audios\spawn-03.wav">
+      <Filter>Audios</Filter>
+    </Media>
+    <Media Include="Audios\spawn-04.wav">
+      <Filter>Audios</Filter>
+    </Media>
+    <Media Include="Audios\spawn-05.wav">
+      <Filter>Audios</Filter>
+    </Media>
+    <Media Include="Audios\spawn-06.wav">
+      <Filter>Audios</Filter>
+    </Media>
+    <Media Include="Audios\spawn-07.wav">
+      <Filter>Audios</Filter>
+    </Media>
+    <Media Include="Audios\spawn-08.wav">
+      <Filter>Audios</Filter>
+    </Media>
   </ItemGroup>
 </Project>
