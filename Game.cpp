@@ -72,6 +72,18 @@ public:
     texture_t* texture;
 };
 
+struct particle_t
+{
+    bool       active;
+    texture_t* texture;
+    vec2       position;
+    float      rotation;
+    vec2       scale;
+    vec4       color;
+    float      timer;
+    float      duration;
+};
+
 namespace game
 {
     int screen_width;
@@ -188,6 +200,75 @@ namespace entity
     }
 }
 
+namespace particle_system
+{
+    array_t<particle_t> particles(membuf_heap());
+    array_t<int> free_particles(membuf_heap());
+
+    void spawn_particle(texture_t* texture, vec2 pos, vec4 tint, float duration, vec2 scale, float theta)
+    {
+        particle_t* p = NULL;
+        if (array::count(free_particles) > 0)
+        {
+            int index = array::pop(free_particles);
+            p = &particles[index];
+        } 
+        else
+        {
+            p = &array::add(particles);
+        }
+
+        p->texture  = texture;
+        p->position = pos;
+        p->rotation = theta;
+        p->color    = tint;
+        p->timer    = 0.0f;
+        p->duration = duration;
+    }
+
+    bool update_particle(particle_t& p, float dt)
+    {
+        bool result = false;
+
+        if (p.active)
+        {
+            p.timer += dt;
+            if (p.timer >= p.duration)
+            {
+                result = true;
+                p.active = false;
+            }
+        }
+
+        return result;
+    }
+
+    void update(float dt)
+    {
+        for (int i = 0, n = particles.count; i < n; i++)
+        {
+            particle_t& p = particles[i];
+            if (update_particle(p, dt))
+            {
+                array::push(free_particles, i);
+            }
+        }
+    }
+
+    void render()
+    {
+        blendfunc_t blend = { GL_ONE, GL_ONE };
+        for (int i = 0, n = particles.count; i < n; i++)
+        {
+            particle_t& p = particles[i];
+            if (p.active)
+            {
+                renderer::draw_texture(p.texture, p.position, p.rotation, p.scale, p.color, blend);
+            }
+        }
+    }
+}
+
 namespace world
 {
     entity_t* player;
@@ -198,10 +279,10 @@ namespace world
     array_t<int> free_bullets(membuf_heap());
     array_t<int> free_seekers(membuf_heap());
 
-    float fire_timer    = 0.0f;
+    float fire_timer = 0.0f;
     float fire_interval = 0.1f;
 
-    float spawn_timer    = 0.0f;
+    float spawn_timer = 0.0f;
     float spawn_interval = 1.0f;
 
     bool lock = false;
@@ -209,16 +290,16 @@ namespace world
     void init(SDL_Window* window)
     {
         player = new entity_t();
-        player->active    = true;
-        player->color     = vec4(1.0f);
-        player->position  = vec2(0.0f);
-        player->rotation  = 0.0f;
-        player->scale     = vec2(1.0f);
+        player->active = true;
+        player->color = vec4(1.0f);
+        player->position = vec2(0.0f);
+        player->rotation = 0.0f;
+        player->scale = vec2(1.0f);
         player->movespeed = 720.0f;
-        player->texture   = texture::load("Art/Player.png");
-        player->radius    = player->texture->width * 0.5f;
+        player->texture = texture::load("Art/Player.png");
+        player->radius = player->texture->width * 0.5f;
     }
-    
+
     void spawn_bullet(vec2 pos, vec2 vel)
     {
         entity_t* en = NULL;
@@ -232,15 +313,15 @@ namespace world
             en = &array::add(bullets);
         }
 
-        en->active    = true;
-        en->color     = vec4(1.0f);
-        en->position  = pos;
-        en->rotation  = atan2f(vel.y, vel.x);
-        en->scale     = vec2(1.0f);
-        en->texture   = texture::load("Art/Bullet.png");
-        en->velocity  = vel;
+        en->active = true;
+        en->color = vec4(1.0f);
+        en->position = pos;
+        en->rotation = atan2f(vel.y, vel.x);
+        en->scale = vec2(1.0f);
+        en->texture = texture::load("Art/Bullet.png");
+        en->velocity = vel;
         en->movespeed = 1280.0f;
-        en->radius    = en->texture->height * 0.5f;
+        en->radius = en->texture->height * 0.5f;
     }
 
     void fire_bullets(vec2 aim_dir)
@@ -268,7 +349,7 @@ namespace world
     vec2 get_spawn_position()
     {
         const float min_distance_sqr = 720.0f * 720.0f;
-        
+
         vec2 pos;
 
         do
@@ -283,7 +364,7 @@ namespace world
 
     void spawn_seeker()
     {
-        vec2 pos = get_spawn_position(); 
+        vec2 pos = get_spawn_position();
 
         entity_t* en = NULL;
         if (array::count(free_seekers) > 0)
@@ -296,15 +377,15 @@ namespace world
             en = &array::add(seekers);
         }
 
-        en->active    = true;
-        en->color     = vec4(1.0f, 1.0f, 1.0f, 0.0f);
-        en->velocity  = normalize(player->position - pos);
-        en->position  = pos;
+        en->active = true;
+        en->color = vec4(1.0f, 1.0f, 1.0f, 0.0f);
+        en->velocity = normalize(player->position - pos);
+        en->position = pos;
         en->movespeed = 360.0f;
-        en->scale     = vec2(1.0f);
-        en->texture   = texture::load("Art/Seeker.png");
-        en->rotation  = atan2f(en->velocity.y, en->velocity.x);
-        en->radius    = en->texture->width * 0.5f;
+        en->scale = vec2(1.0f);
+        en->texture = texture::load("Art/Seeker.png");
+        en->rotation = atan2f(en->velocity.y, en->velocity.x);
+        en->radius = en->texture->width * 0.5f;
     }
 
     void destroy_bullet(entity_t* bullet, int index)
@@ -784,6 +865,7 @@ namespace game
 		renderer::prepair();
 
         world::render();
+        particle_system::render();
 
 		renderer::present();
     }
