@@ -57,6 +57,8 @@ struct texture_t
 struct entity_t
 {
 public:
+    bool  active;
+
     vec2  scale;
     vec2  position;
     float rotation;
@@ -193,8 +195,8 @@ namespace world
     array_t<entity_t> bullets(membuf_heap());
     array_t<entity_t> seekers(membuf_heap());
 
-    array_t<int> remove_bullets(membuf_heap());
-    array_t<int> remove_seekers(membuf_heap());
+    array_t<int> free_bullets(membuf_heap());
+    array_t<int> free_seekers(membuf_heap());
 
     float fire_timer    = 0.0f;
     float fire_interval = 0.1f;
@@ -207,6 +209,7 @@ namespace world
     void init(SDL_Window* window)
     {
         player = new entity_t();
+        player->active    = true;
         player->color     = vec4(1.0f);
         player->position  = vec2(0.0f);
         player->rotation  = 0.0f;
@@ -214,6 +217,30 @@ namespace world
         player->movespeed = 720.0f;
         player->texture   = texture::load("Art/Player.png");
         player->radius    = player->texture->width * 0.5f;
+    }
+    
+    void spawn_bullet(vec2 pos, vec2 vel)
+    {
+        entity_t* en = NULL;
+        if (array::count(free_bullets) > 0)
+        {
+            int index = array::pop(free_bullets);
+            en = &bullets[index];
+        }
+        else
+        {
+            en = &array::add(bullets);
+        }
+
+        en->active    = true;
+        en->color     = vec4(1.0f);
+        en->position  = pos;
+        en->rotation  = atan2f(vel.y, vel.x);
+        en->scale     = vec2(1.0f);
+        en->texture   = texture::load("Art/Bullet.png");
+        en->velocity  = vel;
+        en->movespeed = 1280.0f;
+        en->radius    = en->texture->height * 0.5f;
     }
 
     void fire_bullets(vec2 aim_dir)
@@ -227,30 +254,14 @@ namespace world
         {
             vec2 vel = normalize(aim_dir);
             vec2 pos = player->position + vec2(cosf(angle + offset), sinf(angle + offset)) * player->texture->width * 1.25f;
-            entity_t& en = array::add(bullets);
-            en.color     = vec4(1.0f);
-            en.position  = pos;
-            en.rotation  = atan2f(vel.y, vel.x);
-            en.scale     = vec2(1.0f);
-            en.texture   = texture::load("Art/Bullet.png");
-            en.velocity  = vel;
-            en.movespeed = 1280.0f;
-            en.radius    = en.texture->height * 0.5f;
+            spawn_bullet(pos, vel);
         }
 
         // Second bullet
         {
             vec2 vel = normalize(aim_dir);
             vec2 pos = player->position + vec2(cosf(angle - offset), sinf(angle - offset)) * player->texture->width * 1.25f;
-            entity_t& en = array::add(bullets);
-            en.color     = vec4(1.0f);
-            en.position  = pos;
-            en.rotation  = atan2f(vel.y, vel.x);
-            en.scale     = vec2(1.0f);
-            en.texture   = texture::load("Art/Bullet.png");
-            en.velocity  = vel;
-            en.movespeed = 1280.0f;
-            en.radius    = en.texture->height * 0.5f;
+            spawn_bullet(pos, vel);
         }
     }
 
@@ -272,41 +283,40 @@ namespace world
 
     void spawn_seeker()
     {
-        vec2 pos = get_spawn_position();
+        vec2 pos = get_spawn_position(); 
 
-        entity_t& en = array::add(seekers);
-        en.color     = vec4(1.0f);
-        en.velocity  = normalize(player->position - pos);
-        en.position  = pos;
-        en.movespeed = 360.0f;
-        en.scale     = vec2(1.0f);
-        en.texture   = texture::load("Art/Seeker.png");
-        en.rotation  = 0.0f;
-        en.radius    = en.texture->width * 0.5f;
+        entity_t* en = NULL;
+        if (array::count(free_seekers) > 0)
+        {
+            int index = array::pop(free_seekers);
+            en = &seekers[index];
+        }
+        else
+        {
+            en = &array::add(seekers);
+        }
+
+        en->active    = true;
+        en->color     = vec4(1.0f);
+        en->velocity  = normalize(player->position - pos);
+        en->position  = pos;
+        en->movespeed = 360.0f;
+        en->scale     = vec2(1.0f);
+        en->texture   = texture::load("Art/Seeker.png");
+        en->rotation  = atan2f(en->velocity.y, en->velocity.x);
+        en->radius    = en->texture->width * 0.5f;
     }
 
     void destroy_bullet(entity_t* bullet, int index)
     {
-        if (lock)
-        {
-            array::push(remove_bullets, index);
-        }
-        else
-        {
-            array::erase(bullets, index);
-        }
+        bullet->active = false;
+        array::push(free_bullets, index);
     }
 
     void destroy_seeker(entity_t* seeker, int index)
     {
-        if (lock)
-        {
-            array::push(remove_seekers, index);
-        }
-        else
-        {
-            array::erase(seekers, index);
-        }
+        seeker->active = false;
+        array::push(free_seekers, index);
     }
 
     void update(float dt, float vertical, float horizontal, vec2 aim_dir, bool fire)
@@ -320,34 +330,42 @@ namespace world
         for (int i = 0, n = bullets.count; i < n; i++)
         {
             entity_t* b = &bullets[i];
-            entity::move(b, dt);
-            if (b->position.x < -game::screen_width || b->position.x > game::screen_width
-                || b->position.y < -game::screen_height || b->position.y > game::screen_height)
+            if (b->active)
             {
-                destroy_bullet(b, i);
+                entity::move(b, dt);
+                if (b->position.x < -game::screen_width || b->position.x > game::screen_width
+                    || b->position.y < -game::screen_height || b->position.y > game::screen_height)
+                {
+                    destroy_bullet(b, i);
+                }
             }
         }
 
         for (int i = 0, n = seekers.count; i < n; i++)
         {
             entity_t* s = &seekers[i];
-
-            s->velocity = normalize(player->position - s->position);
-            entity::move(s, dt);
+            if (s->active)
+            {
+                s->velocity = normalize(player->position - s->position);
+                entity::move(s, dt);
+            }
         }
 
         for (int i = 0, n = bullets.count; i < n; i++)
         {
             entity_t* b = &bullets[i];
+            if (!b->active) continue;
 
             for (int j = 0, m = seekers.count; j < m; j++)
             {
                 entity_t* s = &seekers[j];
+                if (!s->active) continue;
 
                 if (distance(b->position, s->position) <= b->radius + s->radius)
                 {
                     destroy_bullet(b, i);
                     destroy_seeker(s, j);
+                    break;
                 }
             }
         }
@@ -355,13 +373,14 @@ namespace world
         for (int j = 0, m = seekers.count; j < m; j++)
         {
             entity_t* s = &seekers[j];
+            if (!s->active) continue;
 
             if (distance(player->position, s->position) <= player->radius + s->radius)
             {
                 array::clear(bullets);
                 array::clear(seekers);
-                array::clear(remove_bullets);
-                array::clear(remove_seekers);
+                array::clear(free_bullets);
+                array::clear(free_seekers);
 
                 player->position = vec2();
                 player->rotation = 0.0f;
@@ -371,18 +390,6 @@ namespace world
 
         // Update is done, unlock the list
         lock = false;
-
-        // Do remove
-        for (int i = 0, n = remove_bullets.count; i < n; i++)
-        {
-            array::erase(bullets, remove_bullets[i]);
-        }
-        for (int i = 0, n = remove_seekers.count; i < n; i++)
-        {
-            array::erase(seekers, remove_seekers[i]);
-        }
-        array::clear(remove_bullets);
-        array::clear(remove_seekers);
 
         // Fire bullet if requested
         if (!fire)
@@ -411,7 +418,10 @@ namespace world
 
     void draw_entity(entity_t* e)
     {
-        renderer::draw_texture(e->texture, e->position, e->rotation, e->scale, e->color);
+        if (e->active)
+        {
+            renderer::draw_texture(e->texture, e->position, e->rotation, e->scale, e->color);
+        }
     }
 
     void render()
