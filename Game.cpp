@@ -76,6 +76,7 @@ struct particle_t
 {
     bool       active;
     texture_t* texture;
+    vec2       velocity;
     vec2       position;
     float      rotation;
     vec2       scale;
@@ -88,6 +89,26 @@ namespace game
 {
     int screen_width;
     int screen_height;
+}
+
+namespace color
+{
+    vec4 hsv(float h, float s, float v)
+    {
+        if (h == 0 && s == 0)
+            return vec4(v, v, v, 1.0f);
+
+        float c = s * v;
+        float x = c * (1 - fabsf(SDL_fmodf(h, 2) - 1));
+        float m = v - c;
+
+        if (h < 1)      return vec4(c + m, x + m, m, 1.0f);
+        else if (h < 2) return vec4(x + m, c + m, m, 1.0f);
+        else if (h < 3) return vec4(m, c + m, x + m, 1.0f);
+        else if (h < 4) return vec4(m, x + m, c + m, 1.0f);
+        else if (h < 5) return vec4(x + m, m, c + m, 1.0f);
+        else            return vec4(c + m, m, x + m, 1.0f);
+    }
 }
 
 namespace renderer
@@ -147,6 +168,7 @@ namespace texture
 			texture::set_pixels(texture, w, h, pixels);
 
 			stbi_image_free(pixels);
+            table::set(textures, path, texture);
 
 			return texture;
 		}
@@ -205,7 +227,7 @@ namespace particle_system
     array_t<particle_t> particles(membuf_heap());
     array_t<int> free_particles(membuf_heap());
 
-    void spawn_particle(texture_t* texture, vec2 pos, vec4 tint, float duration, vec2 scale, float theta)
+    void spawn_particle(texture_t* texture, vec2 pos, vec4 tint, float duration, vec2 scale, float theta, vec2 vel)
     {
         particle_t* p = NULL;
         if (array::count(free_particles) > 0)
@@ -218,7 +240,10 @@ namespace particle_system
             p = &array::add(particles);
         }
 
+        p->active   = true;
+        p->scale    = scale;
         p->texture  = texture;
+        p->velocity = vel;
         p->position = pos;
         p->rotation = theta;
         p->color    = tint;
@@ -237,6 +262,35 @@ namespace particle_system
             {
                 result = true;
                 p.active = false;
+            }
+
+            p.rotation  = vec2_angle(p.velocity);
+            p.position += p.velocity * dt;
+            p.velocity *= 1.0f - 3 * dt;
+
+            p.scale.x = 1.0f - p.timer / p.duration;
+            p.color.a = 1.0f - p.timer / p.duration;
+
+            if (p.position.x < -game::screen_width)
+            {
+                p.velocity.x = fabsf(p.velocity.x);
+                p.position.x = -game::screen_width;
+            }
+            else if (p.position.x > game::screen_width)
+            {
+                p.velocity.x = -fabsf(p.velocity.x);
+                p.position.x = game::screen_width;
+            }
+
+            if (p.position.y < -game::screen_width)
+            {
+                p.velocity.y = fabsf(p.velocity.y);
+                p.position.y = -game::screen_height;
+            }
+            else if (p.position.y > game::screen_width)
+            {
+                p.velocity.y = -fabsf(p.velocity.y);
+                p.position.y = game::screen_height;
             }
         }
 
@@ -388,16 +442,49 @@ namespace world
         en->radius = en->texture->width * 0.5f;
     }
 
-    void destroy_bullet(entity_t* bullet, int index)
+    void destroy_bullet(entity_t* bullet, int index, bool explosion = false)
     {
         bullet->active = false;
         array::push(free_bullets, index);
+
+        if (explosion)
+        {
+            const int PARTICLE_COUNT = 30;
+            texture_t* texture = texture::load("Art/Laser.png");
+
+            for (int i = 0; i < PARTICLE_COUNT; i++)
+            {
+                float speed = 640.0f * (0.2f + (rand() % 101 / 100.0f) * 0.8f);
+                float angle = rand() % 101 / 100.0f * 2 * PI;
+                vec2 vel = vec2(cosf(angle) * speed, sinf(angle) *speed);
+
+                vec4 color = vec4(0.6f, 1.0f, 1.0f, 1.0f);
+                particle_system::spawn_particle(texture, bullet->position, color, 1.0f, vec2(1.0f), 0.0f, vel);
+            }
+        }
     }
 
     void destroy_seeker(entity_t* seeker, int index)
     {
         seeker->active = false;
         array::push(free_seekers, index);
+
+        texture_t* texture = texture::load("Art/Laser.png");
+
+        float hue1 = rand() % 101 / 100.0f * 6.0f;
+        float hue2 = fmodf(hue1 + (rand() % 101 / 100.0f * 2.0f), 6.0f);
+        vec4 color1 = color::hsv(hue1, 0.5f, 1);
+        vec4 color2 = color::hsv(hue2, 0.5f, 1);
+
+        for (int i = 0; i < 120; i++)
+        {
+            float speed = 640.0f * (0.2f + (rand() % 101 / 100.0f) * 0.8f);
+            float angle = rand() % 101 / 100.0f * 2 * PI;
+            vec2 vel = vec2(cosf(angle) * speed, sinf(angle) *speed);
+
+            vec4 color = mix(color1, color2, rand() % 101 / 100.0f);
+            particle_system::spawn_particle(texture, seeker->position, color, 1.0f, vec2(1.0f), 0.0f, vel);
+        }
     }
 
     void update(float dt, float vertical, float horizontal, vec2 aim_dir, bool fire)
@@ -407,6 +494,33 @@ namespace world
 
         player->velocity = normalize(vec2(horizontal, vertical));
         entity::move(player, vec2(game::screen_width, game::screen_height), dt);
+        if (lengthsquared(player->velocity) > 0.1f)
+        {
+            float angle = vec2_angle(player->velocity);
+            
+            texture_t* glow_tex = texture::load("Art/Glow.png");
+            texture_t* line_tex = texture::load("Art/Laser.png");
+
+            vec2 vel = -0.3f * player->movespeed * player->velocity;
+            vec2 pos = player->position + 45.0f * (-player->velocity);
+            vec2 nvel = vec2(vel.y, -vel.x) * 0.6f;
+            float alpha = 0.7f;
+
+            vec2 mid_vel = vel;
+            particle_system::spawn_particle(glow_tex, pos, vec4(1.0f, 0.7f, 0.1f, 1.0f) * alpha, 0.2f, vec2(0.5f, 1.0f), angle, mid_vel);
+            particle_system::spawn_particle(line_tex, pos, vec4(1.0f, 1.0f, 1.0f, 1.0f) * alpha, 0.2f, vec2(0.5f, 1.0f), angle, mid_vel);
+
+            angle = rand() % 101 / 100.0f * 0.2f * PI;
+            vec2 side_vel1 = vel + nvel + vec2(0, 0.3f * player->movespeed * sinf(angle));
+            particle_system::spawn_particle(glow_tex, pos, vec4(1.0f), 0.2f, vec2(0.5f, 1.0f), angle, side_vel1);
+            particle_system::spawn_particle(line_tex, pos, vec4(1.0f), 0.2f, vec2(0.5f, 1.0f), angle, side_vel1);
+
+            angle = rand() % 101 / 100.0f * 0.2f * PI;
+            vec2 side_vel2 = vel - nvel - vec2(0, 0.3f * player->movespeed * sinf(angle));
+            particle_system::spawn_particle(glow_tex, pos, vec4(1.0f), 0.2f, vec2(0.5f, 1.0f), angle, side_vel2);
+            particle_system::spawn_particle(line_tex, pos, vec4(1.0f), 0.2f, vec2(0.5f, 1.0f), angle, side_vel2);
+        
+        }                                   
 
         for (int i = 0, n = bullets.count; i < n; i++)
         {
@@ -417,7 +531,7 @@ namespace world
                 if (b->position.x < -game::screen_width || b->position.x > game::screen_width
                     || b->position.y < -game::screen_height || b->position.y > game::screen_height)
                 {
-                    destroy_bullet(b, i);
+                    destroy_bullet(b, i, true);
                 }
             }
         }
@@ -858,6 +972,7 @@ namespace game
     void update(float dt)
     {
         world::update(dt, axis_vertical, axis_horizontal, aim, fire);
+        particle_system::update(dt);
     }
 
     void render(void)
