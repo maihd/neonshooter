@@ -297,7 +297,7 @@ namespace world
         }
 
         en->active    = true;
-        en->color     = vec4(1.0f);
+        en->color     = vec4(1.0f, 1.0f, 1.0f, 0.0f);
         en->velocity  = normalize(player->position - pos);
         en->position  = pos;
         en->movespeed = 360.0f;
@@ -346,8 +346,19 @@ namespace world
             entity_t* s = &seekers[i];
             if (s->active)
             {
-                s->velocity = normalize(player->position - s->position);
-                entity::move(s, dt);
+                if (s->color.a < 1.0f)
+                {
+                    s->color.a += dt;
+                    if (s->color.a > 1.0f)
+                    {
+                        s->color.a = 1.0f;
+                    }
+                }
+                else
+                {
+                    s->velocity = normalize(player->position - s->position);
+                    entity::move(s, dt);
+                }
             }
         }
 
