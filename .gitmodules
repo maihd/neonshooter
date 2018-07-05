@@ -1,0 +1,11 @@
+[submodule "timer"]
+    path = ThirdParty/timer
+    url  = https://github.com/maihd/timer.git
+
+[submodule "vmath"]
+    path = ThirdParty/vmath
+    url  = https://github.com/maihd/vmath.git
+
+[submodule "memwise"]
+    path = ThirdParty/memwise
+    url  = https://github.com/maihd/memwise.git

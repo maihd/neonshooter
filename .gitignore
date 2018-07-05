@@ -1,6 +1,7 @@
 .vs
 .vscode
 .DS_Store
+/x64
 /obj
 /Debug
 /Release
