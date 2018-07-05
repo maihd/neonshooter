@@ -65,6 +65,7 @@ public:
     float movespeed;
     
     vec4  color;
+    float radius;
 
     texture_t* texture;
 };
@@ -155,24 +156,25 @@ namespace entity
 
     void move(entity_t* entity, vec2 bounds, float dt)
     {
-        vec2 pos = entity->position + entity->velocity * entity->movespeed * dt;
+        vec2  pos = entity->position + entity->velocity * entity->movespeed * dt;
+        float rad = entity->radius;
 
-        if (pos.x > bounds.x)
+        if (pos.x + rad > bounds.x)
         {
-            pos.x = bounds.x;
+            pos.x = bounds.x - rad;
         }
-        else if (pos.x < -bounds.x)
+        else if (pos.x - rad < -bounds.x)
         {
-            pos.x = -bounds.x;
+            pos.x = rad - bounds.x;
         }
 
-        if (pos.y > bounds.y)
+        if (pos.y + rad > bounds.y)
         {
-            pos.y = bounds.y;
+            pos.y = bounds.y - rad;
         }
-        else if (pos.y < -bounds.y)
+        else if (pos.y - rad < -bounds.y)
         {
-            pos.y = -bounds.y;
+            pos.y = rad - bounds.y;
         }
 
         entity->position = pos;
@@ -211,6 +213,7 @@ namespace world
         player->scale     = vec2(1.0f);
         player->movespeed = 720.0f;
         player->texture   = texture::load("Art/Player.png");
+        player->radius    = player->texture->width * 0.5f;
     }
 
     void fire_bullets(vec2 aim_dir)
@@ -225,13 +228,14 @@ namespace world
             vec2 vel = normalize(aim_dir);
             vec2 pos = player->position + vec2(cosf(angle + offset), sinf(angle + offset)) * player->texture->width * 1.25f;
             entity_t& en = array::add(bullets);
-            en.color = vec4(1.0f);
-            en.position = pos;
-            en.rotation = atan2f(vel.y, vel.x);
-            en.scale = vec2(1.0f);
-            en.texture = texture::load("Art/Bullet.png");
-            en.velocity = vel;
+            en.color     = vec4(1.0f);
+            en.position  = pos;
+            en.rotation  = atan2f(vel.y, vel.x);
+            en.scale     = vec2(1.0f);
+            en.texture   = texture::load("Art/Bullet.png");
+            en.velocity  = vel;
             en.movespeed = 1280.0f;
+            en.radius    = en.texture->height * 0.5f;
         }
 
         // Second bullet
@@ -239,13 +243,14 @@ namespace world
             vec2 vel = normalize(aim_dir);
             vec2 pos = player->position + vec2(cosf(angle - offset), sinf(angle - offset)) * player->texture->width * 1.25f;
             entity_t& en = array::add(bullets);
-            en.color = vec4(1.0f);
-            en.position = pos;
-            en.rotation = atan2f(vel.y, vel.x);
-            en.scale = vec2(1.0f);
-            en.texture = texture::load("Art/Bullet.png");
-            en.velocity = vel;
+            en.color     = vec4(1.0f);
+            en.position  = pos;
+            en.rotation  = atan2f(vel.y, vel.x);
+            en.scale     = vec2(1.0f);
+            en.texture   = texture::load("Art/Bullet.png");
+            en.velocity  = vel;
             en.movespeed = 1280.0f;
+            en.radius    = en.texture->height * 0.5f;
         }
     }
 
@@ -270,13 +275,14 @@ namespace world
         vec2 pos = get_spawn_position();
 
         entity_t& en = array::add(seekers);
-        en.color = vec4(1.0f);
-        en.velocity = normalize(player->position - pos);
-        en.position = pos;
+        en.color     = vec4(1.0f);
+        en.velocity  = normalize(player->position - pos);
+        en.position  = pos;
         en.movespeed = 360.0f;
-        en.scale = vec2(1.0f);
-        en.texture = texture::load("Art/Seeker.png");
-        en.rotation = 0.0f;
+        en.scale     = vec2(1.0f);
+        en.texture   = texture::load("Art/Seeker.png");
+        en.rotation  = 0.0f;
+        en.radius    = en.texture->width * 0.5f;
     }
 
     void destroy_bullet(entity_t* bullet, int index)
@@ -293,7 +299,14 @@ namespace world
 
     void destroy_seeker(entity_t* seeker, int index)
     {
-        
+        if (lock)
+        {
+            array::push(remove_seekers, index);
+        }
+        else
+        {
+            array::erase(seekers, index);
+        }
     }
 
     void update(float dt, float vertical, float horizontal, vec2 aim_dir, bool fire)
@@ -321,6 +334,39 @@ namespace world
 
             s->velocity = normalize(player->position - s->position);
             entity::move(s, dt);
+        }
+
+        for (int i = 0, n = bullets.count; i < n; i++)
+        {
+            entity_t* b = &bullets[i];
+
+            for (int j = 0, m = seekers.count; j < m; j++)
+            {
+                entity_t* s = &seekers[j];
+
+                if (distance(b->position, s->position) <= b->radius + s->radius)
+                {
+                    destroy_bullet(b, i);
+                    destroy_seeker(s, j);
+                }
+            }
+        }
+
+        for (int j = 0, m = seekers.count; j < m; j++)
+        {
+            entity_t* s = &seekers[j];
+
+            if (distance(player->position, s->position) <= player->radius + s->radius)
+            {
+                array::clear(bullets);
+                array::clear(seekers);
+                array::clear(remove_bullets);
+                array::clear(remove_seekers);
+
+                player->position = vec2();
+                player->rotation = 0.0f;
+                break;
+            }
         }
 
         // Update is done, unlock the list
