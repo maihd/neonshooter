@@ -239,108 +239,7 @@ namespace entity
 
 namespace particle_system
 {
-    array_t<particle_t> particles(membuf_heap());
-    array_t<int> free_particles(membuf_heap());
-
-    void init(void)
-    {
-        array::ensure(particles, 20 * 1024);
-    }
-
-    void spawn_particle(texture_t* texture, vec2 pos, vec4 tint, float duration, vec2 scale, float theta, vec2 vel)
-    {
-        particle_t* p = NULL;
-        if (array::count(free_particles) > 0)
-        {
-            int index = array::pop(free_particles);
-            p = &particles[index];
-        } 
-        else
-        {
-            p = &array::add(particles);
-        }
-
-        p->active   = true;
-        p->scale    = scale;
-        p->texture  = texture;
-        p->velocity = vel;
-        p->position = pos;
-        p->rotation = theta;
-        p->color    = tint;
-        p->timer    = 0.0f;
-        p->duration = duration;
-    }
-
-    bool update_particle(particle_t& p, float dt)
-    {
-        bool result = false;
-
-        if (p.active)
-        {
-            p.timer += dt;
-            if (p.timer >= p.duration)
-            {
-                result = true;
-                p.active = false;
-            }
-
-            p.rotation  = vec2_angle(p.velocity);
-            p.position += p.velocity * dt;
-            p.velocity *= 1.0f - 3 * dt;
-
-            p.scale.x = 1.0f - p.timer / p.duration;
-            p.color.a = 1.0f - p.timer / p.duration;
-
-            if (p.position.x < -game::screen_width)
-            {
-                p.velocity.x = fabsf(p.velocity.x);
-                p.position.x = -game::screen_width;
-            }
-            else if (p.position.x > game::screen_width)
-            {
-                p.velocity.x = -fabsf(p.velocity.x);
-                p.position.x = game::screen_width;
-            }
-
-            if (p.position.y < -game::screen_width)
-            {
-                p.velocity.y = fabsf(p.velocity.y);
-                p.position.y = -game::screen_height;
-            }
-            else if (p.position.y > game::screen_width)
-            {
-                p.velocity.y = -fabsf(p.velocity.y);
-                p.position.y = game::screen_height;
-            }
-        }
-
-        return result;
-    }
-
-    void update(float dt)
-    {
-        for (int i = 0, n = particles.count; i < n; i++)
-        {
-            particle_t& p = particles[i];
-            if (update_particle(p, dt))
-            {
-                array::push(free_particles, i);
-            }
-        }
-    }
-
-    void render()
-    {
-        blendfunc_t blend = { GL_ONE, GL_ONE };
-        for (int i = 0, n = particles.count; i < n; i++)
-        {
-            particle_t& p = particles[i];
-            if (p.active)
-            {
-                renderer::draw_texture(p.texture, p.position, p.rotation, p.scale, p.color, blend);
-            }
-        }
-    }
+    void spawn_particle(texture_t* texture, vec2 pos, vec4 tint, float duration, vec2 scale, float theta, vec2 vel);
 }
 
 namespace world
@@ -356,6 +255,10 @@ namespace world
     array_t<int> free_seekers(membuf_heap());
     array_t<int> free_wanderers(membuf_heap());
     array_t<int> free_blackholes(membuf_heap());
+
+    int seeker_spawn_rate    = 80;
+    int wanderer_spawn_rate  = 60;
+    int blackhole_spawn_rate = 20;
 
     float fire_timer = 0.0f;
     float fire_interval = 0.1f;
@@ -431,7 +334,7 @@ namespace world
 
     vec2 get_spawn_position()
     {
-        const float min_distance_sqr = 720.0f * 720.0f;
+        const float min_distance_sqr = (game::screen_height * 0.3f) * (game::screen_height * 0.3f);
 
         vec2 pos;
 
@@ -861,6 +764,24 @@ namespace world
             entity_t* s = &blackholes[i];
             if (s->active)
             {
+                texture_t* glow_tex = texture::load("Art/Glow.png");
+                texture_t* line_tex = texture::load("Art/Laser.png");
+
+                vec4 color1 = vec4(0.3f, 0.8f, 0.4f, 1.0f);
+                vec4 color2 = vec4(0.4f, 1.0f, 0.6f, 1.0f);
+
+                for (int j = 0; j < 5; j++)
+                {
+                    float speed = 5.0f * s->radius * (0.8f + (rand() % 101 / 100.0f) * 0.2f);
+                    float angle = rand() % 101 / 100.0f * 2 * PI;
+                    vec2 vel = vec2(cosf(angle) * speed, sinf(angle) * speed);
+                    vec2 pos = s->position + vel;
+
+                    vec4 color = mix(color1, color2, rand() % 101 / 100.0f);
+                    particle_system::spawn_particle(glow_tex, pos, color, 1.0f, vec2(0.6f), 0.0f, vec2(-vel.y, vel.x));
+                    particle_system::spawn_particle(line_tex, pos, color, 1.0f, vec2(0.6f), 0.0f, vec2(-vel.y, vel.x));
+                }
+
                 if (s->color.a < 1.0f)
                 {
                     s->color.a += dt;
@@ -928,9 +849,9 @@ namespace world
         {
             spawn_timer -= spawn_interval;
 
-            spawn_seeker();
-            spawn_wanderer();
-            spawn_blackhole();
+            if (rand() % 101 < seeker_spawn_rate) spawn_seeker();
+            if (rand() % 101 < wanderer_spawn_rate) spawn_wanderer();
+            if (rand() % 101 < blackhole_spawn_rate) spawn_blackhole();
         }
     }
 
@@ -969,6 +890,128 @@ namespace world
         for (int i = 0, n = bullets.count; i < n; i++)
         {
             draw_entity(&bullets[i]);
+        }
+    }
+}
+
+namespace particle_system
+{
+    array_t<particle_t> particles(membuf_heap());
+    array_t<int> free_particles(membuf_heap());
+
+    void init(void)
+    {
+        array::ensure(particles, 20 * 1024);
+    }
+
+    void spawn_particle(texture_t* texture, vec2 pos, vec4 tint, float duration, vec2 scale, float theta, vec2 vel)
+    {
+        particle_t* p = NULL;
+        if (array::count(free_particles) > 0)
+        {
+            int index = array::pop(free_particles);
+            p = &particles[index];
+        } 
+        else
+        {
+            p = &array::add(particles);
+        }
+
+        p->active   = true;
+        p->scale    = scale;
+        p->texture  = texture;
+        p->velocity = vel;
+        p->position = pos;
+        p->rotation = theta;
+        p->color    = tint;
+        p->timer    = 0.0f;
+        p->duration = duration;
+    }
+
+    bool update_particle(particle_t& p, float dt)
+    {
+        bool result = false;
+
+        if (p.active)
+        {
+            p.timer += dt;
+            if (p.timer >= p.duration)
+            {
+                result = true;
+                p.active = false;
+            }
+
+            p.rotation  = vec2_angle(p.velocity);
+            p.position += p.velocity * dt;
+            p.velocity *= 1.0f - 3 * dt;
+
+            p.scale.x = 1.0f - p.timer / p.duration;
+            p.color.a = 1.0f - p.timer / p.duration;
+
+            if (p.position.x < -game::screen_width)
+            {
+                p.velocity.x = fabsf(p.velocity.x);
+                p.position.x = -game::screen_width;
+            }
+            else if (p.position.x > game::screen_width)
+            {
+                p.velocity.x = -fabsf(p.velocity.x);
+                p.position.x = game::screen_width;
+            }
+
+            if (p.position.y < -game::screen_width)
+            {
+                p.velocity.y = fabsf(p.velocity.y);
+                p.position.y = -game::screen_height;
+            }
+            else if (p.position.y > game::screen_width)
+            {
+                p.velocity.y = -fabsf(p.velocity.y);
+                p.position.y = game::screen_height;
+            }
+
+            for (int i = 0, n = world::blackholes.count; i < n; i++)
+            {
+                entity_t* blackhole = &world::blackholes[i];
+
+                vec2 diff = blackhole->position - p.position;
+                float d = length(diff);
+                vec2 normal = normalize(diff);
+                p.velocity += normal * max(0.0f, 20.0f * blackhole->radius / d);
+
+                // add tangential acceleration for nearby particles
+                if (d < 10.0f * blackhole->radius)
+                {
+                    p.velocity += vec2(normal.y, -normal.x) * (10.0f * blackhole->radius / d);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    void update(float dt)
+    {
+        for (int i = 0, n = particles.count; i < n; i++)
+        {
+            particle_t& p = particles[i];
+            if (update_particle(p, dt))
+            {
+                array::push(free_particles, i);
+            }
+        }
+    }
+
+    void render()
+    {
+        blendfunc_t blend = { GL_ONE, GL_ONE };
+        for (int i = 0, n = particles.count; i < n; i++)
+        {
+            particle_t& p = particles[i];
+            if (p.active)
+            {
+                renderer::draw_texture(p.texture, p.position, p.rotation, p.scale, p.color, blend);
+            }
         }
     }
 }
@@ -1375,19 +1418,19 @@ namespace game
                 switch (e->key.keysym.sym)
                 {
                 case SDLK_s:
-                    axis_vertical = -1.0f;
+                    axis_vertical += -1.0f;
                     break;
 
                 case SDLK_w:
-                    axis_vertical = 1.0f;
+                    axis_vertical += 1.0f;
                     break;
 
                 case SDLK_a:
-                    axis_horizontal = -1.0f;
+                    axis_horizontal += -1.0f;
                     break;
 
                 case SDLK_d:
-                    axis_horizontal = 1.0f;
+                    axis_horizontal += 1.0f;
                     break;
                 }
             }
@@ -1424,8 +1467,8 @@ namespace game
     {
         total_time += dt;
 
-        particle_system::update(dt);
         world::update(dt, axis_vertical, axis_horizontal, aim, fire);
+        particle_system::update(dt);
     }
 
     void render(void)
