@@ -100,7 +100,7 @@ namespace color
             return vec4(v, v, v, 1.0f);
 
         float c = s * v;
-        float x = c * (1 - fabsf(SDL_fmodf(h, 2) - 1));
+        float x = c * (1 - fabsf(fmodf(h, 2) - 1));
         float m = v - c;
 
         if (h < 1)      return vec4(c + m, x + m, m, 1.0f);
@@ -770,7 +770,7 @@ namespace world
                 vec4 color1 = vec4(0.3f, 0.8f, 0.4f, 1.0f);
                 vec4 color2 = vec4(0.4f, 1.0f, 0.6f, 1.0f);
 
-                for (int j = 0; j < 5; j++)
+                for (int j = 0, m = (int)(s->color.a * 6); j < n; j++)
                 {
                     float speed = 5.0f * s->radius * (0.8f + (rand() % 101 / 100.0f) * 0.2f);
                     float angle = rand() % 101 / 100.0f * 2 * PI;
@@ -778,8 +778,8 @@ namespace world
                     vec2 pos = s->position + vel;
 
                     vec4 color = mix(color1, color2, rand() % 101 / 100.0f);
-                    particle_system::spawn_particle(glow_tex, pos, color, 1.0f, vec2(0.6f), 0.0f, vec2(-vel.y, vel.x));
-                    particle_system::spawn_particle(line_tex, pos, color, 1.0f, vec2(0.6f), 0.0f, vec2(-vel.y, vel.x));
+                    particle_system::spawn_particle(glow_tex, pos, color, 2.0f, vec2(0.6f), 0.0f, vec2(-vel.y, vel.x));
+                    particle_system::spawn_particle(line_tex, pos, color, 2.0f, vec2(1.0f), 0.0f, vec2(-vel.y, vel.x));
                 }
 
                 if (s->color.a < 1.0f)
