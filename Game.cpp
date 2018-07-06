@@ -557,7 +557,7 @@ namespace world
         {
             return true;
         }
-        else if (distance(other->position, blackhole->position) <= other->radius + blackhole->radius * 5.0f)
+        else if (distance(other->position, blackhole->position) <= other->radius + blackhole->radius * 10.0f)
         {
             vec2 diff = blackhole->position - other->position;
             other->velocity += normalize(diff) * step(1, 0, length(diff) / (game::screen_width * 0.2f));
@@ -578,9 +578,9 @@ namespace world
         // Update is in progress, locking the list
         lock = true;
 
-        player->velocity = normalize(vec2(horizontal, vertical));
+        player->velocity = step(player->velocity, normalize(vec2(horizontal, vertical)), 5.0f * dt);
         entity::move(player, vec2(game::screen_width, game::screen_height), dt);
-        if (lengthsquared(player->velocity) > 0.1f)
+        if (lengthsquared(player->velocity) > 0.1f && fmodf(game::total_time, 0.025f) <= 0.01f)
         {
             float speed;
             float angle = vec2_angle(player->velocity);
@@ -1411,38 +1411,38 @@ namespace game
 
         if (keys[SDL_SCANCODE_W])
         {
-            axis_vertical = min(1.0f, axis_vertical + 0.1f);
+            axis_vertical = step(axis_vertical, 1.0f, 0.1f);
         }
         else
         {
-            if (axis_vertical > 0.0f) axis_vertical = 0.0f;
+            axis_vertical = step(axis_vertical, 0.0f, 0.1f);
         }
 
         if (keys[SDL_SCANCODE_S])
         {
-            axis_vertical = max(-1.0f, axis_vertical - 0.1f);
+            axis_vertical = step(axis_vertical, -1.0f, 0.1f);
         }
         else
         {
-            if (axis_vertical < 0.0f) axis_vertical = 0.0f;
+            axis_vertical = step(axis_vertical, 0.0f, 0.1f);
         }
 
         if (keys[SDL_SCANCODE_A])
         {
-            axis_horizontal = max(-1.0f, axis_horizontal - 0.1f);
+            axis_horizontal = step(axis_horizontal, -1.0f, 0.1f);
         }
         else
         {
-            if (axis_horizontal < 0.0f) axis_horizontal = 0.0f;
+            axis_horizontal = step(axis_horizontal, 0.0f, 0.1f);
         }
 
         if (keys[SDL_SCANCODE_D])
         {
-            axis_horizontal = min(1.0f, axis_horizontal + 0.1f);
+            axis_horizontal = step(axis_horizontal, 1.0f, 0.1f);
         }
         else
         {
-            if (axis_horizontal > 0.0f) axis_horizontal = 0.0f;
+            axis_horizontal = step(axis_horizontal, 0.0f, 0.1f);
         }
 
         int mx;
@@ -1459,8 +1459,8 @@ namespace game
         SDL_Joystick* joystick = SDL_JoystickOpen(0);
         if (joystick)
         {
-            axis_vertical = -(SDL_JoystickGetAxis(joystick, 1)) / (float)SHRT_MAX;
-            axis_horizontal = (SDL_JoystickGetAxis(joystick, 0)) / (float)SHRT_MAX;
+            axis_vertical = step(axis_vertical, -(SDL_JoystickGetAxis(joystick, 1)) / (float)SHRT_MAX, 0.1f);
+            axis_horizontal = step(axis_horizontal, (SDL_JoystickGetAxis(joystick, 0)) / (float)SHRT_MAX, 0.1f);
 
             aim.x = (SDL_JoystickGetAxis(joystick, 3)) / (float)SHRT_MAX;
             aim.y = -(SDL_JoystickGetAxis(joystick, 4)) / (float)SHRT_MAX;
@@ -1482,7 +1482,7 @@ namespace game
         }
         else
         {
-            axes = normalize(axes);
+            axes = clamplength(axes, 0, 1.0f);;
         }
         axis_vertical   = axes.y;
         axis_horizontal = axes.x;
