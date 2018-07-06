@@ -858,7 +858,17 @@ namespace renderer
                 "out vec4 fragColor;"
                 "uniform sampler2D image;"
                 "void main() {"
-                "fragColor = texture(image, uv);"
+                "float weight[5] = float[] (0.227027, 0.1945946, 0.1216216, 0.054054, 0.016216);"
+                "vec2 texOffset = 1.0 / textureSize(image, 0);"
+                "vec3 result = texture(image, uv).rgb * weight[0];"
+                "for(int i = 1; i < 5; ++i) {"
+                "result += texture(image, uv + vec2(texOffset.x * i, 0.0)).rgb * weight[i];"
+                "result += texture(image, uv - vec2(texOffset.x * i, 0.0)).rgb * weight[i];"
+                "}"
+                "result = texture(image, uv).rgb + result;"
+                "result = vec3(1.0) - exp(-result * 0.5f);"
+                "result = pow(result, vec3(1.0 / 2.2));"
+                "fragColor = vec4(result, 1.0);"
                 "}";
 
             GLuint vshader = create_shader(GL_VERTEX_SHADER, vshader_src);
