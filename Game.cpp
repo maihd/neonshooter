@@ -350,10 +350,12 @@ namespace world
     array_t<entity_t> bullets(membuf_heap());
     array_t<entity_t> seekers(membuf_heap());
     array_t<entity_t> wanderers(membuf_heap());
+    array_t<entity_t> blackholes(membuf_heap());
 
     array_t<int> free_bullets(membuf_heap());
     array_t<int> free_seekers(membuf_heap());
     array_t<int> free_wanderers(membuf_heap());
+    array_t<int> free_blackholes(membuf_heap());
 
     float fire_timer = 0.0f;
     float fire_interval = 0.1f;
@@ -458,15 +460,15 @@ namespace world
             en = &array::add(seekers);
         }
 
-        en->active = true;
-        en->color = vec4(1.0f, 1.0f, 1.0f, 0.0f);
-        en->velocity = normalize(player->position - pos);
-        en->position = pos;
+        en->active    = true;
+        en->color     = vec4(1.0f, 1.0f, 1.0f, 0.0f);
+        en->velocity  = normalize(player->position - pos);
+        en->position  = pos;
         en->movespeed = 360.0f;
-        en->scale = vec2(1.0f);
-        en->texture = texture::load("Art/Seeker.png");
-        en->rotation = atan2f(en->velocity.y, en->velocity.x);
-        en->radius = en->texture->width * 0.5f;
+        en->scale     = vec2(1.0f);
+        en->texture   = texture::load("Art/Seeker.png");
+        en->rotation  = atan2f(en->velocity.y, en->velocity.x);
+        en->radius    = en->texture->width * 0.5f;
     }
 
     void spawn_wanderer()
@@ -492,6 +494,32 @@ namespace world
         en->scale     = vec2(1.0f);
         en->texture   = texture::load("Art/wanderer.png");
         en->rotation  = atan2f(en->velocity.y, en->velocity.x);
+        en->radius    = en->texture->width * 0.5f;
+    }
+
+    void spawn_blackhole()
+    {
+        vec2 pos = get_spawn_position();
+
+        entity_t* en = NULL;
+        if (array::count(free_blackholes) > 0)
+        {
+            int index = array::pop(free_blackholes);
+            en = &blackholes[index];
+        }
+        else
+        {
+            en = &array::add(blackholes);
+        }
+
+        en->active    = true;
+        en->color     = vec4(1.0f, 1.0f, 1.0f, 0.0f);
+        en->velocity  = vec2(0.0f);
+        en->position  = pos;
+        en->movespeed = 0;
+        en->scale     = vec2(1.0f);
+        en->texture   = texture::load("Art/Black Hole.png");
+        en->rotation  = 0;
         en->radius    = en->texture->width * 0.5f;
     }
 
@@ -563,14 +591,39 @@ namespace world
         }
     }
 
+    void destroy_blackhole(entity_t* blaclhole, int index)
+    {
+        blaclhole->active = false;
+        array::push(free_blackholes, index);
+
+        texture_t* texture = texture::load("Art/Laser.png");
+
+        float hue1 = rand() % 101 / 100.0f * 6.0f;
+        float hue2 = fmodf(hue1 + (rand() % 101 / 100.0f * 2.0f), 6.0f);
+        vec4 color1 = color::hsv(hue1, 0.5f, 1);
+        vec4 color2 = color::hsv(hue2, 0.5f, 1);
+
+        for (int i = 0; i < 120; i++)
+        {
+            float speed = 640.0f * (0.2f + (rand() % 101 / 100.0f) * 0.8f);
+            float angle = rand() % 101 / 100.0f * 2 * PI;
+            vec2 vel = vec2(cosf(angle) * speed, sinf(angle) *speed);
+
+            vec4 color = mix(color1, color2, rand() % 101 / 100.0f);
+            particle_system::spawn_particle(texture, blaclhole->position, color, 1.0f, vec2(1.0f), 0.0f, vel);
+        }
+    }
+
     void game_over()
     {
         array::clear(bullets);
         array::clear(seekers);
         array::clear(wanderers);
+        array::clear(blackholes);
         array::clear(free_bullets);
         array::clear(free_seekers);
         array::clear(free_wanderers);
+        array::clear(free_blackholes);
 
         game_over_timer = 3.0f;
         texture_t* texture = texture::load("Art/Laser.png");
@@ -584,7 +637,7 @@ namespace world
         {
             float speed = 10.0f * max(game::screen_width, game::screen_height) * (0.6f + (rand() % 101 / 100.0f) * 0.4f);
             float angle = rand() % 101 / 100.0f * 2 * PI;
-            vec2 vel = vec2(cosf(angle) * speed, sinf(angle) *speed);
+            vec2 vel = vec2(cosf(angle) * speed, sinf(angle) * speed);
 
             vec4 color = mix(color1, color2, rand() % 101 / 100.0f);
             particle_system::spawn_particle(texture, player->position, color, game_over_timer, vec2(1.0f), 0.0f, vel);
@@ -593,6 +646,22 @@ namespace world
         player->position = vec2();
         player->velocity = vec2();
         player->rotation = 0.0f;
+    }
+
+    bool update_blackhole(entity_t* blackhole, entity_t* other)
+    {
+        if (distance(other->position, blackhole ->position) <= other->radius + blackhole->radius)
+        {
+            return true;
+        }
+        else if (distance(other->position, blackhole->position) <= other->radius + blackhole->radius * 5.0f)
+        {
+            vec2 diff = blackhole->position - other->position;
+            other->velocity += normalize(diff) * step(1, 0, length(diff) / (game::screen_width * 0.2f));
+            other->velocity = normalize(other->velocity);
+        }
+
+        return false;
     }
 
     void update(float dt, float vertical, float horizontal, vec2 aim_dir, bool fire)
@@ -667,7 +736,7 @@ namespace world
                 }
                 else
                 {
-                    s->velocity = normalize(player->position - s->position);
+                    s->velocity = normalize(s->velocity + normalize(player->position - s->position) * 10.0f * dt);
                     entity::move(s, dt);
                 }
             }
@@ -740,6 +809,27 @@ namespace world
                     break;
                 }
             }
+
+            if (!b->active) continue;
+            for (int j = 0, m = blackholes.count; j < m; j++)
+            {
+                entity_t* s = &blackholes[j];
+                if (!s->active || s->color.a < 1.0f) continue;
+
+                float d = distance(b->position, s->position);
+                if (d <= b->radius + s->radius)
+                {
+                    destroy_bullet(b, i);
+                    destroy_blackhole(s, j);
+                    break;
+                }
+                else if (d <= b->radius + s->radius * 5.0f)
+                {
+                    float r = b->radius + s->radius * 5.0f;
+                    float t = (d - r) / r;
+                    b->velocity = normalize(b->velocity + normalize(b->position - s->position) * 0.3f);
+                }
+            }
         }
 
         for (int j = 0, m = seekers.count; j < m; j++)
@@ -763,6 +853,54 @@ namespace world
             {
                 game_over();
                 break;
+            }
+        }
+
+        for (int i = 0, n = blackholes.count; i < n; i++)
+        {
+            entity_t* s = &blackholes[i];
+            if (s->active)
+            {
+                if (s->color.a < 1.0f)
+                {
+                    s->color.a += dt;
+                    if (s->color.a > 1.0f)
+                    {
+                        s->color.a = 1.0f;
+                    }
+                }
+                else
+                {
+                    if (update_blackhole(s, player))
+                    {
+                        game_over();
+                        break;
+                    }
+
+                    for (int j = 0, m = seekers.count; j < m; j++)
+                    {
+                        entity_t* other = &seekers[j];
+                        if (!other->active || other->color.a < 1.0f) continue;
+
+                        if (update_blackhole(s, other))
+                        {
+                            destroy_seeker(other, j);
+                            break;
+                        }
+                    }
+
+                    for (int j = 0, m = wanderers.count; j < m; j++)
+                    {
+                        entity_t* other = &wanderers[j];
+                        if (!other->active || other->color.a < 1.0f) continue;
+
+                        if (update_blackhole(s, other))
+                        {
+                            destroy_wanderer(other, j);
+                            break;
+                        }
+                    }
+                }
             }
         }
 
@@ -792,6 +930,7 @@ namespace world
 
             spawn_seeker();
             spawn_wanderer();
+            spawn_blackhole();
         }
     }
 
@@ -812,11 +951,6 @@ namespace world
 
         draw_entity(player);
 
-        for (int i = 0, n = bullets.count; i < n; i++)
-        {
-            draw_entity(&bullets[i]);
-        }
-
         for (int i = 0, n = seekers.count; i < n; i++)
         {
             draw_entity(&seekers[i]);
@@ -825,6 +959,16 @@ namespace world
         for (int i = 0, n = wanderers.count; i < n; i++)
         {
             draw_entity(&wanderers[i]);
+        }
+
+        for (int i = 0, n = blackholes.count; i < n; i++)
+        {
+            draw_entity(&blackholes[i]);
+        }
+
+        for (int i = 0, n = bullets.count; i < n; i++)
+        {
+            draw_entity(&bullets[i]);
         }
     }
 }
@@ -1226,23 +1370,26 @@ namespace game
 			break;
 
 		case SDL_KEYDOWN:
-            switch (e->key.keysym.sym)
+            if (!e->key.repeat)
             {
-            case SDLK_s:
-                axis_vertical = -1.0f;
-                break;
+                switch (e->key.keysym.sym)
+                {
+                case SDLK_s:
+                    axis_vertical = -1.0f;
+                    break;
 
-            case SDLK_w:
-                axis_vertical = 1.0f;
-                break;
+                case SDLK_w:
+                    axis_vertical = 1.0f;
+                    break;
 
-            case SDLK_a:
-                axis_horizontal = -1.0f;
-                break;
+                case SDLK_a:
+                    axis_horizontal = -1.0f;
+                    break;
 
-            case SDLK_d:
-                axis_horizontal = 1.0f;
-                break;
+                case SDLK_d:
+                    axis_horizontal = 1.0f;
+                    break;
+                }
             }
 			break;
 
@@ -1277,16 +1424,16 @@ namespace game
     {
         total_time += dt;
 
-        world::update(dt, axis_vertical, axis_horizontal, aim, fire);
         particle_system::update(dt);
+        world::update(dt, axis_vertical, axis_horizontal, aim, fire);
     }
 
     void render(void)
     {
 		renderer::prepair();
 
-        world::render();
         particle_system::render();
+        world::render();
 
 		renderer::present();
     }
