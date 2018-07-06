@@ -87,6 +87,7 @@ struct particle_t
 
 namespace game
 {
+    float total_time;
     int screen_width;
     int screen_height;
 }
@@ -496,6 +497,7 @@ namespace world
         entity::move(player, vec2(game::screen_width, game::screen_height), dt);
         if (lengthsquared(player->velocity) > 0.1f)
         {
+            float speed;
             float angle = vec2_angle(player->velocity);
             
             texture_t* glow_tex = texture::load("Art/Glow.png");
@@ -503,22 +505,24 @@ namespace world
 
             vec2 vel = -0.3f * player->movespeed * player->velocity;
             vec2 pos = player->position + 45.0f * (-player->velocity);
-            vec2 nvel = vec2(vel.y, -vel.x) * 0.6f;
+            vec2 nvel = vec2(vel.y, -vel.x) * 0.6f * sinf(game::total_time * 10.0f);
             float alpha = 0.7f;
 
             vec2 mid_vel = vel;
             particle_system::spawn_particle(glow_tex, pos, vec4(1.0f, 0.7f, 0.1f, 1.0f) * alpha, 0.2f, vec2(0.5f, 1.0f), angle, mid_vel);
             particle_system::spawn_particle(line_tex, pos, vec4(1.0f, 1.0f, 1.0f, 1.0f) * alpha, 0.2f, vec2(0.5f, 1.0f), angle, mid_vel);
 
-            angle = rand() % 101 / 100.0f * 0.2f * PI;
-            vec2 side_vel1 = vel + nvel + vec2(0, 0.3f * player->movespeed * sinf(angle));
-            particle_system::spawn_particle(glow_tex, pos, vec4(1.0f), 0.2f, vec2(0.5f, 1.0f), angle, side_vel1);
-            particle_system::spawn_particle(line_tex, pos, vec4(1.0f), 0.2f, vec2(0.5f, 1.0f), angle, side_vel1);
+            speed = rand() % 101 / 100.0f * 10.0f;
+            angle = rand() % 101 / 100.0f * 2.0f * PI;
+            vec2 side_vel1 = vel + nvel + vec2(cosf(angle), sinf(angle)) * speed;
+            particle_system::spawn_particle(glow_tex, pos, vec4(0.8f, 0.2f, 0.1f, 1.0f), 0.2f, vec2(0.5f, 1.0f), angle, side_vel1);
+            particle_system::spawn_particle(line_tex, pos, vec4(1.0f, 1.0f, 1.0f, 1.0f), 0.2f, vec2(0.5f, 1.0f), angle, side_vel1);
 
-            angle = rand() % 101 / 100.0f * 0.2f * PI;
-            vec2 side_vel2 = vel - nvel - vec2(0, 0.3f * player->movespeed * sinf(angle));
-            particle_system::spawn_particle(glow_tex, pos, vec4(1.0f), 0.2f, vec2(0.5f, 1.0f), angle, side_vel2);
-            particle_system::spawn_particle(line_tex, pos, vec4(1.0f), 0.2f, vec2(0.5f, 1.0f), angle, side_vel2);
+            speed = rand() % 101 / 100.0f * 10.0f;
+            angle = rand() % 101 / 100.0f * 2.0f * PI;
+            vec2 side_vel2 = vel - nvel + vec2(cosf(angle), sinf(angle)) * speed;
+            particle_system::spawn_particle(glow_tex, pos, vec4(0.8f, 0.2f, 0.1f, 1.0f), 0.2f, vec2(0.5f, 1.0f), angle, side_vel2);
+            particle_system::spawn_particle(line_tex, pos, vec4(1.0f, 1.0f, 1.0f, 1.0f), 0.2f, vec2(0.5f, 1.0f), angle, side_vel2);
         
         }                                   
 
@@ -678,6 +682,12 @@ namespace renderer
 	GLuint fshader;
 	GLuint program;
 
+    GLuint     framebuf;
+    texture_t* frametex; 
+    GLuint     framevao;
+    GLuint     framevbo;
+    GLuint     frameprog;
+
 	mat4 proj_matrix;
 
 	const char* vshader_src =
@@ -775,6 +785,97 @@ namespace renderer
 		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), NULL);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
+
+        frametex = new texture_t();
+        texture::apply(frametex);
+        glBindTexture(GL_TEXTURE_2D, frametex->handle);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, w, h, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glGenFramebuffersEXT(1, &framebuf);
+        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, framebuf);
+        glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, frametex->handle, 0);
+
+        GLenum status;
+        status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+        switch (status)
+        {
+        case GL_FRAMEBUFFER_COMPLETE_EXT:
+            printf("renderer::init(): Success create framebuffer.\n");
+            break;
+
+        default:
+            fprintf(stderr, "Failed to create framebuffer.\n");
+            fprintf(stderr, "An error occured, press any key to exit...");
+            getchar();
+            exit(1);
+            break;
+        }
+
+        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+
+        // Create framebuffer render object
+        {
+            glGenVertexArrays(1, &framevao);
+            glGenBuffers(1, &framevbo);
+
+            vec2 vertices[] = 
+            {
+                // First triangle
+                vec2(-1.0f, -1.0f), vec2(0.0f, 0.0f),
+                vec2(-1.0f,  1.0f), vec2(0.0f, 1.0f),
+                vec2( 1.0f,  1.0f), vec2(1.0f, 1.0f),
+
+                // Second triangle
+                vec2( 1.0f,  1.0f), vec2(1.0f, 1.0f),
+                vec2( 1.0f, -1.0f), vec2(1.0f, 0.0f),
+                vec2(-1.0f, -1.0f), vec2(0.0f, 0.0f),
+            };
+
+            glBindVertexArray(framevao);
+            glBindBuffer(GL_ARRAY_BUFFER, framevbo);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+            glEnableVertexAttribArray(0);
+            glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), NULL);
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+            glBindVertexArray(0);
+        }
+
+        // Create post processing shader
+        printf("renderer::init(): Starting create framebuffer's shader...\n");
+        {
+            const char* vshader_src =
+                "#version 330 core\n"
+                "layout (location = 0) in vec4 vertex;"
+                "out vec2 uv;"
+                "void main() {"
+                "uv = vertex.zw;"
+                "gl_Position = vec4(vertex.xy, 0, 1.0);"
+                "}";
+
+            const char* fshader_src =
+                "#version 330 core\n"
+                "in vec2 uv;"
+                "out vec4 fragColor;"
+                "uniform sampler2D image;"
+                "void main() {"
+                "fragColor = texture(image, uv);"
+                "}";
+
+            GLuint vshader = create_shader(GL_VERTEX_SHADER, vshader_src);
+            GLuint fshader = create_shader(GL_FRAGMENT_SHADER, fshader_src);
+            frameprog = create_program(vshader, fshader);
+
+            if (!vshader || !fshader || !frameprog)
+            {
+                fprintf(stderr, "An error occured, press any key to exit...");
+                getchar();
+                exit(1);
+            }
+
+            glDeleteShader(vshader);
+            glDeleteShader(fshader);
+            printf("renderer::init(): Create framebuffer's shader successfully.\n");
+        }
 	}
 
 	void draw_texture(texture_t* texture, vec2 position, float rotation, vec2 scale, vec4 color, blendfunc_t blend)
@@ -824,6 +925,9 @@ namespace renderer
 
 	void present()
 	{
+        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, framebuf);
+        glClear(GL_COLOR_BUFFER_BIT);
+        
 		glUseProgram(program);
 
 		glBindVertexArray(vao);
@@ -863,6 +967,17 @@ namespace renderer
 		glBindVertexArray(0);
 
 		glUseProgram(0);
+        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+
+        glUseProgram(frameprog);
+        glBindVertexArray(framevao);
+        glBindBuffer(GL_ARRAY_BUFFER, framevbo);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, frametex->handle);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
 	}
 }
 
@@ -971,6 +1086,8 @@ namespace game
 
     void update(float dt)
     {
+        total_time += dt;
+
         world::update(dt, axis_vertical, axis_horizontal, aim, fire);
         particle_system::update(dt);
     }
