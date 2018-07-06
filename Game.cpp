@@ -585,29 +585,29 @@ namespace world
             float speed;
             float angle = vec2_angle(player->velocity);
             
-            texture_t* glow_tex = texture::load("Art/Glow.png");
+            texture_t* glow_tex = texture::load("Art/Laser.png");
             texture_t* line_tex = texture::load("Art/Laser.png");
 
-            vec2 vel = -0.3f * player->movespeed * player->velocity;
+            vec2 vel = -0.25f * player->movespeed * player->velocity;
             vec2 pos = player->position + 45.0f * (-player->velocity);
             vec2 nvel = vec2(vel.y, -vel.x) * 0.9f * sinf(game::total_time * 10.0f);
             float alpha = 0.7f;
 
             vec2 mid_vel = vel;
-            particle_system::spawn_particle(glow_tex, pos, vec4(1.0f, 0.7f, 0.1f, 1.0f) * alpha, 0.3f, vec2(0.5f, 1.0f), angle, mid_vel);
-            particle_system::spawn_particle(line_tex, pos, vec4(1.0f, 1.0f, 1.0f, 1.0f) * alpha, 0.3f, vec2(0.5f, 1.0f), angle, mid_vel);
+            particle_system::spawn_particle(glow_tex, pos, vec4(1.0f, 0.7f, 0.1f, 1.0f) * alpha, 0.4f, vec2(1.0f, 2.0f), angle, mid_vel);
+            particle_system::spawn_particle(line_tex, pos, vec4(1.0f, 1.0f, 1.0f, 1.0f) * alpha, 0.4f, vec2(1.0f, 1.0f), angle, mid_vel);
 
-            speed = rand() % 101 / 100.0f * 10.0f;
+            speed = rand() % 101 / 100.0f * 40.0f;
             angle = rand() % 101 / 100.0f * 2.0f * PI;
             vec2 side_vel1 = vel + nvel + vec2(cosf(angle), sinf(angle)) * speed;
-            particle_system::spawn_particle(glow_tex, pos, vec4(0.8f, 0.2f, 0.1f, 1.0f), 0.3f, vec2(0.5f, 1.0f), angle, side_vel1);
-            particle_system::spawn_particle(line_tex, pos, vec4(1.0f, 1.0f, 1.0f, 1.0f), 0.3f, vec2(0.5f, 1.0f), angle, side_vel1);
+            particle_system::spawn_particle(glow_tex, pos, vec4(0.8f, 0.2f, 0.1f, 1.0f) * alpha, 0.4f, vec2(1.0f, 2.0f), angle, side_vel1);
+            particle_system::spawn_particle(line_tex, pos, vec4(1.0f, 1.0f, 1.0f, 1.0f) * alpha, 0.4f, vec2(1.0f, 1.0f), angle, side_vel1);
 
-            speed = rand() % 101 / 100.0f * 10.0f;
+            speed = rand() % 101 / 100.0f * 40.0f;
             angle = rand() % 101 / 100.0f * 2.0f * PI;
             vec2 side_vel2 = vel - nvel + vec2(cosf(angle), sinf(angle)) * speed;
-            particle_system::spawn_particle(glow_tex, pos, vec4(0.8f, 0.2f, 0.1f, 1.0f), 0.3f, vec2(0.5f, 1.0f), angle, side_vel2);
-            particle_system::spawn_particle(line_tex, pos, vec4(1.0f, 1.0f, 1.0f, 1.0f), 0.3f, vec2(0.5f, 1.0f), angle, side_vel2);
+            particle_system::spawn_particle(glow_tex, pos, vec4(0.8f, 0.2f, 0.1f, 1.0f) * alpha, 0.4f, vec2(1.0f, 2.0f), angle, side_vel2);
+            particle_system::spawn_particle(line_tex, pos, vec4(1.0f, 1.0f, 1.0f, 1.0f) * alpha, 0.4f, vec2(1.0f, 1.0f), angle, side_vel2);
         }                                   
 
         for (int i = 0, n = bullets.count; i < n; i++)
@@ -666,7 +666,7 @@ namespace world
                     float direction = vec2_angle(s->velocity);
                     for (int j = 0; j < INTERPOLATIONS; j++)
                     {
-                        direction += (0.06f * (rand() % 101 / 100.0f) - 0.03f) * PI;
+                        direction += (0.12f * (rand() % 101 / 100.0f) - 0.06f) * PI;
 
                         if (s->position.x < -game::screen_width || s->position.x > game::screen_width
                             || s->position.y < -game::screen_height || s->position.y > game::screen_height)
@@ -674,6 +674,7 @@ namespace world
                             direction = vec2_angle(-s->position) + (1.0f * (rand() % 101 / 100.0f) - 0.5f) * PI;
                         }
 
+                        s->rotation = direction;
                         s->velocity = vec2(cosf(direction), sinf(direction));
                         s->position = s->position + s->velocity * real_speed * dt;
                     }
@@ -768,18 +769,18 @@ namespace world
                 texture_t* line_tex = texture::load("Art/Laser.png");
 
                 vec4 color1 = vec4(0.3f, 0.8f, 0.4f, 1.0f);
-                vec4 color2 = vec4(0.4f, 1.0f, 0.6f, 1.0f);
+                vec4 color2 = vec4(0.5f, 1.0f, 0.7f, 1.0f);
 
-                for (int j = 0, m = (int)(s->color.a * 6); j < n; j++)
+                if (fmodf(game::total_time, 0.05f) <= 0.01f)
                 {
-                    float speed = 5.0f * s->radius * (0.8f + (rand() % 101 / 100.0f) * 0.2f);
-                    float angle = rand() % 101 / 100.0f * 2 * PI;
+                    float speed = 16.0f * s->radius * (0.8f + (rand() % 101 / 100.0f) * 0.2f);
+                    float angle = rand() % 101 / 100.0f * game::total_time;
                     vec2 vel = vec2(cosf(angle) * speed, sinf(angle) * speed);
-                    vec2 pos = s->position + vel;
+                    vec2 pos = s->position + 0.4f * vec2(vel.y, -vel.x) + (4.0f + rand() % 101 / 100.0f * 4.0f);
 
                     vec4 color = mix(color1, color2, rand() % 101 / 100.0f);
-                    particle_system::spawn_particle(glow_tex, pos, color, 2.0f, vec2(0.6f), 0.0f, vec2(-vel.y, vel.x));
-                    particle_system::spawn_particle(line_tex, pos, color, 2.0f, vec2(1.0f), 0.0f, vec2(-vel.y, vel.x));
+                    //particle_system::spawn_particle(glow_tex, pos, color, 4.0f, vec2(0.3f, 1.0f), 0.0f, vec2(-vel.y, vel.x));
+                    particle_system::spawn_particle(line_tex, pos, color, 4.0f, vec2(1.0f, 1.0f), 0.0f, vel);
                 }
 
                 if (s->color.a < 1.0f)
@@ -973,16 +974,17 @@ namespace particle_system
             for (int i = 0, n = world::blackholes.count; i < n; i++)
             {
                 entity_t* blackhole = &world::blackholes[i];
+                if (!blackhole->active) continue;
 
                 vec2 diff = blackhole->position - p.position;
                 float d = length(diff);
                 vec2 normal = normalize(diff);
-                p.velocity += normal * max(0.0f, 20.0f * blackhole->radius / d);
+                p.velocity += normal * max(0.0f, game::screen_width / d);
 
                 // add tangential acceleration for nearby particles
                 if (d < 10.0f * blackhole->radius)
                 {
-                    p.velocity += vec2(normal.y, -normal.x) * (10.0f * blackhole->radius / d);
+                    p.velocity += vec2(normal.y, -normal.x) * (21.0f * blackhole->radius / (120.0f + 1.2f * d));
                 }
             }
         }
