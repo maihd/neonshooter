@@ -340,8 +340,8 @@ namespace world
 
         do
         {
-            float x = (2.0f * (rand() % 101) / 100.0f - 1.0f) * game::screen_width;
-            float y = (2.0f * (rand() % 101) / 100.0f - 1.0f) * game::screen_height;
+            float x = (2.0f * (rand() % 101) / 100.0f - 1.0f) * 0.8f * game::screen_width;
+            float y = (2.0f * (rand() % 101) / 100.0f - 1.0f) * 0.8f * game::screen_height;
             pos = vec2(x, y);
         } while (distancesquared(pos, player->position) < min_distance_sqr);
 
@@ -1367,7 +1367,6 @@ namespace game
 	float axis_vertical   = 0.0f;
 	float axis_horizontal = 0.0f;
 
-	texture_t* texture;
 	void init(SDL_Window* window)
 	{
         // System
@@ -1383,83 +1382,107 @@ namespace game
         // Initialize render engine
 		renderer::init(window);
 
-        // Sample texture
-		texture = texture::load("Art/Player.png");
+        SDL_InitSubSystem(SDL_INIT_JOYSTICK);
+        if (SDL_NumJoysticks() > 0)
+        {
+            SDL_Joystick* joystick = SDL_JoystickOpen(0);
+            
+            if (joystick)
+            {
+                printf("Opened Joystick 0\n");
+                printf("Name: %s\n", SDL_JoystickNameForIndex(0));
+                printf("Number of Axes: %d\n", SDL_JoystickNumAxes(joystick));
+                printf("Number of Buttons: %d\n", SDL_JoystickNumButtons(joystick));
+                printf("Number of Balls: %d\n", SDL_JoystickNumBalls(joystick));
+            }
+            else
+            {
+                printf("Couldn't open Joystick 0\n");
+            }
+
+        }
 	}
 
-	void input(const SDL_Event* e)
+	void input()
 	{
-		switch (e->type)
-		{
-		case SDL_KEYUP:
-			switch (e->key.keysym.sym)
-			{
-            case SDLK_s:
-                if (axis_vertical < 0.0f) axis_vertical = 0.0f;
-                break;
+        const Uint8* keys = SDL_GetKeyboardState(NULL);
 
-			case SDLK_w:
-				if (axis_vertical > 0.0f) axis_vertical = 0.0f;
-                break;
+        if (keys[SDL_SCANCODE_W])
+        {
+            axis_vertical = min(1.0f, axis_vertical + 0.1f);
+        }
+        else
+        {
+            if (axis_vertical > 0.0f) axis_vertical = 0.0f;
+        }
 
-            case SDLK_a:
-                if (axis_horizontal < 0.0f) axis_horizontal = 0.0f;
-                break;
+        if (keys[SDL_SCANCODE_S])
+        {
+            axis_vertical = max(-1.0f, axis_vertical - 0.1f);
+        }
+        else
+        {
+            if (axis_vertical < 0.0f) axis_vertical = 0.0f;
+        }
 
-            case SDLK_d:
-                if (axis_horizontal > 0.0f) axis_horizontal = 0.0f;
-                break;
-			}
-			break;
+        if (keys[SDL_SCANCODE_A])
+        {
+            axis_horizontal = max(-1.0f, axis_horizontal - 0.1f);
+        }
+        else
+        {
+            if (axis_horizontal < 0.0f) axis_horizontal = 0.0f;
+        }
 
-		case SDL_KEYDOWN:
-            if (!e->key.repeat)
-            {
-                switch (e->key.keysym.sym)
-                {
-                case SDLK_s:
-                    axis_vertical += -1.0f;
-                    break;
+        if (keys[SDL_SCANCODE_D])
+        {
+            axis_horizontal = min(1.0f, axis_horizontal + 0.1f);
+        }
+        else
+        {
+            if (axis_horizontal > 0.0f) axis_horizontal = 0.0f;
+        }
 
-                case SDLK_w:
-                    axis_vertical += 1.0f;
-                    break;
-
-                case SDLK_a:
-                    axis_horizontal += -1.0f;
-                    break;
-
-                case SDLK_d:
-                    axis_horizontal += 1.0f;
-                    break;
-                }
-            }
-			break;
-
-        case SDL_MOUSEBUTTONDOWN:
-            if (e->button.button == SDL_BUTTON_LEFT)
-            {
-                fire = true;
-            }
-            break;
-
-        case SDL_MOUSEBUTTONUP:
-            if (e->button.button == SDL_BUTTON_LEFT)
-            {
-                fire = false;
-            }
-            break;
-
-        case SDL_MOUSEMOTION:
-            vec2 clip = vec2(2.0f * e->motion.x / (float)screen_width - 1.0f, 1.0f - 2.0f * e->motion.y / (float)screen_height);
+        int mx;
+        int my;
+        Uint32 mouse = SDL_GetMouseState(&mx, &my);
+        fire = mouse & SDL_BUTTON(SDL_BUTTON_LEFT);
+        {
+            vec2 clip = vec2(2.0f * mx / (float)screen_width - 1.0f, 1.0f - 2.0f * my / (float)screen_height);
 
             vec2 mpos = vec2(clip.x * screen_width, clip.y * screen_height);
             aim = normalize(mpos - world::player->position);
-            break;
-		}
+        }
 
-        vec2 axes = normalize(vec2(axis_horizontal, axis_vertical));
-        axis_vertical = axes.y;
+        SDL_Joystick* joystick = SDL_JoystickOpen(0);
+        if (joystick)
+        {
+            axis_vertical = -(SDL_JoystickGetAxis(joystick, 1)) / (float)SHRT_MAX;
+            axis_horizontal = (SDL_JoystickGetAxis(joystick, 0)) / (float)SHRT_MAX;
+
+            aim.x = (SDL_JoystickGetAxis(joystick, 3)) / (float)SHRT_MAX;
+            aim.y = -(SDL_JoystickGetAxis(joystick, 4)) / (float)SHRT_MAX;
+            if (length(aim.x) < 0.01f)
+            {
+                aim = vec2();
+            }
+            else
+            {
+                fire = true;
+                aim = normalize(aim);
+            }
+        }
+
+        vec2 axes = vec2(axis_horizontal, axis_vertical);
+        if (length(axes) < 0.01f)
+        {
+            axes = vec2();
+        }
+        else
+        {
+            axes = normalize(axes);
+        }
+        axis_vertical   = axes.y;
         axis_horizontal = axes.x;
 	}
 
