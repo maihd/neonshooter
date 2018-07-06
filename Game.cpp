@@ -140,14 +140,14 @@ namespace texture
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
-	void set_pixels(texture_t* texture, int w, int h, const void* pixels)
+	void set_pixels(texture_t* texture, int w, int h, const void* pixels, GLenum infmt = GL_RGBA, GLenum fmt = GL_RGBA)
 	{
 		if (w > 0 && h > 0 && pixels)
 		{
 			texture->width  = w;
 			texture->height = h;
 			glBindTexture(GL_TEXTURE_2D, texture->handle);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+			glTexImage2D(GL_TEXTURE_2D, 0, infmt, w, h, 0, fmt, GL_UNSIGNED_BYTE, pixels);
 			glBindTexture(GL_TEXTURE_2D, 0);
 		}
 	}
@@ -164,9 +164,23 @@ namespace texture
 		void* pixels = stbi_load(path, &w, &h, &n, 0);
 		if (pixels)
 		{
+            char ext[32];
+            _splitpath_s(path, NULL, 0, NULL, 0, NULL, 0, ext, sizeof(ext));
+            GLenum fmt, infmt;
+            if (_stricmp(ext, ".jpg") == 0 || _stricmp(ext, ".jpeg") == 0)
+            {
+                fmt   = GL_RGB;
+                infmt = GL_RGBA;
+            }
+            else
+            {
+                fmt   = GL_RGBA;
+                infmt = GL_RGBA;
+            }
+
 			texture = new texture_t();
 			texture::apply(texture);
-			texture::set_pixels(texture, w, h, pixels);
+			texture::set_pixels(texture, w, h, pixels, infmt, fmt);
 
 			stbi_image_free(pixels);
             table::set(textures, path, texture);
@@ -227,6 +241,11 @@ namespace particle_system
 {
     array_t<particle_t> particles(membuf_heap());
     array_t<int> free_particles(membuf_heap());
+
+    void init(void)
+    {
+        array::ensure(particles, 20 * 1024);
+    }
 
     void spawn_particle(texture_t* texture, vec2 pos, vec4 tint, float duration, vec2 scale, float theta, vec2 vel)
     {
@@ -330,9 +349,11 @@ namespace world
 
     array_t<entity_t> bullets(membuf_heap());
     array_t<entity_t> seekers(membuf_heap());
+    array_t<entity_t> wanderers(membuf_heap());
 
     array_t<int> free_bullets(membuf_heap());
     array_t<int> free_seekers(membuf_heap());
+    array_t<int> free_wanderers(membuf_heap());
 
     float fire_timer = 0.0f;
     float fire_interval = 0.1f;
@@ -341,6 +362,7 @@ namespace world
     float spawn_interval = 1.0f;
 
     bool lock = false;
+    float game_over_timer = 0.0f;
 
     void init(SDL_Window* window)
     {
@@ -353,6 +375,10 @@ namespace world
         player->movespeed = 720.0f;
         player->texture = texture::load("Art/Player.png");
         player->radius = player->texture->width * 0.5f;
+
+        array::ensure(bullets  , 256);
+        array::ensure(seekers  , 256);
+        array::ensure(wanderers, 256);
     }
 
     void spawn_bullet(vec2 pos, vec2 vel)
@@ -443,6 +469,32 @@ namespace world
         en->radius = en->texture->width * 0.5f;
     }
 
+    void spawn_wanderer()
+    {
+        vec2 pos = get_spawn_position();
+
+        entity_t* en = NULL;
+        if (array::count(free_wanderers) > 0)
+        {
+            int index = array::pop(free_wanderers);
+            en = &wanderers[index];
+        }
+        else
+        {
+            en = &array::add(wanderers);
+        }
+
+        en->active    = true;
+        en->color     = vec4(1.0f, 1.0f, 1.0f, 0.0f);
+        en->velocity  = normalize(player->position - pos);
+        en->position  = pos;
+        en->movespeed = 240.0f;
+        en->scale     = vec2(1.0f);
+        en->texture   = texture::load("Art/wanderer.png");
+        en->rotation  = atan2f(en->velocity.y, en->velocity.x);
+        en->radius    = en->texture->width * 0.5f;
+    }
+
     void destroy_bullet(entity_t* bullet, int index, bool explosion = false)
     {
         bullet->active = false;
@@ -488,8 +540,69 @@ namespace world
         }
     }
 
+    void destroy_wanderer(entity_t* wanderer, int index)
+    {
+        wanderer->active = false;
+        array::push(free_wanderers, index);
+
+        texture_t* texture = texture::load("Art/Laser.png");
+
+        float hue1 = rand() % 101 / 100.0f * 6.0f;
+        float hue2 = fmodf(hue1 + (rand() % 101 / 100.0f * 2.0f), 6.0f);
+        vec4 color1 = color::hsv(hue1, 0.5f, 1);
+        vec4 color2 = color::hsv(hue2, 0.5f, 1);
+
+        for (int i = 0; i < 120; i++)
+        {
+            float speed = 640.0f * (0.2f + (rand() % 101 / 100.0f) * 0.8f);
+            float angle = rand() % 101 / 100.0f * 2 * PI;
+            vec2 vel = vec2(cosf(angle) * speed, sinf(angle) *speed);
+
+            vec4 color = mix(color1, color2, rand() % 101 / 100.0f);
+            particle_system::spawn_particle(texture, wanderer->position, color, 1.0f, vec2(1.0f), 0.0f, vel);
+        }
+    }
+
+    void game_over()
+    {
+        array::clear(bullets);
+        array::clear(seekers);
+        array::clear(wanderers);
+        array::clear(free_bullets);
+        array::clear(free_seekers);
+        array::clear(free_wanderers);
+
+        game_over_timer = 3.0f;
+        texture_t* texture = texture::load("Art/Laser.png");
+
+        float hue1 = rand() % 101 / 100.0f * 6.0f;
+        float hue2 = fmodf(hue1 + (rand() % 101 / 100.0f * 2.0f), 6.0f);
+        vec4 color1 = color::hsv(hue1, 0.5f, 1);
+        vec4 color2 = color::hsv(hue2, 0.5f, 1);
+
+        for (int i = 0; i < 1200; i++)
+        {
+            float speed = 10.0f * max(game::screen_width, game::screen_height) * (0.6f + (rand() % 101 / 100.0f) * 0.4f);
+            float angle = rand() % 101 / 100.0f * 2 * PI;
+            vec2 vel = vec2(cosf(angle) * speed, sinf(angle) *speed);
+
+            vec4 color = mix(color1, color2, rand() % 101 / 100.0f);
+            particle_system::spawn_particle(texture, player->position, color, game_over_timer, vec2(1.0f), 0.0f, vel);
+        }
+
+        player->position = vec2();
+        player->velocity = vec2();
+        player->rotation = 0.0f;
+    }
+
     void update(float dt, float vertical, float horizontal, vec2 aim_dir, bool fire)
     {
+        if (game_over_timer > 0.0f)
+        {
+            game_over_timer -= dt;
+            return;
+        }
+
         // Update is in progress, locking the list
         lock = true;
 
@@ -505,25 +618,24 @@ namespace world
 
             vec2 vel = -0.3f * player->movespeed * player->velocity;
             vec2 pos = player->position + 45.0f * (-player->velocity);
-            vec2 nvel = vec2(vel.y, -vel.x) * 0.6f * sinf(game::total_time * 10.0f);
+            vec2 nvel = vec2(vel.y, -vel.x) * 0.9f * sinf(game::total_time * 10.0f);
             float alpha = 0.7f;
 
             vec2 mid_vel = vel;
-            particle_system::spawn_particle(glow_tex, pos, vec4(1.0f, 0.7f, 0.1f, 1.0f) * alpha, 0.2f, vec2(0.5f, 1.0f), angle, mid_vel);
-            particle_system::spawn_particle(line_tex, pos, vec4(1.0f, 1.0f, 1.0f, 1.0f) * alpha, 0.2f, vec2(0.5f, 1.0f), angle, mid_vel);
+            particle_system::spawn_particle(glow_tex, pos, vec4(1.0f, 0.7f, 0.1f, 1.0f) * alpha, 0.3f, vec2(0.5f, 1.0f), angle, mid_vel);
+            particle_system::spawn_particle(line_tex, pos, vec4(1.0f, 1.0f, 1.0f, 1.0f) * alpha, 0.3f, vec2(0.5f, 1.0f), angle, mid_vel);
 
             speed = rand() % 101 / 100.0f * 10.0f;
             angle = rand() % 101 / 100.0f * 2.0f * PI;
             vec2 side_vel1 = vel + nvel + vec2(cosf(angle), sinf(angle)) * speed;
-            particle_system::spawn_particle(glow_tex, pos, vec4(0.8f, 0.2f, 0.1f, 1.0f), 0.2f, vec2(0.5f, 1.0f), angle, side_vel1);
-            particle_system::spawn_particle(line_tex, pos, vec4(1.0f, 1.0f, 1.0f, 1.0f), 0.2f, vec2(0.5f, 1.0f), angle, side_vel1);
+            particle_system::spawn_particle(glow_tex, pos, vec4(0.8f, 0.2f, 0.1f, 1.0f), 0.3f, vec2(0.5f, 1.0f), angle, side_vel1);
+            particle_system::spawn_particle(line_tex, pos, vec4(1.0f, 1.0f, 1.0f, 1.0f), 0.3f, vec2(0.5f, 1.0f), angle, side_vel1);
 
             speed = rand() % 101 / 100.0f * 10.0f;
             angle = rand() % 101 / 100.0f * 2.0f * PI;
             vec2 side_vel2 = vel - nvel + vec2(cosf(angle), sinf(angle)) * speed;
-            particle_system::spawn_particle(glow_tex, pos, vec4(0.8f, 0.2f, 0.1f, 1.0f), 0.2f, vec2(0.5f, 1.0f), angle, side_vel2);
-            particle_system::spawn_particle(line_tex, pos, vec4(1.0f, 1.0f, 1.0f, 1.0f), 0.2f, vec2(0.5f, 1.0f), angle, side_vel2);
-        
+            particle_system::spawn_particle(glow_tex, pos, vec4(0.8f, 0.2f, 0.1f, 1.0f), 0.3f, vec2(0.5f, 1.0f), angle, side_vel2);
+            particle_system::spawn_particle(line_tex, pos, vec4(1.0f, 1.0f, 1.0f, 1.0f), 0.3f, vec2(0.5f, 1.0f), angle, side_vel2);
         }                                   
 
         for (int i = 0, n = bullets.count; i < n; i++)
@@ -561,15 +673,51 @@ namespace world
             }
         }
 
+        for (int i = 0, n = wanderers.count; i < n; i++)
+        {
+            entity_t* s = &wanderers[i];
+            if (s->active)
+            {
+                if (s->color.a < 1.0f)
+                {
+                    s->color.a += dt;
+                    if (s->color.a > 1.0f)
+                    {
+                        s->color.a = 1.0f;
+                    }
+                }
+                else
+                {
+                    const int INTERPOLATIONS = 6;
+                    const float real_speed = s->movespeed / INTERPOLATIONS;
+
+                    float direction = vec2_angle(s->velocity);
+                    for (int j = 0; j < INTERPOLATIONS; j++)
+                    {
+                        direction += (0.06f * (rand() % 101 / 100.0f) - 0.03f) * PI;
+
+                        if (s->position.x < -game::screen_width || s->position.x > game::screen_width
+                            || s->position.y < -game::screen_height || s->position.y > game::screen_height)
+                        {
+                            direction = vec2_angle(-s->position) + (1.0f * (rand() % 101 / 100.0f) - 0.5f) * PI;
+                        }
+
+                        s->velocity = vec2(cosf(direction), sinf(direction));
+                        s->position = s->position + s->velocity * real_speed * dt;
+                    }
+                }
+            }
+        }
+
         for (int i = 0, n = bullets.count; i < n; i++)
         {
             entity_t* b = &bullets[i];
-            if (!b->active) continue;
 
+            if (!b->active) continue;
             for (int j = 0, m = seekers.count; j < m; j++)
             {
                 entity_t* s = &seekers[j];
-                if (!s->active) continue;
+                if (!s->active || s->color.a < 1.0f) continue;
 
                 if (distance(b->position, s->position) <= b->radius + s->radius)
                 {
@@ -578,22 +726,42 @@ namespace world
                     break;
                 }
             }
+
+            if (!b->active) continue;
+            for (int j = 0, m = wanderers.count; j < m; j++)
+            {
+                entity_t* s = &wanderers[j];
+                if (!s->active || s->color.a < 1.0f) continue;
+
+                if (distance(b->position, s->position) <= b->radius + s->radius)
+                {
+                    destroy_bullet(b, i);
+                    destroy_wanderer(s, j);
+                    break;
+                }
+            }
         }
 
         for (int j = 0, m = seekers.count; j < m; j++)
         {
             entity_t* s = &seekers[j];
-            if (!s->active) continue;
+            if (!s->active || s->color.a < 1.0f) continue;
 
             if (distance(player->position, s->position) <= player->radius + s->radius)
             {
-                array::clear(bullets);
-                array::clear(seekers);
-                array::clear(free_bullets);
-                array::clear(free_seekers);
+                game_over();
+                break;
+            }
+        }
 
-                player->position = vec2();
-                player->rotation = 0.0f;
+        for (int j = 0, m = wanderers.count; j < m; j++)
+        {
+            entity_t* s = &wanderers[j];
+            if (!s->active || s->color.a < 1.0f) continue;
+
+            if (distance(player->position, s->position) <= player->radius + s->radius)
+            {
+                game_over();
                 break;
             }
         }
@@ -623,6 +791,7 @@ namespace world
             spawn_timer -= spawn_interval;
 
             spawn_seeker();
+            spawn_wanderer();
         }
     }
 
@@ -636,6 +805,11 @@ namespace world
 
     void render()
     {
+        if (game_over_timer > 0)
+        {
+            return;
+        }
+
         draw_entity(player);
 
         for (int i = 0, n = bullets.count; i < n; i++)
@@ -646,6 +820,11 @@ namespace world
         for (int i = 0, n = seekers.count; i < n; i++)
         {
             draw_entity(&seekers[i]);
+        }
+
+        for (int i = 0, n = wanderers.count; i < n; i++)
+        {
+            draw_entity(&wanderers[i]);
         }
     }
 }
