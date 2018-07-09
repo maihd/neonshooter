@@ -771,7 +771,7 @@ namespace world
                 vec4 color1 = vec4(0.3f, 0.8f, 0.4f, 1.0f);
                 vec4 color2 = vec4(0.5f, 1.0f, 0.7f, 1.0f);
 
-                if (fmodf(game::total_time, 0.05f) <= 0.01f)
+                if (fmodf(game::total_time, 0.1f) <= 0.01f)
                 {
                     float speed = 16.0f * s->radius * (0.8f + (rand() % 101 / 100.0f) * 0.2f);
                     float angle = rand() % 101 / 100.0f * game::total_time;
@@ -1453,7 +1453,18 @@ namespace game
             vec2 clip = vec2(2.0f * mx / (float)screen_width - 1.0f, 1.0f - 2.0f * my / (float)screen_height);
 
             vec2 mpos = vec2(clip.x * screen_width, clip.y * screen_height);
-            aim = normalize(mpos - world::player->position);
+            
+            vec2 taim = normalize(mpos - world::player->position);
+
+        #if 0
+            float cur_angle = vec2_angle(aim);
+            float aim_angle = vec2_angle(taim);
+
+            cur_angle = step(cur_angle, aim_angle, 0.8f);
+            aim = vec2(cosf(cur_angle), sinf(cur_angle));
+        #endif
+
+            aim = step(aim, taim, 0.8f);
         }
 
         SDL_Joystick* joystick = SDL_JoystickOpen(0);
@@ -1462,16 +1473,26 @@ namespace game
             axis_vertical = step(axis_vertical, -(SDL_JoystickGetAxis(joystick, 1)) / (float)SHRT_MAX, 0.1f);
             axis_horizontal = step(axis_horizontal, (SDL_JoystickGetAxis(joystick, 0)) / (float)SHRT_MAX, 0.1f);
 
-            aim.x = (SDL_JoystickGetAxis(joystick, 3)) / (float)SHRT_MAX;
-            aim.y = -(SDL_JoystickGetAxis(joystick, 4)) / (float)SHRT_MAX;
-            if (length(aim.x) < 0.01f)
+            float x = (SDL_JoystickGetAxis(joystick, 3)) / (float)SHRT_MAX;
+            float y = -(SDL_JoystickGetAxis(joystick, 4)) / (float)SHRT_MAX;
+            if (length(vec2(x, y)) < 0.01f)
             {
                 aim = vec2();
             }
             else
             {
                 fire = true;
-                aim = normalize(aim);
+            
+            #if 0
+                float cur_angle = vec2_angle(aim);
+                float aim_angle = atan2f(y, x);
+
+                cur_angle = step(cur_angle, aim_angle, 0.8f);
+                aim = vec2(cosf(cur_angle), sinf(cur_angle));
+            #endif
+
+                aim.x = step(aim.x, x, 0.6f);
+                aim.y = step(aim.y, y, 0.6f);
             }
         }
 
