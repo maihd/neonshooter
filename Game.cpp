@@ -1006,7 +1006,7 @@ namespace particle_system
 
     void render()
     {
-        blendfunc_t blend = { GL_ONE, GL_ONE };
+        blendfunc_t blend = { GL_SRC_ALPHA, GL_ONE };
         for (int i = 0, n = particles.count; i < n; i++)
         {
             particle_t& p = particles[i];
