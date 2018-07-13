@@ -2,9 +2,12 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <SDL.h>
 #include <vmath.h>
 #include <GL/glew.h>
+#include <SDL2/SDL.h>
+
+#include <AL/al.h>
+#include <AL/alc.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -1359,6 +1362,32 @@ namespace renderer
 	}
 }
 
+namespace audio
+{
+    ALCdevice*  device;
+    ALCcontext* context;
+
+    void init()
+    {
+        device = alcOpenDevice(NULL);
+        if (!device)
+        {
+            fprintf(stderr, "audio::init(): Cannot open audio device '%s'\n", alcGetString(NULL, alcGetError(NULL)));
+            return;
+        }
+
+        fprintf(stderr, "audio::init(): %s\n", alcGetString(device, ALC_ALL_DEVICES_SPECIFIER));
+
+        context = alcCreateContext(device, NULL);
+        if (!context)
+        {
+            fprintf(stderr, "audio::init(): Cannot create audio context '%s'", alcGetString(device, alcGetError(device)));
+            return;
+        }
+        alcMakeContextCurrent(context);
+    }
+}
+
 namespace game
 {
     SDL_Window* window;
@@ -1383,6 +1412,9 @@ namespace game
 
         // Initialize render engine
 		renderer::init(window);
+
+        // Initialize audio
+        audio::init();
 
         SDL_InitSubSystem(SDL_INIT_JOYSTICK);
         if (SDL_NumJoysticks() > 0)
