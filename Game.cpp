@@ -18,6 +18,8 @@
 #include <array.hpp>
 #include <table.hpp>
 
+#include <Windows.h>
+
 struct blendfunc_t
 {
 	GLenum src;
@@ -93,6 +95,13 @@ namespace game
     float total_time;
     int screen_width;
     int screen_height;
+}
+
+
+namespace audio
+{
+    void play_shoot(void);
+    void stop_shoot(void);
 }
 
 namespace color
@@ -836,14 +845,16 @@ namespace world
         if (!fire)
         {
             fire_timer = 0.0f;
+            audio::stop_shoot();
         }
         else
         {
             fire_timer += dt;
             if (fire_timer >= fire_interval)
             {
-                fire_timer -= fire_interval;
+                fire_timer = 0;
                 fire_bullets(aim_dir);
+                audio::play_shoot();
             }
         }
 
@@ -1364,8 +1375,16 @@ namespace renderer
 
 namespace audio
 {
+    struct audio_t
+    {
+        ALuint source;
+        ALuint buffer;
+    };
+
     ALCdevice*  device;
     ALCcontext* context;
+
+    table_t<const char*, audio_t> audios(membuf_heap());
 
     void init()
     {
@@ -1376,7 +1395,7 @@ namespace audio
             return;
         }
 
-        fprintf(stderr, "audio::init(): %s\n", alcGetString(device, ALC_ALL_DEVICES_SPECIFIER));
+        fprintf(stderr, "audio::init(): %s\n", alcGetString(device, ALC_DEVICE_SPECIFIER));
 
         context = alcCreateContext(device, NULL);
         if (!context)
@@ -1384,7 +1403,285 @@ namespace audio
             fprintf(stderr, "audio::init(): Cannot create audio context '%s'", alcGetString(device, alcGetError(device)));
             return;
         }
+
         alcMakeContextCurrent(context);
+        printf("Audio version: %s\n", alGetString(AL_VERSION));
+        printf("Audio renderer: %s\n", alGetString(AL_RENDERER));
+
+        alListener3f(AL_POSITION, 0, 0, 0);
+        alListener3f(AL_VELOCITY, 0, 0, 0);
+
+        ALfloat listenerOri[] = { 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f };
+        alListenerfv(AL_ORIENTATION, listenerOri);
+    }
+
+    static void* LoadWAV(const char* path, ALenum* format, int* size, int* freq)
+    {
+    #pragma push(1)
+        struct WAVHeader
+        {
+            uint32_t id;
+            uint32_t size;
+            uint32_t format;
+
+            uint32_t subchunk1;
+            uint32_t subchunk1size;
+
+            uint16_t audioformat;
+            uint16_t channels;
+            uint32_t samplerate;
+            uint32_t byterate;
+            uint32_t blockalign;
+            uint32_t bitspersample;
+
+            uint32_t subchunk2;
+            uint32_t subchunk2size;
+        };
+    #pragma pop
+
+        HANDLE file = CreateFileA(
+            path,
+            GENERIC_READ,
+            0,
+            NULL,
+            OPEN_EXISTING,
+            FILE_ATTRIBUTE_NORMAL,
+            NULL
+        );
+        if (file != INVALID_HANDLE_VALUE)
+        {
+            WAVHeader header;
+            ReadFile(file, &header, sizeof(header), NULL, NULL);
+
+            void* result = malloc(header.size);
+            ReadFile(file, result, header.size, NULL, NULL);
+
+            *size = header.size;
+            *freq = header.samplerate;
+
+            if (header.channels == 1)
+            {
+                if (header.bitspersample == 8)
+                {
+                    *format = AL_FORMAT_MONO8;
+                }
+                else
+                {
+                    *format = AL_FORMAT_MONO16;
+                }
+            }
+            else
+            {
+                if (header.bitspersample == 8)
+                {
+                    *format = AL_FORMAT_STEREO8;
+                }
+                else
+                {
+                    *format = AL_FORMAT_STEREO16;
+                }
+            }
+
+            CloseHandle(file);
+            return result;
+        }
+
+        return NULL;
+    }
+
+    bool load(const char* path, audio_t* out_audio)
+    {
+        audio_t audio;
+        if (table::tryget(audios, path, audio))
+        {
+            if (out_audio)
+            {
+                out_audio[0] = audio;
+            }
+            return true;
+        }
+
+        Uint32 len;
+        Uint8* wav;
+        ALenum format;
+        ALenum error;
+        SDL_AudioSpec spec;
+        if (SDL_LoadWAV(path, &spec, &wav, &len))
+        {
+            // Lock audio context
+            alcSuspendContext(context);
+
+            alGenSources(1, &audio.source);
+            error = alGetError();
+            if (error != AL_NO_ERROR)
+            {
+                SDL_FreeWAV(wav);
+                alDeleteSources(1, &audio.source);
+                alDeleteBuffers(1, &audio.buffer);
+                printf("audio::play(): alGenSources: %s\n", alGetString(error));
+                return false;
+            }
+
+            alGenBuffers(1, &audio.buffer);
+            error = alGetError();
+            if (error != AL_NO_ERROR)
+            {
+                SDL_FreeWAV(wav);
+                alDeleteSources(1, &audio.source);
+                alDeleteBuffers(1, &audio.buffer);
+                printf("audio::play(): alGenBuffers: %s\n", alGetString(error));
+                return false;
+            }
+
+            alSourcef(audio.source, AL_GAIN, 1);
+            error = alGetError();
+            if (error != AL_NO_ERROR)
+            {
+                SDL_FreeWAV(wav);
+                alDeleteSources(1, &audio.source);
+                alDeleteBuffers(1, &audio.buffer);
+                printf("audio::play(): set source gain failed: %s\n", alGetString(error));
+                return false;
+            }
+
+            alSourcef(audio.source, AL_PITCH, 1);
+            error = alGetError();
+            if (error != AL_NO_ERROR)
+            {
+                SDL_FreeWAV(wav);
+                alDeleteSources(1, &audio.source);
+                alDeleteBuffers(1, &audio.buffer);
+                printf("audio::play(): set source pitch failed: %s\n", alGetString(error));
+                return false;
+            }
+
+            alSource3f(audio.source, AL_POSITION, 0, 0, 0);
+            error = alGetError();
+            if (error != AL_NO_ERROR)
+            {
+                SDL_FreeWAV(wav);
+                alDeleteSources(1, &audio.source);
+                alDeleteBuffers(1, &audio.buffer);
+                printf("audio::play(): set source position failed: %s\n", alGetString(error));
+                return false;
+            }
+
+            alSource3f(audio.source, AL_VELOCITY, 0, 0, 0);
+            error = alGetError();
+            if (error != AL_NO_ERROR)
+            {
+                SDL_FreeWAV(wav);
+                alDeleteSources(1, &audio.source);
+                alDeleteBuffers(1, &audio.buffer);
+                printf("audio::play(): set source velocity failed: %s\n", alGetString(error));
+                return false;
+            }
+
+            alSourcei(audio.source, AL_LOOPING, AL_FALSE);
+            error = alGetError();
+            if (error != AL_NO_ERROR)
+            {
+                SDL_FreeWAV(wav);
+                alDeleteSources(1, &audio.source);
+                alDeleteBuffers(1, &audio.buffer);
+                printf("audio::play(): set source loop failed: %s\n", alGetString(error));
+                return false;
+            }
+
+            switch (spec.format)
+            {
+            case AUDIO_U8:
+            case AUDIO_S8:
+                format = spec.channels == 2 ? AL_FORMAT_STEREO8 : AL_FORMAT_MONO8;
+                break;
+
+            case AUDIO_U16:
+            case AUDIO_S16:
+                format = spec.channels == 2 ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16;
+                break;
+            }
+
+            alBufferData(audio.buffer, format, wav, len, spec.freq);
+            error = alGetError();
+            if (error != AL_NO_ERROR)
+            {
+                SDL_FreeWAV(wav);
+                alDeleteSources(1, &audio.source);
+                alDeleteBuffers(1, &audio.buffer);
+                printf("audio::play(): set buffer data failed: %s\n", alGetString(error));
+                return false;
+            }
+
+            alSourcei(audio.source, AL_BUFFER, audio.buffer);
+            error = alGetError();
+            if (error != AL_NO_ERROR)
+            {
+                free(wav);
+                alDeleteSources(1, &audio.source);
+                alDeleteBuffers(1, &audio.buffer);
+                printf("audio::play(): set buffer failed: %s\n", alGetString(error));
+                return false;
+            }
+
+            // Unlock audio context
+            alcProcessContext(context);
+
+            if (out_audio)
+            {
+                out_audio[0] = audio;
+            }
+            table::set(audios, path, audio);
+            
+            SDL_FreeWAV(wav);
+            return true;
+        }
+        return false;
+    }
+
+    void play(const char* path)
+    {
+        audio_t audio;
+        if (load(path, &audio))
+        {
+            ALint state;
+            alGetSourcei(audio.source, AL_SOURCE_STATE, &state);
+            alSourcePlay(audio.source);
+        }
+    }
+
+    void stop(const char* path)
+    {
+        audio_t audio;
+        if (table::tryget(audios, path, audio))
+        {                        
+            ALint state;
+            alGetSourcei(audio.source, AL_SOURCE_STATE, &state);
+            alSourceStop(audio.source);
+        }
+    }
+
+    const char* shoot_audio_paths[] =
+    {
+        "Audios/shoot-01.wav",
+        "Audios/shoot-02.wav",
+        "Audios/shoot-03.wav",
+        "Audios/shoot-04.wav",
+    };
+
+    void play_shoot(void)
+    {
+        const int count = _countof(shoot_audio_paths);
+        
+        int index = rand() % count;
+        play(shoot_audio_paths[index]);
+    }
+
+    void stop_shoot(void)
+    {
+        for (int i = 0, n = _countof(shoot_audio_paths); i < 0; i++)
+        {
+            stop(shoot_audio_paths[i]);
+        }
     }
 }
 

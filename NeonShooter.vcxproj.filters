@@ -93,9 +93,6 @@
     <Media Include="Audios\shoot-02.wav">
       <Filter>Audios</Filter>
     </Media>
-    <Media Include="Audios\shoot-03.wav">
-      <Filter>Audios</Filter>
-    </Media>
     <Media Include="Audios\shoot-04.wav">
       <Filter>Audios</Filter>
     </Media>
@@ -121,6 +118,9 @@
       <Filter>Audios</Filter>
     </Media>
     <Media Include="Audios\spawn-08.wav">
+      <Filter>Audios</Filter>
+    </Media>
+    <Media Include="Audios\shoot-03.wav">
       <Filter>Audios</Filter>
     </Media>
   </ItemGroup>
