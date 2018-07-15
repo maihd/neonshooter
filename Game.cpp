@@ -102,6 +102,10 @@ namespace audio
 {
     void play_shoot(void);
     void stop_shoot(void);
+    void play_spawn(void);
+    void stop_spawn(void);
+    void play_explosion(void);
+    void stop_explosion(void);
 }
 
 namespace color
@@ -362,6 +366,8 @@ namespace world
 
     void spawn_seeker()
     {
+        audio::play_spawn();
+
         vec2 pos = get_spawn_position();
 
         entity_t* en = NULL;
@@ -388,6 +394,8 @@ namespace world
 
     void spawn_wanderer()
     {
+        audio::play_spawn();
+
         vec2 pos = get_spawn_position();
 
         entity_t* en = NULL;
@@ -414,6 +422,8 @@ namespace world
 
     void spawn_blackhole()
     {
+        audio::play_spawn();
+
         vec2 pos = get_spawn_position();
 
         entity_t* en = NULL;
@@ -462,6 +472,8 @@ namespace world
 
     void destroy_seeker(entity_t* seeker, int index)
     {
+        audio::play_explosion();
+
         seeker->active = false;
         array::push(free_seekers, index);
 
@@ -485,6 +497,8 @@ namespace world
 
     void destroy_wanderer(entity_t* wanderer, int index)
     {
+        audio::play_explosion();
+
         wanderer->active = false;
         array::push(free_wanderers, index);
 
@@ -508,6 +522,8 @@ namespace world
 
     void destroy_blackhole(entity_t* blaclhole, int index)
     {
+        audio::play_explosion();
+
         blaclhole->active = false;
         array::push(free_blackholes, index);
 
@@ -531,6 +547,8 @@ namespace world
 
     void game_over()
     {
+        audio::play_explosion();
+
         array::clear(bullets);
         array::clear(seekers);
         array::clear(wanderers);
@@ -1533,7 +1551,7 @@ namespace audio
                 return false;
             }
 
-            alSourcef(audio.source, AL_GAIN, 1);
+            alSourcef(audio.source, AL_GAIN, 0.3f);
             error = alGetError();
             if (error != AL_NO_ERROR)
             {
@@ -1681,6 +1699,62 @@ namespace audio
         for (int i = 0, n = _countof(shoot_audio_paths); i < 0; i++)
         {
             stop(shoot_audio_paths[i]);
+        }
+    }
+
+    const char* explosion_audio_paths[] =
+    {
+        "Audios/explosion-01.wav",
+        "Audios/explosion-02.wav",
+        "Audios/explosion-03.wav",
+        "Audios/explosion-04.wav",
+        "Audios/explosion-05.wav",
+        "Audios/explosion-06.wav",
+        "Audios/explosion-07.wav",
+        "Audios/explosion-08.wav",
+    };
+
+    void play_explosion(void)
+    {
+        const int count = _countof(explosion_audio_paths);
+
+        int index = rand() % count;
+        play(explosion_audio_paths[index]);
+    }
+
+    void stop_explosion(void)
+    {
+        for (int i = 0, n = _countof(explosion_audio_paths); i < 0; i++)
+        {
+            stop(explosion_audio_paths[i]);
+        }
+    }
+
+    const char* spawn_audio_paths[] =
+    {
+        "Audios/spawn-01.wav",
+        "Audios/spawn-02.wav",
+        "Audios/spawn-03.wav",
+        "Audios/spawn-04.wav",
+        "Audios/spawn-05.wav",
+        "Audios/spawn-06.wav",
+        "Audios/spawn-07.wav",
+        "Audios/spawn-08.wav",
+    };
+
+    void play_spawn(void)
+    {
+        const int count = _countof(spawn_audio_paths);
+
+        int index = rand() % count;
+        play(spawn_audio_paths[index]);
+    }
+
+    void stop_spawn(void)
+    {
+        for (int i = 0, n = _countof(spawn_audio_paths); i < 0; i++)
+        {
+            stop(spawn_audio_paths[i]);
         }
     }
 }
