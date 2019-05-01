@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Alc">
+      <UniqueIdentifier>{B5D5870B-21DF-877C-AA5A-9E7C1663937C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OpenAL32">
+      <UniqueIdentifier>{890D0305-75DA-5D10-9EF3-4BB88A1F939E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OpenAL32\Include">
+      <UniqueIdentifier>{DC159E5B-C80E-BDAD-F140-A232DD989CB9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common">
+      <UniqueIdentifier>{AEFEE3F6-9AA0-0ECD-835B-22216F9C951D}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\Alc\alconfig.h">
+      <Filter>Alc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\Alc\alstring.h">
+      <Filter>Alc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\Alc\ambdec.h">
+      <Filter>Alc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\Alc\bformatdec.h">
+      <Filter>Alc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\Alc\compat.h">
+      <Filter>Alc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\Alc\converter.h">
+      <Filter>Alc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\Alc\cpu_caps.h">
+      <Filter>Alc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\Alc\fpu_modes.h">
+      <Filter>Alc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\Alc\hrtf.h">
+      <Filter>Alc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\Alc\inprogext.h">
+      <Filter>Alc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\Alc\logging.h">
+      <Filter>Alc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\Alc\mastering.h">
+      <Filter>Alc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\Alc\polymorphism.h">
+      <Filter>Alc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\Alc\ringbuffer.h">
+      <Filter>Alc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\Alc\uhjfilter.h">
+      <Filter>Alc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\Alc\vector.h">
+      <Filter>Alc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\OpenAL32\Include\alAuxEffectSlot.h">
+      <Filter>OpenAL32\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\OpenAL32\Include\alBuffer.h">
+      <Filter>OpenAL32\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\OpenAL32\Include\alEffect.h">
+      <Filter>OpenAL32\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\OpenAL32\Include\alError.h">
+      <Filter>OpenAL32\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\OpenAL32\Include\alFilter.h">
+      <Filter>OpenAL32\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\OpenAL32\Include\alListener.h">
+      <Filter>OpenAL32\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\OpenAL32\Include\alMain.h">
+      <Filter>OpenAL32\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\OpenAL32\Include\alSource.h">
+      <Filter>OpenAL32\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\OpenAL32\Include\alu.h">
+      <Filter>OpenAL32\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\OpenAL32\Include\bs2b.h">
+      <Filter>OpenAL32\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\OpenAL32\Include\sample_cvt.h">
+      <Filter>OpenAL32\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\common\alcomplex.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\common\align.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\common\almalloc.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\common\atomic.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\common\bool.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\common\config.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\common\math_defs.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\common\rwlock.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\common\static_assert.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\common\threads.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\common\uintmap.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\common\version.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\common\win_main_utf8.h">
+      <Filter>common</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\Alc\ALc.c">
+      <Filter>Alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\Alc\ALu.c">
+      <Filter>Alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\Alc\alconfig.c">
+      <Filter>Alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\Alc\ambdec.c">
+      <Filter>Alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\Alc\bformatdec.c">
+      <Filter>Alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\Alc\bs2b.c">
+      <Filter>Alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\Alc\converter.c">
+      <Filter>Alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\Alc\helpers.c">
+      <Filter>Alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\Alc\hrtf.c">
+      <Filter>Alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\Alc\mastering.c">
+      <Filter>Alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\Alc\mixvoice.c">
+      <Filter>Alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\Alc\panning.c">
+      <Filter>Alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\Alc\ringbuffer.c">
+      <Filter>Alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\Alc\uhjfilter.c">
+      <Filter>Alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\OpenAL32\alAuxEffectSlot.c">
+      <Filter>OpenAL32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\OpenAL32\alBuffer.c">
+      <Filter>OpenAL32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\OpenAL32\alEffect.c">
+      <Filter>OpenAL32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\OpenAL32\alError.c">
+      <Filter>OpenAL32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\OpenAL32\alExtension.c">
+      <Filter>OpenAL32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\OpenAL32\alFilter.c">
+      <Filter>OpenAL32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\OpenAL32\alListener.c">
+      <Filter>OpenAL32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\OpenAL32\alSource.c">
+      <Filter>OpenAL32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\OpenAL32\alState.c">
+      <Filter>OpenAL32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\OpenAL32\event.c">
+      <Filter>OpenAL32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\OpenAL32\sample_cvt.c">
+      <Filter>OpenAL32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\common\alcomplex.c">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\common\almalloc.c">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\common\atomic.c">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\common\rwlock.c">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\common\threads.c">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\common\uintmap.c">
+      <Filter>common</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Include">
+      <UniqueIdentifier>{6917EFFE-D5F6-6D9A-DE0E-F9704A6DD4FB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\Mojo">
+      <UniqueIdentifier>{2DC0614B-1923-F1EF-C2A8-29A6AEEABC72}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources">
+      <UniqueIdentifier>{89565304-F535-D29F-FE4D-5D766AAC3801}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdParty">
+      <UniqueIdentifier>{107145F9-FC28-8746-6530-60A251072237}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdParty\glew-2.1.0">
+      <UniqueIdentifier>{AA363EAB-16A3-F9A5-DF96-91034BC21B0E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdParty\glew-2.1.0\src">
+      <UniqueIdentifier>{C13989F7-2DFC-BC81-76AC-4B0EE2AD955F}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Allocator.h">
+      <Filter>Include\Mojo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Array.h">
+      <Filter>Include\Mojo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Assets.h">
+      <Filter>Include\Mojo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\AsyncOperation.h">
+      <Filter>Include\Mojo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Atomic.h">
+      <Filter>Include\Mojo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Audio.h">
+      <Filter>Include\Mojo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Coroutine.h">
+      <Filter>Include\Mojo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Delegate.h">
+      <Filter>Include\Mojo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\DrawCanvas.h">
+      <Filter>Include\Mojo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\FileSystem.h">
+      <Filter>Include\Mojo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\GL.h">
+      <Filter>Include\Mojo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\HashTable.h">
+      <Filter>Include\Mojo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Input.h">
+      <Filter>Include\Mojo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\JobCounter.h">
+      <Filter>Include\Mojo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\JobSystem.h">
+      <Filter>Include\Mojo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Material.h">
+      <Filter>Include\Mojo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Math.h">
+      <Filter>Include\Mojo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\SpinLock.h">
+      <Filter>Include\Mojo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\System.h">
+      <Filter>Include\Mojo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Thread.h">
+      <Filter>Include\Mojo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Window.h">
+      <Filter>Include\Mojo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Sources\Mojo_Input.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Allocator.cc">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Assets.cc">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Atomic.cc">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Audio.cc">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Coroutine.cc">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_FileSystem.cc">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_GL.cc">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Input.cc">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_JobSystem.cc">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Material.cc">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_SpinLock.cc">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_System.cc">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Thread.cc">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Window.cc">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\ThirdParty\glew-2.1.0\src\glew.c">
+      <Filter>ThirdParty\glew-2.1.0\src</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

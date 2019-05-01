@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NeonShooter", "NeonShooter.vcxproj", "{B968E41B-251E-5D11-AE12-57E81AC75315}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Mojo", "Mojo.vcxproj", "{FA2E897C-E665-8A0D-8F52-70107B68060F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
+		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B968E41B-251E-5D11-AE12-57E81AC75315}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B968E41B-251E-5D11-AE12-57E81AC75315}.Debug|Win32.Build.0 = Debug|Win32
+		{B968E41B-251E-5D11-AE12-57E81AC75315}.Debug|x64.ActiveCfg = Debug|x64
+		{B968E41B-251E-5D11-AE12-57E81AC75315}.Debug|x64.Build.0 = Debug|x64
+		{B968E41B-251E-5D11-AE12-57E81AC75315}.Release|Win32.ActiveCfg = Release|Win32
+		{B968E41B-251E-5D11-AE12-57E81AC75315}.Release|Win32.Build.0 = Release|Win32
+		{B968E41B-251E-5D11-AE12-57E81AC75315}.Release|x64.ActiveCfg = Release|x64
+		{B968E41B-251E-5D11-AE12-57E81AC75315}.Release|x64.Build.0 = Release|x64
+		{FA2E897C-E665-8A0D-8F52-70107B68060F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{FA2E897C-E665-8A0D-8F52-70107B68060F}.Debug|Win32.Build.0 = Debug|Win32
+		{FA2E897C-E665-8A0D-8F52-70107B68060F}.Debug|x64.ActiveCfg = Debug|x64
+		{FA2E897C-E665-8A0D-8F52-70107B68060F}.Debug|x64.Build.0 = Debug|x64
+		{FA2E897C-E665-8A0D-8F52-70107B68060F}.Release|Win32.ActiveCfg = Release|Win32
+		{FA2E897C-E665-8A0D-8F52-70107B68060F}.Release|Win32.Build.0 = Release|Win32
+		{FA2E897C-E665-8A0D-8F52-70107B68060F}.Release|x64.ActiveCfg = Release|x64
+		{FA2E897C-E665-8A0D-8F52-70107B68060F}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
