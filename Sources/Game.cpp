@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
 #include <Mojo/GL.h>
 #include <Mojo/Math.h>
@@ -253,7 +254,7 @@ namespace World
         wanderers.Ensure(256);
     }
 
-    void spawn_bullet(vec2 pos, vec2 vel)
+    void SpawnBullet(vec2 pos, vec2 vel)
     {
         Entity* en = NULL;
         if (freeBullets.count > 0)
@@ -277,7 +278,7 @@ namespace World
         en->radius      = en->texture.height * 0.5f;
     }
 
-    void fire_bullets(vec2 aim_dir)
+    void FireBullets(vec2 aim_dir)
     {
         float angle = atan2f(aim_dir.y, aim_dir.x) + (rand() % 101) / 100.0f * (PI * 0.025f);
         float offset = PI * 0.1f;
@@ -288,20 +289,20 @@ namespace World
         {
             vec2 vel = normalize(aim_dir);
             vec2 pos = player.position + vec2(cosf(angle + offset), sinf(angle + offset)) * player.texture.width * 1.25f;
-            spawn_bullet(pos, vel);
+            SpawnBullet(pos, vel);
         }
 
         // Second bullet
         {
             vec2 vel = normalize(aim_dir);
             vec2 pos = player.position + vec2(cosf(angle - offset), sinf(angle - offset)) * player.texture.width * 1.25f;
-            spawn_bullet(pos, vel);
+            SpawnBullet(pos, vel);
         }
     }
 
-    vec2 get_spawn_position()
+    vec2 GetSpawnPosition()
     {
-        const float min_distance_sqr = (Window::GetHeight() * 0.3f);
+        const float min_distance_sqr = (Window::GetHeight() * 0.3f) * (Window::GetHeight() * 0.3f);
 
         vec2 pos;
 
@@ -315,11 +316,11 @@ namespace World
         return pos;
     }
 
-    void spawn_seeker()
+    void SpawnSeeker()
     {
         //audio::play_spawn();
 
-        vec2 pos = get_spawn_position();
+        vec2 pos = GetSpawnPosition();
 
         Entity* en = NULL;
         if (freeSeekers.count > 0)
@@ -343,11 +344,11 @@ namespace World
         en->radius      = en->texture.width * 0.5f;
     }
 
-    void spawn_wanderer()
+    void SpawnWanderer()
     {
         //audio::play_spawn();
 
-        vec2 pos = get_spawn_position();
+        vec2 pos = GetSpawnPosition();
 
         Entity* en = NULL;
         if (freeWanderers.count > 0)
@@ -371,11 +372,11 @@ namespace World
         en->radius      = en->texture.width * 0.5f;
     }
 
-    void spawn_blackhole()
+    void SpawnBlackhole()
     {
         //audio::play_spawn();
 
-        vec2 pos = get_spawn_position();
+        vec2 pos = GetSpawnPosition();
 
         Entity* en = NULL;
         if (freeBlackHoles.count > 0)
@@ -399,7 +400,7 @@ namespace World
         en->radius      = en->texture.width * 0.5f;
     }
 
-    void destroy_bullet(Entity* bullet, int index, bool explosion = false)
+    void DestroyBullet(Entity* bullet, int index, bool explosion = false)
     {
         bullet->active = false;
         freeBullets.Push(index);
@@ -446,7 +447,7 @@ namespace World
         }
     }
 
-    void destroy_wanderer(Entity* wanderer, int index)
+    void DestroyWanderer(Entity* wanderer, int index)
     {
         //audio::play_explosion();
 
@@ -471,7 +472,7 @@ namespace World
         }
     }
 
-    void destroy_blackhole(Entity* blaclhole, int index)
+    void DestroyBlackhole(Entity* blaclhole, int index)
     {
         //audio::play_explosion();
 
@@ -496,7 +497,7 @@ namespace World
         }
     }
 
-    void game_over()
+    void OnGameOver()
     {
         //audio::play_explosion();
 
@@ -600,7 +601,7 @@ namespace World
                 if (b->position.x < -Window::GetWidth() || b->position.x > Window::GetWidth()
                     || b->position.y < -Window::GetHeight() || b->position.y > Window::GetHeight())
                 {
-                    destroy_bullet(b, i, true);
+                    DestroyBullet(b, i, true);
                 }
             }
         }
@@ -675,7 +676,7 @@ namespace World
 
                 if (distance(b->position, s->position) <= b->radius + s->radius)
                 {
-                    destroy_bullet(b, i);
+                    DestroyBullet(b, i);
                     DestroySeeker(s, j);
                     break;
                 }
@@ -689,8 +690,8 @@ namespace World
 
                 if (distance(b->position, s->position) <= b->radius + s->radius)
                 {
-                    destroy_bullet(b, i);
-                    destroy_wanderer(s, j);
+                    DestroyBullet(b, i);
+                    DestroyWanderer(s, j);
                     break;
                 }
             }
@@ -704,8 +705,8 @@ namespace World
                 float d = distance(b->position, s->position);
                 if (d <= b->radius + s->radius)
                 {
-                    destroy_bullet(b, i);
-                    destroy_blackhole(s, j);
+                    DestroyBullet(b, i);
+                    DestroyBlackhole(s, j);
                     break;
                 }
                 else if (d <= b->radius + s->radius * 5.0f)
@@ -724,7 +725,7 @@ namespace World
 
             if (distance(player.position, s->position) <= player.radius + s->radius)
             {
-                game_over();
+                OnGameOver();
                 break;
             }
         }
@@ -736,7 +737,7 @@ namespace World
 
             if (distance(player.position, s->position) <= player.radius + s->radius)
             {
-                game_over();
+                OnGameOver();
                 break;
             }
         }
@@ -776,7 +777,7 @@ namespace World
                 {
                     if (UpdateBlackhole(s, &player))
                     {
-                        game_over();
+                        OnGameOver();
                         break;
                     }
 
@@ -799,7 +800,7 @@ namespace World
 
                         if (UpdateBlackhole(s, other))
                         {
-                            destroy_wanderer(other, j);
+                            DestroyWanderer(other, j);
                             break;
                         }
                     }
@@ -822,7 +823,7 @@ namespace World
             if (fireTimer >= fireInterval)
             {
                 fireTimer = 0;
-                fire_bullets(aim_dir);
+                FireBullets(aim_dir);
                 //audio::play_shoot();
             }
         }
@@ -833,9 +834,9 @@ namespace World
         {
             spawnTimer -= spawnInterval;
 
-            if (rand() % 101 < seekerSpawnRate) spawn_seeker();
-            if (rand() % 101 < wandererSpawnRate) spawn_wanderer();
-            if (rand() % 101 < blackHoleSpawnRate) spawn_blackhole();
+            if (rand() % 101 < seekerSpawnRate) SpawnSeeker();
+            if (rand() % 101 < wandererSpawnRate) SpawnWanderer();
+            if (rand() % 101 < blackHoleSpawnRate) SpawnBlackhole();
         }
     }
 
@@ -1021,15 +1022,15 @@ namespace Renderer
         BlendFunc blend;
     };
 
-    Array<DrawCommand>    drawcmds;
-    Array<Vertex>         vertices;
-    Array<unsigned short> indices;
+    Array<DrawCommand>    _drawCmds;
+    Array<Vertex>         _vertices;
+    Array<unsigned short> _indices;
 
-    VertexArray  vertexArray;
-    IndexBuffer  indexBuffer;
-    VertexBuffer vertexBuffer;
+    VertexArray  _spriteVertexArray;
+    IndexBuffer  _spriteIndexBuffer;
+    VertexBuffer _spriteVertexBuffer;
 
-    Shader shader;
+    Shader _spriteShader;
 
     //GLuint  framebuf;
     //Texture frametex;
@@ -1064,24 +1065,28 @@ namespace Renderer
         GL::Enable(GraphicsMode::Blend);
         GL::SetBlendFunc(BlendFactor::SrcAlpha, BlendFactor::InvertSrcAlpha);
 
+        _drawCmds.Expand(50 * 1024);
+        _vertices.Expand(50 * 1024);
+        _indices.Expand(50 * 1024);
+
         float w = Window::GetWidth();
         float h = Window::GetHeight();
         proj_matrix = mat4::ortho(-w, w, -h, h, -10.0f, 10.0f);
 
-        vertexArray = VertexArray::Create();
-        vertexBuffer = VertexBuffer::Create();
-        indexBuffer = IndexBuffer::Create();
+        _spriteVertexArray = VertexArray::Create();
+        _spriteVertexBuffer = VertexBuffer::Create();
+        _spriteIndexBuffer = IndexBuffer::Create();
 
-        shader = Shader::Create(vshader_src, fshader_src);
+        _spriteShader = Shader::Create(vshader_src, fshader_src);
 
-        if (!shader._handle)
+        if (!_spriteShader._handle)
         {
             fprintf(stderr, "An error occured, press any key to exit...");
             getchar();
             exit(1);
         }
 
-        vertexArray.SetAttribute(vertexBuffer, 0, 4, DataType::Float, false, sizeof(Vertex));
+        _spriteVertexArray.SetAttribute(_spriteVertexBuffer, 0, 4, DataType::Float, false, sizeof(Vertex));
 
         //frametex = new Texture();
         //texture::apply(frametex);
@@ -1115,7 +1120,7 @@ namespace Renderer
             //glGenVertexArrays(1, &framevao);
             //glGenBuffers(1, &framevbo);
             //
-            //vec2 vertices[] =
+            //vec2 _vertices[] =
             //{
             //    // First triangle
             //    vec2(-1.0f, -1.0f), vec2(0.0f, 0.0f),
@@ -1130,14 +1135,14 @@ namespace Renderer
             //
             //glBindVertexArray(framevao);
             //glBindBuffer(GL_ARRAY_BUFFER, framevbo);
-            //glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+            //glBufferData(GL_ARRAY_BUFFER, sizeof(_vertices), _vertices, GL_STATIC_DRAW);
             //glEnableVertexAttribArray(0);
             //glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), NULL);
             //glBindBuffer(GL_ARRAY_BUFFER, 0);
             //glBindVertexArray(0);
         }
 
-        // Create post processing shader
+        // Create post processing _spriteShader
         printf("renderer::init(): Starting create framebuffer's shader...\n");
         {
             const char* vshader_src =
@@ -1181,7 +1186,7 @@ namespace Renderer
             //
             //glDeleteShader(vshader);
             //glDeleteShader(fshader);
-            //printf("renderer::init(): Create framebuffer's shader successfully.\n");
+            //printf("renderer::init(): Create framebuffer's _spriteShader successfully.\n");
         }
     }
 
@@ -1195,39 +1200,42 @@ namespace Renderer
         cmd.blend       = blend;
         cmd.color       = color;
         cmd.drawCount   = 6;
-        drawcmds.Push(cmd);
+        if (!_drawCmds.Push(cmd))
+        {
+            assert(false && "Renderer: Out of memory when push draw call to queue.");
+        }
 
-        unsigned short i = (unsigned short)indices.count;
-        indices.Push((unsigned short)(i + 0U));
-        indices.Push((unsigned short)(i + 1U));
-        indices.Push((unsigned short)(i + 2U));
-        indices.Push((unsigned short)(i + 0U));
-        indices.Push((unsigned short)(i + 2U));
-        indices.Push((unsigned short)(i + 3U));
+        unsigned short i = (unsigned short)_indices.count;
+        _indices.Push((unsigned short)(i + 0U));
+        _indices.Push((unsigned short)(i + 1U));
+        _indices.Push((unsigned short)(i + 2U));
+        _indices.Push((unsigned short)(i + 0U));
+        _indices.Push((unsigned short)(i + 2U));
+        _indices.Push((unsigned short)(i + 3U));
 
         Vertex v;
         v.pos = vec2(-0.5f, -0.5f);
         v.uv = vec2(0.0f, 1.0f);
-        vertices.Push(v);
+        _vertices.Push(v);
 
         v.pos = vec2(-0.5f, 0.5f);
         v.uv = vec2(0.0f, 0.0f);
-        vertices.Push(v);
+        _vertices.Push(v);
 
         v.pos = vec2(0.5f, 0.5f);
         v.uv = vec2(1.0f, 0.0f);
-        vertices.Push(v);
+        _vertices.Push(v);
 
         v.pos = vec2(0.5f, -0.5f);
         v.uv = vec2(1.0f, 1.0f);
-        vertices.Push(v);
+        _vertices.Push(v);
     }
 
     void Prepair()
     {
-        drawcmds.Clear();
-        vertices.Clear();
-        indices.Clear();
+        _drawCmds.Clear();
+        _vertices.Clear();
+        _indices.Clear();
     }
 
     void Present()
@@ -1235,23 +1243,30 @@ namespace Renderer
         //glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, framebuf);
         //glClear(GL_COLOR_BUFFER_BIT);
 
-        vertexBuffer.SetData(vertices.elements, vertices.count * sizeof(Vertex), BufferUsage::StreamDraw);
-        indexBuffer.SetData(indices.elements, indices.count * sizeof(unsigned short), DataType::Ushort, BufferUsage::StreamDraw);
+        GL::BindShader(_spriteShader);
+        GL::BindVertexArray(_spriteVertexArray);
+        GL::BindIndexBuffer(_spriteIndexBuffer);
+        GL::BindVertexBuffer(_spriteVertexBuffer);
+
+        _spriteVertexBuffer.SetData(_vertices.elements, _vertices.count * sizeof(Vertex), BufferUsage::StreamDraw);
+        _spriteIndexBuffer.SetData(_indices.elements, _indices.count * sizeof(unsigned short), DataType::Ushort, BufferUsage::StreamDraw);
 
         int offset = 0;
-        for (int i = 0, n = drawcmds.count; i < n; i++)
+        for (int i = 0, n = _drawCmds.count; i < n; i++)
         {
-            const DrawCommand& cmd = drawcmds[i];
+            const DrawCommand& cmd = _drawCmds[i];
 
             GL::SetBlendFunc(cmd.blend);
+            //_spriteVertexBuffer.SetBlendFunc(cmd.blend);
 
             mat4 model_matrix = mat4::translation(cmd.position) * mat4::rotation_z(cmd.rotation) * mat4::scalation(cmd.scale);
             mat4 MVP_matrix = proj_matrix * model_matrix;
 
-            shader.SetFloat4x4("MVP", (float*)&MVP_matrix);
-            shader.SetFloat4("color", cmd.color.x, cmd.color.y, cmd.color.z, cmd.color.w);
+            _spriteShader.SetFloat4x4("MVP", (float*)&MVP_matrix);
+            _spriteShader.SetFloat4("color", cmd.color.x, cmd.color.y, cmd.color.z, cmd.color.w);
 
-            GL::DrawIndices(DrawType::Triangles, shader, vertexArray, cmd.texture, indexBuffer, cmd.drawCount, offset);
+            GL::BindTexture(cmd.texture);
+            GL::DrawIndices(DrawType::Triangles, _spriteIndexBuffer._dataType, cmd.drawCount, offset);
 
             offset += cmd.drawCount;
         }
@@ -1350,11 +1365,12 @@ namespace Game
             axis_horizontal = lerp(axis_horizontal, 0.0f, LERP_RATE);
         }
 
-        int mx;
-        int my;
+        float mx;
+        float my;
+        Input::GetMouseState(&mx, &my);
         fire = Input::GetMouseButton(MouseButton::Left);
         {
-            vec2 clip = vec2(2.0f * mx / (float)Window::GetWidth() - 1.0f, 1.0f - 2.0f * my / (float)Window::GetHeight());
+            vec2 clip = vec2(2.0f * mx / Window::GetWidth() - 1.0f, 1.0f - 2.0f * my / Window::GetHeight());
         
             vec2 mpos = vec2(clip.x * Window::GetWidth(), clip.y * Window::GetHeight());
         
@@ -1433,8 +1449,8 @@ namespace Game
     {
         Renderer::Prepair();
 
-        ParticleSystem::Render();
         World::Render();
+        ParticleSystem::Render();
 
         Renderer::Present();
     }

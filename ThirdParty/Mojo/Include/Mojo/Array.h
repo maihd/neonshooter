@@ -138,7 +138,10 @@ inline namespace Mojo
                 T* newElements = (T*)_allocator->Acquire(sizeof(T) * newCapacity, alignof(T));
                 if (newElements)
                 {
-                    ::memcpy(newElements, elements, this->capacity * sizeof(T));
+                    if (this->elements && this->capacity > 0)
+                    {
+                        ::memcpy(newElements, this->elements, this->capacity * sizeof(T));
+                    }
 
                     _allocator->Release(elements);
 
@@ -214,7 +217,15 @@ inline namespace Mojo
 
         inline bool Push(const T& value)
         {
-            return this->Set(count, value);
+            if (this->Ensure(this->count + 1))
+            {
+                this->elements[this->count++] = value;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         inline const T& Pop(void)

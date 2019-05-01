@@ -16,6 +16,7 @@ inline namespace Mojo
         };
 
         constexpr int   KEY_INPUT_COUNT = 1024;
+        constexpr int   MOUSE_INPUT_COUNT = 8;
 
         static int      _currentFrame;
 
@@ -26,8 +27,9 @@ inline namespace Mojo
         static int      _keyUpFrame[KEY_INPUT_COUNT];
         static int      _keyDownFrame[KEY_INPUT_COUNT];
                         
-        static int      _mouseUpFrame[8];
-        static int      _mouseDownFrame[8];
+        static int      _mouseState;
+        static int      _mouseUpFrame[MOUSE_INPUT_COUNT];
+        static int      _mouseDownFrame[MOUSE_INPUT_COUNT];
         static float    _mouseX;
         static float    _mouseY;
 
@@ -76,17 +78,16 @@ inline namespace Mojo
         void UpdateMouse(MouseButton button, bool down)
         {
             int index = (int)button;
-            if (down)
+            if (index > -1 && index < MOUSE_INPUT_COUNT)
             {
-                if (index > -1 && index < KEY_INPUT_COUNT)
+                if (down)
                 {
+                    _mouseState |= button;
                     _mouseDownFrame[index] = _currentFrame;
                 }
-            }
-            else
-            {
-                if (index > -1 && index < KEY_INPUT_COUNT)
+                else
                 {
+                    _mouseState &= ~button;
                     _mouseUpFrame[index] = _currentFrame;
                 }
             }
@@ -167,7 +168,7 @@ inline namespace Mojo
             if (x) *x = _mouseX;
             if (y) *y = _mouseY;
 
-            return 0;
+            return _mouseState;
         }
 
         bool GetMouseButton(MouseButton button)

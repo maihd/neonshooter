@@ -179,6 +179,10 @@ inline namespace Mojo
         static void        Destroy(IndexBuffer& buffer);
 
         void SetData(const void* data, int size, DataType dataType, BufferUsage usage);
+
+        void SetBlendOp(BlendOp op);
+        void SetBlendFunc(BlendFunc func);
+        void SetBlendFunc(BlendFactor src, BlendFactor dst);
     };
 
     struct VertexBuffer
@@ -189,6 +193,10 @@ inline namespace Mojo
         static void         Destroy(VertexBuffer& buffer);
 
         void SetData(const void* data, int size, BufferUsage usage);
+
+        void SetBlendOp(BlendOp op);
+        void SetBlendFunc(BlendFunc func);
+        void SetBlendFunc(BlendFactor src, BlendFactor dst);
     };
 
     struct VertexArray
@@ -239,6 +247,12 @@ inline namespace Mojo
 
         void Scissor(float x, float y, float width, float height);
         void Viewport(float x, float y, float width, float height);
+
+        void BindShader(const Shader& shader);
+        void BindTexture(const Texture& texture, int index = 0);
+        void BindVertexArray(const VertexArray& array);
+        void BindIndexBuffer(const IndexBuffer& buffer);
+        void BindVertexBuffer(const VertexBuffer& buffer);
 
         void DrawArrays(DrawType type, int count, int offset = 0);
         void DrawIndices(DrawType type, DataType dataType, int count, int offset = 0);

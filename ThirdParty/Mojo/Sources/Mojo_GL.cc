@@ -5,9 +5,9 @@
 
 inline namespace Mojo
 {
-    inline namespace Converters
+    namespace
     {
-        GLenum ConvertBufferUsage(BufferUsage usage)
+        static GLenum ConvertBufferUsage(BufferUsage usage)
         {
             switch (usage)
             {
@@ -75,7 +75,7 @@ inline namespace Mojo
             return 0;
         }
 
-        int ConvertDataSize(DataType type)
+        static int ConvertDataSize(DataType type)
         {
             switch (type)
             {
@@ -107,7 +107,7 @@ inline namespace Mojo
             return 0;
         }
 
-        GLenum ConvertTextureType(TextureType type)
+        static GLenum ConvertTextureType(TextureType type)
         {
             switch (type)
             {
@@ -127,7 +127,7 @@ inline namespace Mojo
             return 0;
         }
 
-        GLenum ConvertTextureWrap(TextureWrap wrap)
+        static GLenum ConvertTextureWrap(TextureWrap wrap)
         {
             switch (wrap)
             {
@@ -141,7 +141,7 @@ inline namespace Mojo
             return 0;
         }
 
-        GLenum ConvertTextureFilter(TextureFilter filter)
+        static GLenum ConvertTextureFilter(TextureFilter filter)
         {
             switch (filter)
             {
@@ -155,7 +155,7 @@ inline namespace Mojo
             return 0;
         }
 
-        GLenum ConvertPixelFormat(PixelFormat format)
+        static GLenum ConvertPixelFormat(PixelFormat format)
         {
             switch (format)
             {
@@ -169,7 +169,7 @@ inline namespace Mojo
             return 0;
         }
 
-        GLenum ConvertBlendOp(BlendOp op)
+        static GLenum ConvertBlendOp(BlendOp op)
         {
             switch (op)
             {
@@ -195,7 +195,7 @@ inline namespace Mojo
             return 0;
         }
 
-        GLenum ConvertBlendFactor(BlendFactor mode)
+        static GLenum ConvertBlendFactor(BlendFactor mode)
         {
             switch (mode)
             {
@@ -237,7 +237,7 @@ inline namespace Mojo
         }
     }
 
-    inline namespace OpenGL
+    namespace
     {
         static GLuint CreateGLShader(GLenum type, const char* src)
         {
@@ -397,7 +397,8 @@ inline namespace Mojo
             return false;
         }
 
-        ::glProgramUniform4f(_handle, location, x, y, z, w);
+        ::glUniform4f(location, x, y, z, w);
+        //::glProgramUniform4f(_handle, location, x, y, z, w);
         return true;
     }
 
@@ -413,7 +414,8 @@ inline namespace Mojo
             return false;
         }
 
-        ::glProgramUniformMatrix4fv(_handle, location, 1, transpose, value);
+        ::glUniformMatrix4fv(location, 1, transpose, value);
+        //::glProgramUniformMatrix4fv(_handle, location, 1, transpose, value);
         return true;
     }
 
@@ -439,9 +441,35 @@ inline namespace Mojo
     {
         _dataType = type;
 
-        ::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _handle);
-        ::glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, data, ConvertBufferUsage(usage));
-        ::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        //GLint boundHandle;
+        //glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &boundHandle);
+        //if (boundHandle == _handle)
+        //{
+        //    ::glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, data, ConvertBufferUsage(usage));
+        //}
+        //else
+        //{
+        //    ::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _handle);
+        //    ::glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, data, ConvertBufferUsage(usage));
+        //    ::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        //}
+
+        glNamedBufferData(_handle, size, data, ConvertBufferUsage(usage));
+    }
+
+    void IndexBuffer::SetBlendOp(BlendOp op)
+    {
+        ::glBlendEquationi(_handle, ConvertBlendOp(op));
+    }
+
+    void IndexBuffer::SetBlendFunc(BlendFunc func)
+    {
+        ::glBlendFunci(_handle, ConvertBlendFactor(func.src), ConvertBlendFactor(func.dst));
+    }
+
+    void IndexBuffer::SetBlendFunc(BlendFactor src, BlendFactor dst)
+    {
+        ::glBlendFunci(_handle, ConvertBlendFactor(src), ConvertBlendFactor(dst));
     }
 
     VertexBuffer VertexBuffer::Create(void)
@@ -459,9 +487,36 @@ inline namespace Mojo
 
     void VertexBuffer::SetData(const void* data, int size, BufferUsage usage)
     {
-        ::glBindBuffer(GL_ARRAY_BUFFER, _handle);
-        ::glBufferData(GL_ARRAY_BUFFER, size, data, ConvertBufferUsage(usage));
-        ::glBindBuffer(GL_ARRAY_BUFFER, 0);
+        //GLint boundHandle;
+        //glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &boundHandle);
+        //
+        //if (boundHandle == _handle)
+        //{
+        //    ::glBufferData(GL_ARRAY_BUFFER, size, data, ConvertBufferUsage(usage));
+        //}
+        //else
+        //{
+        //    ::glBindBuffer(GL_ARRAY_BUFFER, _handle);
+        //    ::glBufferData(GL_ARRAY_BUFFER, size, data, ConvertBufferUsage(usage));
+        //    ::glBindBuffer(GL_ARRAY_BUFFER, 0);
+        //}
+
+        glNamedBufferData(_handle, size, data, ConvertBufferUsage(usage));
+    }
+
+    void VertexBuffer::SetBlendOp(BlendOp op) 
+    {
+        ::glBlendEquationi(_handle, ConvertBlendOp(op));
+    }
+
+    void VertexBuffer::SetBlendFunc(BlendFunc func)
+    {
+        ::glBlendFunci(_handle, ConvertBlendFactor(func.src), ConvertBlendFactor(func.dst));
+    }
+
+    void VertexBuffer::SetBlendFunc(BlendFactor src, BlendFactor dst)
+    {
+        ::glBlendFunci(_handle, ConvertBlendFactor(src), ConvertBlendFactor(dst));
     }
     
     VertexArray VertexArray::Create(void)
@@ -652,6 +707,32 @@ inline namespace Mojo
             ::glViewport((GLint)x, (GLint)y, (GLsizei)width, (GLsizei)height);
         }
 
+        void BindShader(const Shader& shader)
+        {
+            ::glUseProgram(shader._handle);
+        }
+
+        void BindTexture(const Texture& texture, int index)
+        {
+            ::glActiveTexture(GL_TEXTURE0 + index);
+            ::glBindTexture(ConvertTextureType(texture._type), texture._handle);
+        }
+
+        void BindVertexArray(const VertexArray& array)
+        {
+            ::glBindVertexArray(array._handle);
+        }
+
+        void BindIndexBuffer(const IndexBuffer& buffer)
+        {
+            ::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer._handle);
+        }
+
+        void BindVertexBuffer(const VertexBuffer& buffer)
+        {
+            ::glBindBuffer(GL_ARRAY_BUFFER, buffer._handle);
+        }
+
         void DrawArrays(DrawType type, int count, int offset)
         {
             GLenum glDrawType = (GLenum)type;
@@ -662,7 +743,7 @@ inline namespace Mojo
         {
             GLenum glDrawType = (GLenum)type;
 
-            ::glDrawElements(glDrawType, count, ConvertDataType(dataType), (const void*)(offset * ConvertDataSize(dataType)));
+            ::glDrawElements(glDrawType, count, ConvertDataType(dataType), (const void*)(intptr_t)(offset * ConvertDataSize(dataType)));
         }
 
         void DrawArrays(DrawType type, const Shader& shader, const VertexArray& array, int count, int offset)
