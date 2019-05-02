@@ -69,13 +69,13 @@ inline namespace Mojo
         int  Write(const void* buffer, int length);
 
         // Read content of file at given path, with async progress
-        //AsyncFile* ReadAsync(void* buffer, int length);
+        //virtual FileAsyncOperation* ReadAsync(void* buffer, int length);
 
         // Write content to file at given path, with async progress
-        //AsyncFile* WriteAsync(const void* buffer, int length);
+        //virtual FileAsyncOperation* WriteAsync(const void* buffer, int length);
     };
 
-    struct AsyncFile
+    struct FileAsyncOperation
     {
         File        file;
         const char* path;
@@ -89,7 +89,7 @@ inline namespace Mojo
         const void* const buffer;
               int   const length;
 
-        AsyncFile(void)
+        FileAsyncOperation(void)
             : file()
             , path(0)
             , isDone(false)
@@ -105,7 +105,7 @@ inline namespace Mojo
 
     namespace FileSystem
     {
-        bool Setup(FileDevice* fileDevice, Allocator* allocator = 0);
+        bool Setup(void);
         void Shutdown(void);
 
         // Make new directory at given path
@@ -124,9 +124,9 @@ inline namespace Mojo
         int        WriteFile(const char* path, const void* buffer, int length);
 
         // Read content of file at given path, with async progress
-        AsyncFile* ReadFileAsync(const char* path, void* buffer, int length);
+        FileAsyncOperation* ReadFileAsync(const char* path, void* buffer, int length);
 
         // Write content to file at given path, with async progress
-        AsyncFile* WriteFileAsync(const char* path, const void* buffer, int length);
+        FileAsyncOperation* WriteFileAsync(const char* path, const void* buffer, int length);
     }
 }

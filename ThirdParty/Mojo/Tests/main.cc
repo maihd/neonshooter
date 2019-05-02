@@ -65,12 +65,12 @@ int main(void)
     }
 
     static char buffer[1024 * 1024];
-    AsyncFile* file = FileSystem::ReadFileAsync("D:/a.out.js", buffer, sizeof(buffer));
-    if (file)
+    FileAsyncOperation* fileOp = FileSystem::ReadFileAsync("D:/a.out.js", buffer, sizeof(buffer));
+    if (fileOp)
     {
-        file->Wait();
+        fileOp->Wait();
 
-        buffer[file->length] = 0;
+        buffer[fileOp->length] = 0;
         printf("Read Content: %s\n", buffer);
     }
     else

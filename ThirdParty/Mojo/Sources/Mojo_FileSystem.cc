@@ -14,7 +14,7 @@
 
 inline namespace Mojo
 {
-    void AsyncFile::Wait(void)
+    void FileAsyncOperation::Wait(void)
     {
         while (!isDone) 
         {
@@ -27,7 +27,7 @@ inline namespace Mojo
     {
         int       head;
         int       tail;
-        AsyncFile data[size];
+        FileAsyncOperation data[size];
 
         AsyncFilePool(void)
             : head(0)
@@ -334,11 +334,8 @@ inline namespace Mojo
 
     namespace FileSystem
     {
-        bool Init(FileDevice* fileDevice, Allocator* allocator)
+        bool Setup(void)
         {
-            (void)fileDevice;
-            (void)allocator;
-
             return true;
         }
 
@@ -394,7 +391,7 @@ inline namespace Mojo
         {
             constexpr int ChunkSize = 1024;
 
-            AsyncFile* asyncFile = (AsyncFile*)args;
+            FileAsyncOperation* asyncFile = (FileAsyncOperation*)args;
 
             int nbytes = 0;
             for (int i = 0, n = asyncFile->length; i < n;)
@@ -432,7 +429,7 @@ inline namespace Mojo
         {
             constexpr int ChunkSize = 1024;
 
-            AsyncFile* asyncFile = (AsyncFile*)args;
+            FileAsyncOperation* asyncFile = (FileAsyncOperation*)args;
 
             int nbytes = 0;
             for (int i = 0, n = asyncFile->length; i < n;)
@@ -466,7 +463,7 @@ inline namespace Mojo
             return 0;
         }
 
-        AsyncFile* ReadFileAsync(const char* path, void* buffer, int length)
+        FileAsyncOperation* ReadFileAsync(const char* path, void* buffer, int length)
         {
             if (!buffer)
             {
@@ -493,8 +490,8 @@ inline namespace Mojo
                 return NULL;
             }
 
-            AsyncFile* asyncFile = &_asyncFilePool.data[asyncFileIndex];
-            ::memset(asyncFile, 0, sizeof(AsyncFile));
+            FileAsyncOperation* asyncFile = &_asyncFilePool.data[asyncFileIndex];
+            ::memset(asyncFile, 0, sizeof(FileAsyncOperation));
 
             *((File* )&asyncFile->file) = file;
             *((void**)&asyncFile->path) = (void*)path;
@@ -507,7 +504,7 @@ inline namespace Mojo
             return asyncFile;
         }
 
-        AsyncFile* WriteFileAsync(const char* path, const void* buffer, int length)
+        FileAsyncOperation* WriteFileAsync(const char* path, const void* buffer, int length)
         {
             if (!buffer)
             {
@@ -534,8 +531,8 @@ inline namespace Mojo
                 return NULL;
             }
 
-            AsyncFile* asyncFile = &_asyncFilePool.data[asyncFileIndex];
-            ::memset(asyncFile, 0, sizeof(AsyncFile));
+            FileAsyncOperation* asyncFile = &_asyncFilePool.data[asyncFileIndex];
+            ::memset(asyncFile, 0, sizeof(FileAsyncOperation));
 
             *((File* )&asyncFile->file) = file;
             *((void**)&asyncFile->path) = (void*)path;
