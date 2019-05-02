@@ -548,8 +548,8 @@ inline namespace Mojo
                 WGL_DEPTH_BITS_ARB, settings.depthBits,
                 WGL_STENCIL_BITS_ARB, settings.stencilBits,
 
-                WGL_SAMPLE_BUFFERS_ARB, WGL_ARB_multisample && settings.multisamples > 1,
-                WGL_SAMPLES_ARB, WGL_ARB_multisample ? settings.multisamples : 1,
+                WGL_ARB_multisample && settings.multisamples > 1 ? WGL_SAMPLE_BUFFERS_ARB : 0, 1,
+                WGL_ARB_multisample && settings.multisamples > 1 ? WGL_SAMPLES_ARB : 0, settings.multisamples,
 
                 0
             };
@@ -576,6 +576,7 @@ inline namespace Mojo
             {
                 return false;
             }
+            _mainContext = context;
 
             // Set viewport
             GL::Viewport(0, 0, Window::GetWidth(), Window::GetHeight());
@@ -588,7 +589,7 @@ inline namespace Mojo
 
         void Shutdown(void)
         {
-            ::wglDeleteContext(_mainContext);
+            wglDeleteContext(_mainContext);
             _mainContext = NULL;
         }
 

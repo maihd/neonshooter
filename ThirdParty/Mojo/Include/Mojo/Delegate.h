@@ -8,35 +8,32 @@ inline namespace Mojo
     template <typename R, typename ...Args>
     struct Delegate<R(Args...)>
     {
-        using Stub = R(*)(void*, void*, Args...);
+        using Stub = R(*)(void*, Args...);
 
-        static R StubFunction(void*, void* callee, Args... args)
+        static R StubFunction(void* target, Args... args)
         {
             using Function = R(*)(Args...);
-            return ((Function)callee)(args...);
+            return ((Function)target)(args...);
         };
 
-        template <typename T>
-        static R StubMethod(void* caller, void* callee, Args... args)
+        template <typename T, R(T::*method)(Args...)>
+        static R StubMethod(void* target, Args... args)
         {
-            union
-            {
-                void* callee;
-                R(T::*method)(Args...);
-            } convert;
-            convert.callee = callee;
+            return (((T*)target)->*method)(args...);
+        };
 
-            return (((T*)caller)->*convert.method)(args...);
+        template <typename T, R(T::*method)(Args...) const>
+        static R StubConstMethod(void* target, Args... args)
+        {
+            return (((const T*)target)->*method)(args...);
         };
 
         Stub  _stub;
-        void* _caller;
-        void* _callee;
+        void* _target;
 
         Delegate(void)
-            : _stub(NULL)
-            , _caller(NULL)
-            , _callee(NULL)
+            : _stub(0)
+            , _target(0)
         {
         }
 
@@ -45,58 +42,29 @@ inline namespace Mojo
             this->Bind(function);
         }
 
-        template <typename T>
-        Delegate(T* object, R(T::*method)(Args...))
-        {
-            this->Bind(object, method);
-        }
-
-        template <typename T>
-        Delegate(const T* object, R(T::*method)(Args...) const)
-        {
-            this->Bind(object, method);
-        }
-
         void Bind(R(*function)(Args...))
         {
             this->_stub   = &StubFunction;
-            this->_caller = NULL;
-            this->_callee = function;
+            this->_target = function;
         }
 
-        template <typename T>
-        void Bind(T* object, R(T::*method)(Args...))
+        template <typename T, R(T::*method)(Args...)>
+        void Bind(T* object)
         {
-            union
-            {
-                void* callee;
-                R(T::*method)(Args...);
-            } convert;
-            convert.method = method;
-
-            this->_stub   = &StubMethod<T>;
-            this->_caller = object;
-            this->_callee = convert.callee;
+            this->_stub   = &StubMethod<T, method>;
+            this->_target = object;
         }
 
-        template <typename T>
-        void Bind(const T* object, R(T::*method)(Args...) const)
+        template <typename T, R(T::*method)(Args...) const>
+        void Bind(const T* object)
         {
-            union
-            {
-                void* callee;
-                R(T::*method)(Args...) const;
-            } convert;
-            convert.method = method;
-
-            this->_stub   = &StubMethod<T>;
+            this->_stub   = &StubConstMethod<T, method>;
             this->_caller = (void*)object;
-            this->_callee = convert.callee;
         }
 
         R Invoke(Args... args)
         {
-            return _stub(_caller, _callee, args...);
+            return _stub(_target, args...);
         }
 
         R operator()(Args... args)
@@ -106,35 +74,17 @@ inline namespace Mojo
 
         operator bool(void) const
         {
-            return _callee != NULL;
+            return _stub != 0 && _target != 0;
         }
 
         friend bool operator==(const Delegate& lhs, const Delegate& rhs)
         {
-            return lhs._callee == rhs._callee && lhs._caller == rhs._caller;
+            return lhs._stub == rhs._stub && lhs._target == rhs._target;
         }
 
         friend bool operator!=(const Delegate& lhs, const Delegate& rhs)
         {
-            return lhs._callee != rhs._callee || lhs._caller != rhs._caller;
+            return lhs._stub == rhs._stub && lhs._target == rhs._target;
         }
     };
-
-    template <typename R, typename ...Args>
-    Delegate<R(Args...)> BindDelegate(R(*function)(Args...))
-    {
-        return Delegate<R(Args...)>(function);
-    }
-
-    template <typename T, typename R, typename ...Args>
-    Delegate<R(Args...)> BindDelegate(T* object, R(T::*method)(Args...))
-    {
-        return Delegate<R(Args...)>(object, method);
-    }
-
-    template <typename T, typename R, typename ...Args>
-    Delegate<R(Args...)> BindDelegate(const T* object, R(T::*method)(Args...) const)
-    {
-        return Delegate<R(Args...)>(object, method);
-    }
 }

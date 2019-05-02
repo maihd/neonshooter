@@ -97,6 +97,8 @@ inline namespace Mojo
     {
         Clamp,
         Repeat,
+        MirrorClamp,
+        MirrorRepeat,
     };
 
     enum struct PixelFormat

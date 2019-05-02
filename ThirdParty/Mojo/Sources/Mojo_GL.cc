@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <assert.h>
 #include <GL/glew.h>
 #include <Mojo/GL.h>
 #include <Mojo/Math.h>
@@ -7,6 +8,11 @@ inline namespace Mojo
 {
     namespace
     {
+        static void HandleError()
+        {
+            glGetError();
+        }
+
         static GLenum ConvertBufferUsage(BufferUsage usage)
         {
             switch (usage)
@@ -132,10 +138,16 @@ inline namespace Mojo
             switch (wrap)
             {
             case TextureWrap::Clamp:
-                return GL_CLAMP;
+                return GL_CLAMP_TO_EDGE;
 
             case TextureWrap::Repeat:
                 return GL_REPEAT;
+
+            case TextureWrap::MirrorClamp:
+                return GL_MIRROR_CLAMP_TO_EDGE;
+
+            case TextureWrap::MirrorRepeat:
+                return GL_MIRRORED_REPEAT;
             }
 
             return 0;
@@ -427,7 +439,10 @@ inline namespace Mojo
     IndexBuffer IndexBuffer::Create(void)
     {
         IndexBuffer buffer;
-        ::glGenBuffers(1, &buffer._handle);
+        glGenBuffers(1, &buffer._handle);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer._handle);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0, 0, GL_STATIC_DRAW);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
         return buffer;
     }
 
@@ -451,7 +466,7 @@ inline namespace Mojo
         //{
         //    ::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _handle);
         //    ::glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, data, ConvertBufferUsage(usage));
-        //    ::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        //    ::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, boundHandle);
         //}
 
         glNamedBufferData(_handle, size, data, ConvertBufferUsage(usage));
@@ -459,23 +474,26 @@ inline namespace Mojo
 
     void IndexBuffer::SetBlendOp(BlendOp op)
     {
-        ::glBlendEquationi(_handle, ConvertBlendOp(op));
+        glBlendEquationi(_handle, ConvertBlendOp(op));
     }
 
     void IndexBuffer::SetBlendFunc(BlendFunc func)
     {
-        ::glBlendFunci(_handle, ConvertBlendFactor(func.src), ConvertBlendFactor(func.dst));
+        glBlendFunci(_handle, ConvertBlendFactor(func.src), ConvertBlendFactor(func.dst));
     }
 
     void IndexBuffer::SetBlendFunc(BlendFactor src, BlendFactor dst)
     {
-        ::glBlendFunci(_handle, ConvertBlendFactor(src), ConvertBlendFactor(dst));
+        glBlendFunci(_handle, ConvertBlendFactor(src), ConvertBlendFactor(dst));
     }
 
     VertexBuffer VertexBuffer::Create(void)
     {
         VertexBuffer buffer = {};
-        ::glGenBuffers(1, &buffer._handle);
+        glGenBuffers(1, &buffer._handle);
+        glBindBuffer(GL_ARRAY_BUFFER, buffer._handle);
+        glBufferData(GL_ARRAY_BUFFER, 0, 0, GL_STATIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
         return buffer;
     }
 
@@ -487,9 +505,9 @@ inline namespace Mojo
 
     void VertexBuffer::SetData(const void* data, int size, BufferUsage usage)
     {
-        //GLint boundHandle;
-        //glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &boundHandle);
-        //
+        GLint boundHandle;
+        glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &boundHandle);
+        
         //if (boundHandle == _handle)
         //{
         //    ::glBufferData(GL_ARRAY_BUFFER, size, data, ConvertBufferUsage(usage));
@@ -498,7 +516,7 @@ inline namespace Mojo
         //{
         //    ::glBindBuffer(GL_ARRAY_BUFFER, _handle);
         //    ::glBufferData(GL_ARRAY_BUFFER, size, data, ConvertBufferUsage(usage));
-        //    ::glBindBuffer(GL_ARRAY_BUFFER, 0);
+        //    ::glBindBuffer(GL_ARRAY_BUFFER, boundHandle);
         //}
 
         glNamedBufferData(_handle, size, data, ConvertBufferUsage(usage));
@@ -506,29 +524,29 @@ inline namespace Mojo
 
     void VertexBuffer::SetBlendOp(BlendOp op) 
     {
-        ::glBlendEquationi(_handle, ConvertBlendOp(op));
+        glBlendEquationi(_handle, ConvertBlendOp(op));
     }
 
     void VertexBuffer::SetBlendFunc(BlendFunc func)
     {
-        ::glBlendFunci(_handle, ConvertBlendFactor(func.src), ConvertBlendFactor(func.dst));
+        glBlendFunci(_handle, ConvertBlendFactor(func.src), ConvertBlendFactor(func.dst));
     }
 
     void VertexBuffer::SetBlendFunc(BlendFactor src, BlendFactor dst)
     {
-        ::glBlendFunci(_handle, ConvertBlendFactor(src), ConvertBlendFactor(dst));
+        glBlendFunci(_handle, ConvertBlendFactor(src), ConvertBlendFactor(dst));
     }
     
     VertexArray VertexArray::Create(void)
     {
         VertexArray array;
-        ::glGenVertexArrays(1, &array._handle);
+        glGenVertexArrays(1, &array._handle);
         return array;
     }
 
     void VertexArray::Destroy(VertexArray& array)
     {
-        ::glDeleteVertexArrays(1, &array._handle);
+        glDeleteVertexArrays(1, &array._handle);
         array._handle = 0;
     }
 
@@ -536,14 +554,14 @@ inline namespace Mojo
     {
         GLenum glDataType = ConvertDataType(dataType);
 
-        ::glBindVertexArray(_handle);
-        ::glBindBuffer(GL_ARRAY_BUFFER, buffer._handle);
+        glBindVertexArray(_handle);
+        glBindBuffer(GL_ARRAY_BUFFER, buffer._handle);
 
-        ::glEnableVertexAttribArray(location);
-        ::glVertexAttribPointer(location, size, glDataType, normalized, stride, (const void*)(intptr_t)offset);
+        glEnableVertexAttribArray(location);
+        glVertexAttribPointer(location, size, glDataType, normalized, stride, (const void*)(intptr_t)offset);
 
-        ::glBindBuffer(GL_ARRAY_BUFFER, 0);
-        ::glBindVertexArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
     }
 
     Texture Texture::Create(TextureType type)
@@ -579,11 +597,16 @@ inline namespace Mojo
     void Texture::SetWrap(TextureWrap wrapU, TextureWrap wrapV)
     {
         GLenum glType = ConvertTextureType(_type);
+        
+        glBindTexture(glType, _handle);
+        glTexParameteri(glType, GL_TEXTURE_WRAP_S, ConvertTextureWrap(wrapU));
+        glTexParameteri(glType, GL_TEXTURE_WRAP_T, ConvertTextureWrap(wrapV));
+        glBindTexture(glType, 0);
 
-        ::glBindTexture(glType, _handle);
-        ::glTexParameteri(glType, GL_TEXTURE_WRAP_S, ConvertTextureWrap(wrapU));
-        ::glTexParameteri(glType, GL_TEXTURE_WRAP_T, ConvertTextureWrap(wrapV));
-        ::glBindTexture(glType, 0);
+        //glTextureParameteri(_handle, GL_TEXTURE_WRAP_S, ConvertTextureWrap(wrapU));
+        //glTextureParameteri(_handle, GL_TEXTURE_WRAP_T, ConvertTextureWrap(wrapV));
+
+        HandleError();
     }
     
     void Texture::SetFilter(TextureFilter filter)
@@ -593,12 +616,17 @@ inline namespace Mojo
 
     void Texture::SetFilter(TextureFilter minFilter, TextureFilter magFilter)
     {
-        GLenum glType = ConvertTextureType(_type);
+        //GLenum glType = ConvertTextureType(_type);
+        //
+        //::glBindTexture(glType, _handle);
+        //::glTexParameteri(glType, GL_TEXTURE_MIN_FILTER, ConvertTextureFilter(minFilter));
+        //::glTexParameteri(glType, GL_TEXTURE_MAG_FILTER, ConvertTextureFilter(magFilter));
+        //::glBindTexture(glType, 0);
 
-        ::glBindTexture(glType, _handle);
-        ::glTexParameteri(glType, GL_TEXTURE_MIN_FILTER, ConvertTextureFilter(minFilter));
-        ::glTexParameteri(glType, GL_TEXTURE_MAG_FILTER, ConvertTextureFilter(magFilter));
-        ::glBindTexture(glType, 0);
+        glTextureParameteri(_handle, GL_TEXTURE_MIN_FILTER, ConvertTextureFilter(minFilter));
+        glTextureParameteri(_handle, GL_TEXTURE_MAG_FILTER, ConvertTextureFilter(magFilter));
+
+        HandleError();
     }
     
     void Texture::SetPixels(int w, int h, PixelFormat format, const void* pixels, PixelFormat targetFormat)
@@ -608,19 +636,24 @@ inline namespace Mojo
             return;
         }
 
-        this->width  = w;
-        this->height = h;
+        //GLenum glType = ConvertTextureType(_type);
+        //::glBindTexture(glType, _handle);
+        //switch (_type)
+        //{
+        //case TextureType::Texture2D:
+        //    //::glTexImage2D(glType, 0, ConvertPixelFormat(targetFormat), w, h, 0, ConvertPixelFormat(format), GL_UNSIGNED_BYTE, pixels);
+        //    break;
+        //}
+        //::glBindTexture(glType, 0);
 
-        GLenum glType = ConvertTextureType(_type);
-
-        ::glBindTexture(glType, _handle);
-        switch (_type)
+        if (_type == TextureType::Texture2D)
         {
-        case TextureType::Texture2D:
-            ::glTexImage2D(glType, 0, ConvertPixelFormat(targetFormat), w, h, 0, ConvertPixelFormat(format), GL_UNSIGNED_BYTE, pixels);
-            break;
+            this->width  = w;
+            this->height = h;
+
+            glTextureImage2DEXT(_handle, GL_TEXTURE_2D, 0, ConvertPixelFormat(targetFormat), w, h, 0, ConvertPixelFormat(format), GL_UNSIGNED_BYTE, pixels);
+            HandleError();
         }
-        ::glBindTexture(glType, 0);
     }
 
     namespace GL

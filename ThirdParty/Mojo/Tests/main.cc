@@ -78,7 +78,14 @@ int main(void)
         printf("Read file failed!\n");
     }
 
-    if (!Window::Init("Mojo", 1280, 720)) 
+    if (!Window::Setup("Mojo", 1280, 720)) 
+    {
+        return 1;
+    }
+
+    GraphicsSettings settings;
+    settings.multisamples = 1;
+    if (!GL::Setup(settings))
     {
         return 1;
     }
@@ -86,9 +93,8 @@ int main(void)
     const char* vertexShader =
         "#version 330 core\n"
         "layout (location = 0) in vec2 vertex;"
-        "uniform mat4 MVP;"
         "void main() {"
-        "gl_Position = MVP * vec4(vertex, 0, 1.0);"
+        "gl_Position = vec4(vertex, 0, 1.0);"
         "}";
 
     const char* pixelsShader =
@@ -98,14 +104,14 @@ int main(void)
         "pixelColor = vec4(1.0);"
         "}";
 
-    mat4 mvp = mat4::ortho(-1, 1, -1, 1, -1.0f, 1.0f);
+    float4x4 mvp = float4x4::ortho(-1, 1, -1, 1, -1.0f, 1.0f);
 
     Shader shader = Shader::Create(vertexShader, pixelsShader);
 
-    vec2 vertices[] = {
-        vec2(-0.5f, -0.5f),
-        vec2( 0.0f,  0.5f),
-        vec2( 0.5f, -0.5f),
+    float2 vertices[] = {
+        float2(-0.5f, -0.5f),
+        float2( 0.0f,  0.5f),
+        float2( 0.5f, -0.5f),
     };
 
     VertexArray vertexArray = VertexArray::Create();
@@ -138,11 +144,11 @@ int main(void)
             break;
         }
 
-        Window::ClearBuffer();
+        GL::ClearBuffer(ClearFlag::Color);
 
         GL::DrawArrays(DrawType::Triangles, shader, vertexArray, 3, 0);
 
-        Window::SwapBuffers();
+        GL::SwapBuffers();
     }
 
     Window::Shutdown();

@@ -33,22 +33,22 @@ inline namespace Mojo
         }
     }
 
-    void Material::SetVector2(const char* name, const vec2& value)
+    void Material::SetVector2(const char* name, const float2& value)
     {
 
     }
 
-    void Material::SetVector3(const char* name, const vec3& value)
+    void Material::SetVector3(const char* name, const float3& value)
     {
 
     }
 
-    void Material::SetVector4(const char* name, const vec4& value)
+    void Material::SetVector4(const char* name, const float4& value)
     {
 
     }
 
-    void Material::SetMatrix4(const char* name, const mat4& value)
+    void Material::SetMatrix4(const char* name, const float4x4& value)
     {
 
     }

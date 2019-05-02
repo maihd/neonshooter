@@ -22,14 +22,14 @@ struct Entity
 public:
     bool  active;
 
-    vec2  scale;
-    vec2  position;
+    float2  scale;
+    float2  position;
     float rotation;
 
-    vec2  velocity;
+    float2  velocity;
     float movespeed;
 
-    vec4  color;
+    float4  color;
     float radius;
 
     Texture texture;
@@ -43,9 +43,9 @@ public:
         }
     }
 
-    void Update(vec2 bounds, float dt)
+    void Update(float2 bounds, float dt)
     {
-        vec2  pos = position + velocity * movespeed * dt;
+        float2  pos = position + velocity * movespeed * dt;
         float rad = radius;
 
         if (pos.x + rad > bounds.x)
@@ -79,11 +79,11 @@ struct Particle
 {
     bool       active;
     Texture    texture;
-    vec2       velocity;
-    vec2       position;
+    float2       velocity;
+    float2       position;
     float      rotation;
-    vec2       scale;
-    vec4       color;
+    float2       scale;
+    float4       color;
     float      timer;
     float      duration;
 };
@@ -171,21 +171,21 @@ Texture LoadTexture(const char* path)
 
 namespace Color
 {
-    vec4 HSV(float h, float s, float v)
+    float4 HSV(float h, float s, float v)
     {
         if (h == 0 && s == 0)
-            return vec4(v, v, v, 1.0f);
+            return float4(v, v, v, 1.0f);
 
         float c = s * v;
         float x = c * (1 - fabsf(fmodf(h, 2) - 1));
         float m = v - c;
 
-        if (h < 1)      return vec4(c + m, x + m, m, 1.0f);
-        else if (h < 2) return vec4(x + m, c + m, m, 1.0f);
-        else if (h < 3) return vec4(m, c + m, x + m, 1.0f);
-        else if (h < 4) return vec4(m, x + m, c + m, 1.0f);
-        else if (h < 5) return vec4(x + m, m, c + m, 1.0f);
-        else            return vec4(c + m, m, x + m, 1.0f);
+        if (h < 1)      return float4(c + m, x + m, m, 1.0f);
+        else if (h < 2) return float4(x + m, c + m, m, 1.0f);
+        else if (h < 3) return float4(m, c + m, x + m, 1.0f);
+        else if (h < 4) return float4(m, x + m, c + m, 1.0f);
+        else if (h < 5) return float4(x + m, m, c + m, 1.0f);
+        else            return float4(c + m, m, x + m, 1.0f);
     }
 }
 
@@ -197,17 +197,17 @@ namespace Game
 
 namespace ParticleSystem
 {
-    void SpawnParticle(const Texture& texture, vec2 pos, vec4 tint, float duration, vec2 scale, float theta, vec2 vel);
+    void SpawnParticle(const Texture& texture, float2 pos, float4 tint, float duration, float2 scale, float theta, float2 vel);
 }
 
 namespace Renderer
 {
     void DrawTexture(
         const Texture& texture, 
-        vec2 position = vec2(0.0f), 
+        float2 position = float2(0.0f), 
         float rotation = 0.0f, 
-        vec2 scale = vec2(1.0f), 
-        vec4 color = vec4(1.0f), 
+        float2 scale = float2(1.0f), 
+        float4 color = float4(1.0f), 
         BlendFunc blend = { BlendFactor::SrcAlpha, BlendFactor::InvertSrcAlpha });
 }
 
@@ -241,10 +241,10 @@ namespace World
     void Init(void)
     {
         player.active    = true;
-        player.color     = vec4(1.0f);
-        player.position  = vec2(0.0f);
+        player.color     = float4(1.0f);
+        player.position  = float2(0.0f);
         player.rotation  = 0.0f;
-        player.scale     = vec2(1.0f);
+        player.scale     = float2(1.0f);
         player.movespeed = 720.0f;
         player.texture   = LoadTexture("Art/Player.png");
         player.radius    = player.texture.width * 0.5f;
@@ -254,7 +254,7 @@ namespace World
         wanderers.Ensure(256);
     }
 
-    void SpawnBullet(vec2 pos, vec2 vel)
+    void SpawnBullet(float2 pos, float2 vel)
     {
         Entity* en = NULL;
         if (freeBullets.count > 0)
@@ -268,49 +268,49 @@ namespace World
         }
 
         en->active      = true;
-        en->color       = vec4(1.0f);
+        en->color       = float4(1.0f);
         en->position    = pos;
         en->rotation    = atan2f(vel.y, vel.x);
-        en->scale       = vec2(1.0f);
+        en->scale       = float2(1.0f);
         en->texture     = LoadTexture("Art/Bullet.png");
         en->velocity    = vel;
         en->movespeed   = 1280.0f;
         en->radius      = en->texture.height * 0.5f;
     }
 
-    void FireBullets(vec2 aim_dir)
+    void FireBullets(float2 aim_dir)
     {
         float angle = atan2f(aim_dir.y, aim_dir.x) + (rand() % 101) / 100.0f * (PI * 0.025f);
         float offset = PI * 0.1f;
 
-        aim_dir = vec2(cosf(angle), sinf(angle));
+        aim_dir = float2(cosf(angle), sinf(angle));
 
         // First bullet
         {
-            vec2 vel = normalize(aim_dir);
-            vec2 pos = player.position + vec2(cosf(angle + offset), sinf(angle + offset)) * player.texture.width * 1.25f;
+            float2 vel = normalize(aim_dir);
+            float2 pos = player.position + float2(cosf(angle + offset), sinf(angle + offset)) * player.texture.width * 1.25f;
             SpawnBullet(pos, vel);
         }
 
         // Second bullet
         {
-            vec2 vel = normalize(aim_dir);
-            vec2 pos = player.position + vec2(cosf(angle - offset), sinf(angle - offset)) * player.texture.width * 1.25f;
+            float2 vel = normalize(aim_dir);
+            float2 pos = player.position + float2(cosf(angle - offset), sinf(angle - offset)) * player.texture.width * 1.25f;
             SpawnBullet(pos, vel);
         }
     }
 
-    vec2 GetSpawnPosition()
+    float2 GetSpawnPosition()
     {
         const float min_distance_sqr = (Window::GetHeight() * 0.3f) * (Window::GetHeight() * 0.3f);
 
-        vec2 pos;
+        float2 pos;
 
         do
         {
             float x = (2.0f * (rand() % 101) / 100.0f - 1.0f) * 0.8f * Window::GetWidth();
             float y = (2.0f * (rand() % 101) / 100.0f - 1.0f) * 0.8f * Window::GetHeight();
-            pos = vec2(x, y);
+            pos = float2(x, y);
         } while (distsqr(pos, player.position) < min_distance_sqr);
 
         return pos;
@@ -320,7 +320,7 @@ namespace World
     {
         //audio::play_spawn();
 
-        vec2 pos = GetSpawnPosition();
+        float2 pos = GetSpawnPosition();
 
         Entity* en = NULL;
         if (freeSeekers.count > 0)
@@ -334,11 +334,11 @@ namespace World
         }
 
         en->active      = true;
-        en->color       = vec4(1.0f, 1.0f, 1.0f, 0.0f);
+        en->color       = float4(1.0f, 1.0f, 1.0f, 0.0f);
         en->velocity    = normalize(player.position - pos);
         en->position    = pos;
         en->movespeed   = 360.0f;
-        en->scale       = vec2(1.0f);
+        en->scale       = float2(1.0f);
         en->texture     = LoadTexture("Art/Seeker.png");
         en->rotation    = atan2f(en->velocity.y, en->velocity.x);
         en->radius      = en->texture.width * 0.5f;
@@ -348,7 +348,7 @@ namespace World
     {
         //audio::play_spawn();
 
-        vec2 pos = GetSpawnPosition();
+        float2 pos = GetSpawnPosition();
 
         Entity* en = NULL;
         if (freeWanderers.count > 0)
@@ -362,11 +362,11 @@ namespace World
         }
 
         en->active      = true;
-        en->color       = vec4(1.0f, 1.0f, 1.0f, 0.0f);
+        en->color       = float4(1.0f, 1.0f, 1.0f, 0.0f);
         en->velocity    = normalize(player.position - pos);
         en->position    = pos;
         en->movespeed   = 240.0f;
-        en->scale       = vec2(1.0f);
+        en->scale       = float2(1.0f);
         en->texture     = LoadTexture("Art/Wanderer.png");
         en->rotation    = atan2f(en->velocity.y, en->velocity.x);
         en->radius      = en->texture.width * 0.5f;
@@ -376,7 +376,7 @@ namespace World
     {
         //audio::play_spawn();
 
-        vec2 pos = GetSpawnPosition();
+        float2 pos = GetSpawnPosition();
 
         Entity* en = NULL;
         if (freeBlackHoles.count > 0)
@@ -390,11 +390,11 @@ namespace World
         }
 
         en->active      = true;
-        en->color       = vec4(1.0f, 1.0f, 1.0f, 0.0f);
-        en->velocity    = vec2(0.0f);
+        en->color       = float4(1.0f, 1.0f, 1.0f, 0.0f);
+        en->velocity    = float2(0.0f);
         en->position    = pos;
         en->movespeed   = 0;
-        en->scale       = vec2(1.0f);
+        en->scale       = float2(1.0f);
         en->texture     = LoadTexture("Art/Black Hole.png");
         en->rotation    = 0;
         en->radius      = en->texture.width * 0.5f;
@@ -414,10 +414,10 @@ namespace World
             {
                 float speed = 640.0f * (0.2f + (rand() % 101 / 100.0f) * 0.8f);
                 float angle = rand() % 101 / 100.0f * 2 * PI;
-                vec2 vel = vec2(cosf(angle) * speed, sinf(angle) *speed);
+                float2 vel = float2(cosf(angle) * speed, sinf(angle) *speed);
 
-                vec4 color = vec4(0.6f, 1.0f, 1.0f, 1.0f);
-                ParticleSystem::SpawnParticle(texture, bullet->position, color, 1.0f, vec2(1.0f), 0.0f, vel);
+                float4 color = float4(0.6f, 1.0f, 1.0f, 1.0f);
+                ParticleSystem::SpawnParticle(texture, bullet->position, color, 1.0f, float2(1.0f), 0.0f, vel);
             }
         }
     }
@@ -433,17 +433,17 @@ namespace World
 
         float hue1 = rand() % 101 / 100.0f * 6.0f;
         float hue2 = fmodf(hue1 + (rand() % 101 / 100.0f * 2.0f), 6.0f);
-        vec4 color1 = Color::HSV(hue1, 0.5f, 1);
-        vec4 color2 = Color::HSV(hue2, 0.5f, 1);
+        float4 color1 = Color::HSV(hue1, 0.5f, 1);
+        float4 color2 = Color::HSV(hue2, 0.5f, 1);
 
         for (int i = 0; i < 120; i++)
         {
             float speed = 640.0f * (0.2f + (rand() % 101 / 100.0f) * 0.8f);
             float angle = rand() % 101 / 100.0f * 2 * PI;
-            vec2 vel = vec2(cosf(angle) * speed, sinf(angle) * speed);
+            float2 vel = float2(cosf(angle) * speed, sinf(angle) * speed);
 
-            vec4 color = color1 + (color2 - color1) * ((rand() % 101) / 100.0f);
-            ParticleSystem::SpawnParticle(texture, seeker->position, color, 1.0f, vec2(1.0f), 0.0f, vel);
+            float4 color = color1 + (color2 - color1) * ((rand() % 101) / 100.0f);
+            ParticleSystem::SpawnParticle(texture, seeker->position, color, 1.0f, float2(1.0f), 0.0f, vel);
         }
     }
 
@@ -458,17 +458,17 @@ namespace World
 
         float hue1 = rand() % 101 / 100.0f * 6.0f;
         float hue2 = fmodf(hue1 + (rand() % 101 / 100.0f * 2.0f), 6.0f);
-        vec4 color1 = Color::HSV(hue1, 0.5f, 1);
-        vec4 color2 = Color::HSV(hue2, 0.5f, 1);
+        float4 color1 = Color::HSV(hue1, 0.5f, 1);
+        float4 color2 = Color::HSV(hue2, 0.5f, 1);
 
         for (int i = 0; i < 120; i++)
         {
             float speed = 640.0f * (0.2f + (rand() % 101 / 100.0f) * 0.8f);
             float angle = rand() % 101 / 100.0f * 2 * PI;
-            vec2 vel = vec2(cosf(angle) * speed, sinf(angle) * speed);
+            float2 vel = float2(cosf(angle) * speed, sinf(angle) * speed);
 
-            vec4 color = color1 + (color2 - color1) * ((rand() % 101) / 100.0f);
-            ParticleSystem::SpawnParticle(texture, wanderer->position, color, 1.0f, vec2(1.0f), 0.0f, vel);
+            float4 color = color1 + (color2 - color1) * ((rand() % 101) / 100.0f);
+            ParticleSystem::SpawnParticle(texture, wanderer->position, color, 1.0f, float2(1.0f), 0.0f, vel);
         }
     }
 
@@ -483,17 +483,17 @@ namespace World
 
         float hue1 = rand() % 101 / 100.0f * 6.0f;
         float hue2 = fmodf(hue1 + (rand() % 101 / 100.0f * 2.0f), 6.0f);
-        vec4 color1 = Color::HSV(hue1, 0.5f, 1);
-        vec4 color2 = Color::HSV(hue2, 0.5f, 1);
+        float4 color1 = Color::HSV(hue1, 0.5f, 1);
+        float4 color2 = Color::HSV(hue2, 0.5f, 1);
 
         for (int i = 0; i < 120; i++)
         {
             float speed = 640.0f * (0.2f + (rand() % 101 / 100.0f) * 0.8f);
             float angle = rand() % 101 / 100.0f * 2 * PI;
-            vec2 vel = vec2(cosf(angle) * speed, sinf(angle) * speed);
+            float2 vel = float2(cosf(angle) * speed, sinf(angle) * speed);
 
-            vec4 color = color1 + (color2 - color1) * ((rand() % 101) / 100.0f);
-            ParticleSystem::SpawnParticle(texture, blaclhole->position, color, 1.0f, vec2(1.0f), 0.0f, vel);
+            float4 color = color1 + (color2 - color1) * ((rand() % 101) / 100.0f);
+            ParticleSystem::SpawnParticle(texture, blaclhole->position, color, 1.0f, float2(1.0f), 0.0f, vel);
         }
     }
 
@@ -515,21 +515,21 @@ namespace World
 
         float hue1 = rand() % 101 / 100.0f * 6.0f;
         float hue2 = fmodf(hue1 + (rand() % 101 / 100.0f * 2.0f), 6.0f);
-        vec4 color1 = Color::HSV(hue1, 0.5f, 1);
-        vec4 color2 = Color::HSV(hue2, 0.5f, 1);
+        float4 color1 = Color::HSV(hue1, 0.5f, 1);
+        float4 color2 = Color::HSV(hue2, 0.5f, 1);
 
         for (int i = 0; i < 1200; i++)
         {
             float speed = 10.0f * max(Window::GetWidth(), Window::GetHeight()) * (0.6f + (rand() % 101 / 100.0f) * 0.4f);
             float angle = rand() % 101 / 100.0f * 2 * PI;
-            vec2 vel = vec2(cosf(angle) * speed, sinf(angle) * speed);
+            float2 vel = float2(cosf(angle) * speed, sinf(angle) * speed);
 
-            vec4 color = color1 + (color2 - color1) * ((rand() % 101) / 100.0f);
-            ParticleSystem::SpawnParticle(texture, player.position, color, gameOverTimer, vec2(1.0f), 0.0f, vel);
+            float4 color = color1 + (color2 - color1) * ((rand() % 101) / 100.0f);
+            ParticleSystem::SpawnParticle(texture, player.position, color, gameOverTimer, float2(1.0f), 0.0f, vel);
         }
 
-        player.position = vec2();
-        player.velocity = vec2();
+        player.position = float2();
+        player.velocity = float2();
         player.rotation = 0.0f;
     }
 
@@ -541,7 +541,7 @@ namespace World
         }
         else if (distance(other->position, blackhole->position) <= other->radius + blackhole->radius * 10.0f)
         {
-            vec2 diff = blackhole->position - other->position;
+            float2 diff = blackhole->position - other->position;
             other->velocity += normalize(diff) * lerp(1, 0, length(diff) / (Window::GetWidth() * 0.2f));
             other->velocity = normalize(other->velocity);
         }
@@ -549,7 +549,7 @@ namespace World
         return false;
     }
 
-    void Update(float dt, float vertical, float horizontal, vec2 aim_dir, bool fire)
+    void Update(float dt, float vertical, float horizontal, float2 aim_dir, bool fire)
     {
         if (gameOverTimer > 0.0f)
         {
@@ -560,8 +560,8 @@ namespace World
         // Update is in progress, locking the list
         lock = true;
 
-        player.velocity = lerp(player.velocity, normalize(vec2(horizontal, vertical)), 5.0f * dt);
-        player.Update(vec2(Window::GetWidth(), Window::GetHeight()), dt);
+        player.velocity = lerp(player.velocity, normalize(float2(horizontal, vertical)), 5.0f * dt);
+        player.Update(float2(Window::GetWidth(), Window::GetHeight()), dt);
         if (lensqr(player.velocity) > 0.1f && fmodf(Game::totalTime, 0.025f) <= 0.01f)
         {
             float speed;
@@ -570,26 +570,26 @@ namespace World
             Texture glow_tex = LoadTexture("Art/Laser.png");
             Texture line_tex = LoadTexture("Art/Laser.png");
 
-            vec2 vel = -0.25f * player.movespeed * player.velocity;
-            vec2 pos = player.position + 45.0f * (-player.velocity);
-            vec2 nvel = vec2(vel.y, -vel.x) * 0.9f * sinf(Game::totalTime * 10.0f);
+            float2 vel = -0.25f * player.movespeed * player.velocity;
+            float2 pos = player.position + 45.0f * (-player.velocity);
+            float2 nvel = float2(vel.y, -vel.x) * 0.9f * sinf(Game::totalTime * 10.0f);
             float alpha = 0.7f;
 
-            vec2 mid_vel = vel;
-            ParticleSystem::SpawnParticle(glow_tex, pos, vec4(1.0f, 0.7f, 0.1f, 1.0f) * alpha, 0.4f, vec2(1.0f, 2.0f), angle, mid_vel);
-            ParticleSystem::SpawnParticle(line_tex, pos, vec4(1.0f, 1.0f, 1.0f, 1.0f) * alpha, 0.4f, vec2(1.0f, 1.0f), angle, mid_vel);
+            float2 mid_vel = vel;
+            ParticleSystem::SpawnParticle(glow_tex, pos, float4(1.0f, 0.7f, 0.1f, 1.0f) * alpha, 0.4f, float2(1.0f, 2.0f), angle, mid_vel);
+            ParticleSystem::SpawnParticle(line_tex, pos, float4(1.0f, 1.0f, 1.0f, 1.0f) * alpha, 0.4f, float2(1.0f, 1.0f), angle, mid_vel);
 
             speed = rand() % 101 / 100.0f * 40.0f;
             angle = rand() % 101 / 100.0f * 2.0f * PI;
-            vec2 side_vel1 = vel + nvel + vec2(cosf(angle), sinf(angle)) * speed;
-            ParticleSystem::SpawnParticle(glow_tex, pos, vec4(0.8f, 0.2f, 0.1f, 1.0f) * alpha, 0.4f, vec2(1.0f, 2.0f), angle, side_vel1);
-            ParticleSystem::SpawnParticle(line_tex, pos, vec4(1.0f, 1.0f, 1.0f, 1.0f) * alpha, 0.4f, vec2(1.0f, 1.0f), angle, side_vel1);
+            float2 side_vel1 = vel + nvel + float2(cosf(angle), sinf(angle)) * speed;
+            ParticleSystem::SpawnParticle(glow_tex, pos, float4(0.8f, 0.2f, 0.1f, 1.0f) * alpha, 0.4f, float2(1.0f, 2.0f), angle, side_vel1);
+            ParticleSystem::SpawnParticle(line_tex, pos, float4(1.0f, 1.0f, 1.0f, 1.0f) * alpha, 0.4f, float2(1.0f, 1.0f), angle, side_vel1);
 
             speed = rand() % 101 / 100.0f * 40.0f;
             angle = rand() % 101 / 100.0f * 2.0f * PI;
-            vec2 side_vel2 = vel - nvel + vec2(cosf(angle), sinf(angle)) * speed;
-            ParticleSystem::SpawnParticle(glow_tex, pos, vec4(0.8f, 0.2f, 0.1f, 1.0f) * alpha, 0.4f, vec2(1.0f, 2.0f), angle, side_vel2);
-            ParticleSystem::SpawnParticle(line_tex, pos, vec4(1.0f, 1.0f, 1.0f, 1.0f) * alpha, 0.4f, vec2(1.0f, 1.0f), angle, side_vel2);
+            float2 side_vel2 = vel - nvel + float2(cosf(angle), sinf(angle)) * speed;
+            ParticleSystem::SpawnParticle(glow_tex, pos, float4(0.8f, 0.2f, 0.1f, 1.0f) * alpha, 0.4f, float2(1.0f, 2.0f), angle, side_vel2);
+            ParticleSystem::SpawnParticle(line_tex, pos, float4(1.0f, 1.0f, 1.0f, 1.0f) * alpha, 0.4f, float2(1.0f, 1.0f), angle, side_vel2);
         }
 
         for (int i = 0, n = bullets.count; i < n; i++)
@@ -657,7 +657,7 @@ namespace World
                         }
 
                         s->rotation = direction;
-                        s->velocity = vec2(cosf(direction), sinf(direction));
+                        s->velocity = float2(cosf(direction), sinf(direction));
                         s->position = s->position + s->velocity * real_speed * dt;
                     }
                 }
@@ -750,19 +750,19 @@ namespace World
                 Texture glow_tex = LoadTexture("Art/Glow.png");
                 Texture line_tex = LoadTexture("Art/Laser.png");
 
-                vec4 color1 = vec4(0.3f, 0.8f, 0.4f, 1.0f);
-                vec4 color2 = vec4(0.5f, 1.0f, 0.7f, 1.0f);
+                float4 color1 = float4(0.3f, 0.8f, 0.4f, 1.0f);
+                float4 color2 = float4(0.5f, 1.0f, 0.7f, 1.0f);
 
                 if (fmodf(Game::totalTime, 0.1f) <= 0.01f)
                 {
                     float speed = 16.0f * s->radius * (0.8f + (rand() % 101 / 100.0f) * 0.2f);
                     float angle = rand() % 101 / 100.0f * Game::totalTime;
-                    vec2 vel = vec2(cosf(angle) * speed, sinf(angle) * speed);
-                    vec2 pos = s->position + 0.4f * vec2(vel.y, -vel.x) + (4.0f + rand() % 101 / 100.0f * 4.0f);
+                    float2 vel = float2(cosf(angle) * speed, sinf(angle) * speed);
+                    float2 pos = s->position + 0.4f * float2(vel.y, -vel.x) + (4.0f + rand() % 101 / 100.0f * 4.0f);
 
-                    vec4 color = color1 + (color2 - color1) * ((rand() % 101) / 100.0f);
-                    //ParticleSystem::SpawnParticle(glow_tex, pos, color, 4.0f, vec2(0.3f, 1.0f), 0.0f, vec2(-vel.y, vel.x));
-                    ParticleSystem::SpawnParticle(line_tex, pos, color, 4.0f, vec2(1.0f, 1.0f), 0.0f, vel);
+                    float4 color = color1 + (color2 - color1) * ((rand() % 101) / 100.0f);
+                    //ParticleSystem::SpawnParticle(glow_tex, pos, color, 4.0f, float2(0.3f, 1.0f), 0.0f, float2(-vel.y, vel.x));
+                    ParticleSystem::SpawnParticle(line_tex, pos, color, 4.0f, float2(1.0f, 1.0f), 0.0f, vel);
                 }
 
                 if (s->color.w < 1.0f)
@@ -889,7 +889,7 @@ namespace ParticleSystem
         particles.Ensure(20 * 1024);
     }
 
-    void SpawnParticle(const Texture& texture, vec2 pos, vec4 tint, float duration, vec2 scale, float theta, vec2 vel)
+    void SpawnParticle(const Texture& texture, float2 pos, float4 tint, float duration, float2 scale, float theta, float2 vel)
     {
         Particle* p = NULL;
         if (freeParticles.count > 0)
@@ -960,15 +960,15 @@ namespace ParticleSystem
                 Entity* blackhole = &World::blackHoles[i];
                 if (!blackhole->active) continue;
 
-                vec2 diff = blackhole->position - p.position;
+                float2 diff = blackhole->position - p.position;
                 float d = length(diff);
-                vec2 normal = normalize(diff);
+                float2 normal = normalize(diff);
                 p.velocity += normal * max(0.0f, Window::GetWidth() / d);
 
                 // add tangential acceleration for nearby particles
                 if (d < 10.0f * blackhole->radius)
                 {
-                    p.velocity += vec2(normal.y, -normal.x) * (21.0f * blackhole->radius / (120.0f + 1.2f * d));
+                    p.velocity += float2(normal.y, -normal.x) * (21.0f * blackhole->radius / (120.0f + 1.2f * d));
                 }
             }
         }
@@ -1006,18 +1006,18 @@ namespace Renderer
 {
     struct Vertex
     {
-        vec2 pos;
-        vec2 uv;
+        float2 pos;
+        float2 uv;
     };
 
     struct DrawCommand
     {
         Texture   texture;
         int       drawCount;
-        vec2      position;
-        vec2      scale;
+        float2      position;
+        float2      scale;
         float     rotation;
-        vec4      color;
+        float4      color;
 
         BlendFunc blend;
     };
@@ -1038,7 +1038,7 @@ namespace Renderer
     //GLuint  framevbo;
     //GLuint  frameprog;
 
-    mat4 proj_matrix;
+    float4x4 proj_matrix;
 
     const char* vshader_src =
         "#version 330 core\n"
@@ -1071,7 +1071,7 @@ namespace Renderer
 
         float w = Window::GetWidth();
         float h = Window::GetHeight();
-        proj_matrix = mat4::ortho(-w, w, -h, h, -10.0f, 10.0f);
+        proj_matrix = float4x4::ortho(-w, w, -h, h, -10.0f, 10.0f);
 
         _spriteVertexArray = VertexArray::Create();
         _spriteVertexBuffer = VertexBuffer::Create();
@@ -1120,17 +1120,17 @@ namespace Renderer
             //glGenVertexArrays(1, &framevao);
             //glGenBuffers(1, &framevbo);
             //
-            //vec2 _vertices[] =
+            //float2 _vertices[] =
             //{
             //    // First triangle
-            //    vec2(-1.0f, -1.0f), vec2(0.0f, 0.0f),
-            //    vec2(-1.0f,  1.0f), vec2(0.0f, 1.0f),
-            //    vec2(1.0f,  1.0f), vec2(1.0f, 1.0f),
+            //    float2(-1.0f, -1.0f), float2(0.0f, 0.0f),
+            //    float2(-1.0f,  1.0f), float2(0.0f, 1.0f),
+            //    float2(1.0f,  1.0f), float2(1.0f, 1.0f),
             //
             //    // Second triangle
-            //    vec2(1.0f,  1.0f), vec2(1.0f, 1.0f),
-            //    vec2(1.0f, -1.0f), vec2(1.0f, 0.0f),
-            //    vec2(-1.0f, -1.0f), vec2(0.0f, 0.0f),
+            //    float2(1.0f,  1.0f), float2(1.0f, 1.0f),
+            //    float2(1.0f, -1.0f), float2(1.0f, 0.0f),
+            //    float2(-1.0f, -1.0f), float2(0.0f, 0.0f),
             //};
             //
             //glBindVertexArray(framevao);
@@ -1190,13 +1190,13 @@ namespace Renderer
         }
     }
 
-    void DrawTexture(const Texture& texture, vec2 position, float rotation, vec2 scale, vec4 color, BlendFunc blend)
+    void DrawTexture(const Texture& texture, float2 position, float rotation, float2 scale, float4 color, BlendFunc blend)
     {
         DrawCommand cmd;
         cmd.texture     = texture;
         cmd.position    = position;
         cmd.rotation    = rotation;
-        cmd.scale       = scale * vec2(texture.width, texture.height);
+        cmd.scale       = scale * float2(texture.width, texture.height);
         cmd.blend       = blend;
         cmd.color       = color;
         cmd.drawCount   = 6;
@@ -1214,20 +1214,20 @@ namespace Renderer
         _indices.Push((unsigned short)(i + 3U));
 
         Vertex v;
-        v.pos = vec2(-0.5f, -0.5f);
-        v.uv = vec2(0.0f, 1.0f);
+        v.pos = float2(-0.5f, -0.5f);
+        v.uv = float2(0.0f, 1.0f);
         _vertices.Push(v);
 
-        v.pos = vec2(-0.5f, 0.5f);
-        v.uv = vec2(0.0f, 0.0f);
+        v.pos = float2(-0.5f, 0.5f);
+        v.uv = float2(0.0f, 0.0f);
         _vertices.Push(v);
 
-        v.pos = vec2(0.5f, 0.5f);
-        v.uv = vec2(1.0f, 0.0f);
+        v.pos = float2(0.5f, 0.5f);
+        v.uv = float2(1.0f, 0.0f);
         _vertices.Push(v);
 
-        v.pos = vec2(0.5f, -0.5f);
-        v.uv = vec2(1.0f, 1.0f);
+        v.pos = float2(0.5f, -0.5f);
+        v.uv = float2(1.0f, 1.0f);
         _vertices.Push(v);
     }
 
@@ -1259,8 +1259,8 @@ namespace Renderer
             GL::SetBlendFunc(cmd.blend);
             //_spriteVertexBuffer.SetBlendFunc(cmd.blend);
 
-            mat4 model_matrix = mat4::translation(cmd.position) * mat4::rotation_z(cmd.rotation) * mat4::scalation(cmd.scale);
-            mat4 MVP_matrix = proj_matrix * model_matrix;
+            float4x4 model_matrix = float4x4::translation(cmd.position) * float4x4::rotation_z(cmd.rotation) * float4x4::scalation(cmd.scale);
+            float4x4 MVP_matrix = proj_matrix * model_matrix;
 
             _spriteShader.SetFloat4x4("MVP", (float*)&MVP_matrix);
             _spriteShader.SetFloat4("color", cmd.color.x, cmd.color.y, cmd.color.z, cmd.color.w);
@@ -1292,7 +1292,7 @@ namespace Renderer
 
 namespace Game
 {
-    vec2 aim;
+    float2 aim;
     bool fire;
 
     float axis_vertical = 0.0f;
@@ -1370,18 +1370,18 @@ namespace Game
         Input::GetMouseState(&mx, &my);
         fire = Input::GetMouseButton(MouseButton::Left);
         {
-            vec2 clip = vec2(2.0f * mx / Window::GetWidth() - 1.0f, 1.0f - 2.0f * my / Window::GetHeight());
+            float2 clip = float2(2.0f * mx / Window::GetWidth() - 1.0f, 1.0f - 2.0f * my / Window::GetHeight());
         
-            vec2 mpos = vec2(clip.x * Window::GetWidth(), clip.y * Window::GetHeight());
+            float2 mpos = float2(clip.x * Window::GetWidth(), clip.y * Window::GetHeight());
         
-            vec2 taim = normalize(mpos - World::player.position);
+            float2 taim = normalize(mpos - World::player.position);
         
 #if 0   
             float cur_angle = vec2_angle(aim);
             float aim_angle = vec2_angle(taim);
         
             cur_angle = step(cur_angle, aim_angle, 0.8f);
-            aim = vec2(cosf(cur_angle), sinf(cur_angle));
+            aim = float2(cosf(cur_angle), sinf(cur_angle));
 #endif  
         
             aim = lerp(aim, taim, 0.8f);
@@ -1396,9 +1396,9 @@ namespace Game
         //
         //    float x = (SDL_JoystickGetAxis(joystick, 3)) / (float)SHRT_MAX;
         //    float y = -(SDL_JoystickGetAxis(joystick, 4)) / (float)SHRT_MAX;
-        //    if (length(vec2(x, y)) < 0.01f)
+        //    if (length(float2(x, y)) < 0.01f)
         //    {
-        //        aim = vec2();
+        //        aim = float2();
         //    }
         //    else
         //    {
@@ -1409,7 +1409,7 @@ namespace Game
         //        float aim_angle = atan2f(y, x);
         //
         //        cur_angle = step(cur_angle, aim_angle, 0.8f);
-        //        aim = vec2(cosf(cur_angle), sinf(cur_angle));
+        //        aim = float2(cosf(cur_angle), sinf(cur_angle));
 #endif  //
         //
         //        aim.x = step(aim.x, x, 0.6f);
@@ -1418,17 +1418,17 @@ namespace Game
         //}
         //
 
-        vec2 axes = vec2(axis_horizontal, axis_vertical);
+        float2 axes = float2(axis_horizontal, axis_vertical);
         if (length(axes) < 0.01f)
         {
-            axes = vec2();
+            axes = float2();
         }
         else
         {
             float len = clamp(length(axes), 0, 1);
             float angle = atan2(axes.y, axes.x);
 
-            axes = vec2(cos(angle) * len, sin(angle) * len);
+            axes = float2(cos(angle) * len, sin(angle) * len);
         }
 
         axis_vertical = axes.y;
@@ -1833,7 +1833,7 @@ namespace Game
 {
     SDL_Window* window;
 
-    vec2 aim;
+    float2 aim;
     bool fire;
 
 	float axis_vertical   = 0.0f;
@@ -1923,18 +1923,18 @@ namespace Game
         Uint32 mouse = SDL_GetMouseState(&mx, &my);
         fire = mouse & SDL_BUTTON(SDL_BUTTON_LEFT);
         {
-            vec2 clip = vec2(2.0f * mx / (float)screen_width - 1.0f, 1.0f - 2.0f * my / (float)screen_height);
+            float2 clip = float2(2.0f * mx / (float)screen_width - 1.0f, 1.0f - 2.0f * my / (float)screen_height);
 
-            vec2 mpos = vec2(clip.x * screen_width, clip.y * screen_height);
+            float2 mpos = float2(clip.x * screen_width, clip.y * screen_height);
             
-            vec2 taim = normalize(mpos - World::player->position);
+            float2 taim = normalize(mpos - World::player->position);
 
         #if 0
             float cur_angle = vec2_angle(aim);
             float aim_angle = vec2_angle(taim);
 
             cur_angle = step(cur_angle, aim_angle, 0.8f);
-            aim = vec2(cosf(cur_angle), sinf(cur_angle));
+            aim = float2(cosf(cur_angle), sinf(cur_angle));
         #endif
 
             aim = step(aim, taim, 0.8f);
@@ -1948,9 +1948,9 @@ namespace Game
 
             float x = (SDL_JoystickGetAxis(joystick, 3)) / (float)SHRT_MAX;
             float y = -(SDL_JoystickGetAxis(joystick, 4)) / (float)SHRT_MAX;
-            if (length(vec2(x, y)) < 0.01f)
+            if (length(float2(x, y)) < 0.01f)
             {
-                aim = vec2();
+                aim = float2();
             }
             else
             {
@@ -1961,7 +1961,7 @@ namespace Game
                 float aim_angle = atan2f(y, x);
 
                 cur_angle = step(cur_angle, aim_angle, 0.8f);
-                aim = vec2(cosf(cur_angle), sinf(cur_angle));
+                aim = float2(cosf(cur_angle), sinf(cur_angle));
             #endif
 
                 aim.x = step(aim.x, x, 0.6f);
@@ -1969,10 +1969,10 @@ namespace Game
             }
         }
 
-        vec2 axes = vec2(axis_horizontal, axis_vertical);
+        float2 axes = float2(axis_horizontal, axis_vertical);
         if (length(axes) < 0.01f)
         {
-            axes = vec2();
+            axes = float2();
         }
         else
         {
