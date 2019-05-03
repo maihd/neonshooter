@@ -97,6 +97,7 @@ inline namespace Mojo
     {
         RGB,
         RGBA,
+        Depth24Stencil8,
     };
 
     enum struct GraphicsMode
@@ -228,6 +229,25 @@ inline namespace Mojo
         void      SetPixels(int width, int height, PixelFormat format, const void* pixels, PixelFormat targetFormat = PixelFormat::RGBA);
     };
 
+    struct RenderTarget
+    {
+        Texture      _texture;
+        VertexArray  _vertexArray;
+        VertexBuffer _vertexBuffer;
+
+        unsigned _frameBuffer  = 0;
+        unsigned _renderBuffer = 0;
+        int      width         = 0;
+        int      height        = 0;
+
+        //static RenderTarget Create(void);
+        static RenderTarget Create(int width, int height, PixelFormat pixelFormat = PixelFormat::Depth24Stencil8);
+        static void         Destroy(RenderTarget& renderTarget);
+
+        void Clear(int flags = ClearFlag::Color);
+        void Present(const Shader& shader);
+    };
+
     namespace GL
     {
         bool Setup(const GraphicsSettings& settings = GraphicsSettings());
@@ -252,6 +272,8 @@ inline namespace Mojo
         void BindVertexArray(const VertexArray& array);
         void BindIndexBuffer(const IndexBuffer& buffer);
         void BindVertexBuffer(const VertexBuffer& buffer);
+
+        void BindRenderTarget(RenderTarget* renderTarget);
 
         void DrawArrays(DrawType type, int count, int offset = 0);
         void DrawIndices(DrawType type, DataType dataType, int count, int offset = 0);

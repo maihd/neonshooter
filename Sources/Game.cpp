@@ -1031,12 +1031,9 @@ namespace Renderer
     VertexBuffer _spriteVertexBuffer;
 
     Shader _spriteShader;
+    Shader _postProcessShader;
 
-    //GLuint  framebuf;
-    //Texture frametex;
-    //GLuint  framevao;
-    //GLuint  framevbo;
-    //GLuint  frameprog;
+    RenderTarget _renderTarget;
 
     float4x4 proj_matrix;
 
@@ -1088,6 +1085,7 @@ namespace Renderer
 
         _spriteVertexArray.SetAttribute(_spriteVertexBuffer, 0, 4, DataType::Float, false, sizeof(Vertex));
 
+        _renderTarget = RenderTarget::Create(w, h);
         //frametex = new Texture();
         //texture::apply(frametex);
         //glBindTexture(GL_TEXTURE_2D, frametex->handle);
@@ -1172,21 +1170,7 @@ namespace Renderer
                 "result = pow(result, vec3(1.0 / 2.2));"
                 "fragColor = vec4(result, 1.0);"
                 "}";
-
-            //GLuint vshader = create_shader(GL_VERTEX_SHADER, vshader_src);
-            //GLuint fshader = create_shader(GL_FRAGMENT_SHADER, fshader_src);
-            //frameprog = create_program(vshader, fshader);
-            //
-            //if (!vshader || !fshader || !frameprog)
-            //{
-            //    fprintf(stderr, "An error occured, press any key to exit...");
-            //    getchar();
-            //    exit(1);
-            //}
-            //
-            //glDeleteShader(vshader);
-            //glDeleteShader(fshader);
-            //printf("renderer::init(): Create framebuffer's _spriteShader successfully.\n");
+            _postProcessShader = Shader::Create(vshader_src, fshader_src);
         }
     }
 
@@ -1240,8 +1224,8 @@ namespace Renderer
 
     void Present()
     {
-        //glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, framebuf);
-        //glClear(GL_COLOR_BUFFER_BIT);
+        _renderTarget.Clear();
+        GL::BindRenderTarget(&_renderTarget);
 
         GL::BindShader(_spriteShader);
         GL::BindVertexArray(_spriteVertexArray);
@@ -1271,22 +1255,8 @@ namespace Renderer
             offset += cmd.drawCount;
         }
 
-        //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-        //glBindBuffer(GL_ARRAY_BUFFER, 0);
-        //glBindVertexArray(0);
-        //
-        //glUseProgram(0);
-        //glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-        //
-        //glUseProgram(frameprog);
-        //glBindVertexArray(framevao);
-        //glBindBuffer(GL_ARRAY_BUFFER, framevbo);
-        //glActiveTexture(GL_TEXTURE0);
-        //glBindTexture(GL_TEXTURE_2D, frametex->handle);
-        //glDrawArrays(GL_TRIANGLES, 0, 6);
-        //glBindTexture(GL_TEXTURE_2D, 0);
-        //glBindBuffer(GL_ARRAY_BUFFER, 0);
-        //glBindVertexArray(0);
+        GL::BindRenderTarget(NULL);
+        _renderTarget.Present(_postProcessShader);
     }
 }
 

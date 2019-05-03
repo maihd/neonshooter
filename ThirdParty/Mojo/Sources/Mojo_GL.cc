@@ -156,6 +156,9 @@ inline namespace Mojo
 
             case PixelFormat::RGBA:
                 return GL_RGBA;
+
+            case PixelFormat::Depth24Stencil8:
+                return GL_DEPTH24_STENCIL8;
             }
 
             return 0;
@@ -657,6 +660,95 @@ inline namespace Mojo
         HandleError();
     }
 
+    RenderTarget RenderTarget::Create(int width, int height, PixelFormat pixelFormat)
+    {
+        RenderTarget renderTarget;
+
+        renderTarget._texture = Texture::Create();
+        glBindTexture(GL_TEXTURE_2D, renderTarget._texture._handle);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+        glGenFramebuffersEXT(1, &renderTarget._frameBuffer);
+        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, renderTarget._frameBuffer);
+        glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, renderTarget._texture._handle, 0);
+
+        GLenum status;
+        status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+        switch (status)
+        {
+        case GL_FRAMEBUFFER_COMPLETE_EXT:
+            //printf("renderer::init(): Success create framebuffer.\n");
+            break;
+        
+        default:
+            //fprintf(stderr, "Failed to create framebuffer.\n");
+            //fprintf(stderr, "An error occured, press any key to exit...");
+            //getchar();
+            //exit(1);
+            break;
+        }
+        
+        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+
+        //glGenVertexArrays(1, &framevao);
+        //glGenBuffers(1, &framevbo);
+        //
+        float2 vertices[] =
+        {
+            // First triangle
+            float2(-1.0f, -1.0f), float2(0.0f, 0.0f),
+            float2(-1.0f,  1.0f), float2(0.0f, 1.0f),
+            float2( 1.0f,  1.0f), float2(1.0f, 1.0f),
+        
+            // Second triangle
+            float2( 1.0f,  1.0f), float2(1.0f, 1.0f),
+            float2( 1.0f, -1.0f), float2(1.0f, 0.0f),
+            float2(-1.0f, -1.0f), float2(0.0f, 0.0f),
+        };
+
+        renderTarget._vertexArray = VertexArray::Create();
+        renderTarget._vertexBuffer = VertexBuffer::Create();
+
+        renderTarget._vertexBuffer.SetData(vertices, sizeof(vertices), BufferUsage::StaticDraw);
+        renderTarget._vertexArray.SetAttribute(renderTarget._vertexBuffer, 0, 4, DataType::Float, false, 4 * sizeof(float));
+
+        return renderTarget;
+    }
+
+    void RenderTarget::Destroy(RenderTarget& renderTarget)
+    {
+
+    }
+
+    void RenderTarget::Clear(int flags)
+    {
+        GLint bindingFramebuffer;
+        glGetIntegerv(GL_FRAMEBUFFER_BINDING_EXT, &bindingFramebuffer);
+        if ((GLuint)bindingFramebuffer == _frameBuffer)
+        {
+            GL::ClearBuffer(flags);
+        }
+        else
+        {
+            glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, _frameBuffer);
+            GL::ClearBuffer(flags);
+            glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, (GLuint)bindingFramebuffer);
+        }
+    }
+
+    void RenderTarget::Present(const Shader& shader)
+    {
+        GLint bindingFramebuffer;
+        glGetIntegerv(GL_FRAMEBUFFER_BINDING_EXT, &bindingFramebuffer);
+        if ((GLuint)bindingFramebuffer == _frameBuffer)
+        {
+            return;
+        }
+
+        GL::DrawArrays(DrawType::Triangles, shader, _vertexArray, _texture, 6, 0);
+    }
+
     namespace GL
     {
         void Enable(GraphicsMode mode)
@@ -765,6 +857,11 @@ inline namespace Mojo
         void BindVertexBuffer(const VertexBuffer& buffer)
         {
             glBindBuffer(GL_ARRAY_BUFFER, buffer._handle);
+        }
+
+        void BindRenderTarget(RenderTarget* renderTarget)
+        {
+            glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, renderTarget ? renderTarget->_frameBuffer : 0);
         }
 
         void DrawArrays(DrawType type, int count, int offset)
