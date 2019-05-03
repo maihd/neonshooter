@@ -188,7 +188,7 @@ inline namespace Mojo
             // Donot handle event from other window
             if (hwnd != _mainWindow)
             {
-                return DefWindowProcA(hwnd, msg, wparam, lparam);;
+                return ::DefWindowProcA(hwnd, msg, wparam, lparam);;
             }
 
             switch (msg)
@@ -262,7 +262,7 @@ inline namespace Mojo
                 return 0;
             }
 
-            return DefWindowProcA(hwnd, msg, wparam, lparam);
+            return ::DefWindowProcA(hwnd, msg, wparam, lparam);
         }
 
         static bool RegisterWindowClass(void)
@@ -327,12 +327,12 @@ inline namespace Mojo
                 0,
                 0, 0, 0
             };
-            if ((format = ChoosePixelFormat(hdc, &pfd)) == 0)
+            if ((format = ::ChoosePixelFormat(hdc, &pfd)) == 0)
             {
                 return false;
             }
 
-            if (!SetPixelFormat(hdc, format, &pfd))
+            if (!::SetPixelFormat(hdc, format, &pfd))
             {
                 return false;
             }
@@ -351,7 +351,7 @@ inline namespace Mojo
                 return false;
             }
 
-            ::wglDeleteContext(context);
+            wglDeleteContext(context);
             ::DestroyWindow(hwnd);
 
             return (init = true);
@@ -376,7 +376,7 @@ inline namespace Mojo
                 WINDOW_CLASS, title,
                 WS_VISIBLE | WS_OVERLAPPEDWINDOW,
                 -1, -1, width, height,
-                nullptr, nullptr, GetModuleHandleA(nullptr), nullptr);
+                nullptr, nullptr, ::GetModuleHandleA(nullptr), nullptr);
             if (!hwnd)
             {
                 return false;
@@ -518,7 +518,7 @@ inline namespace Mojo
                 return false;
             }
 
-            // Modern api require differences extension to create context
+            // Modern api require differences extension to create _context
             if (!wglewIsSupported("WGL_ARB_create_context"))
             {
                 return false;
@@ -572,7 +572,7 @@ inline namespace Mojo
             };
 
             HGLRC context = wglCreateContextAttribsARB(hdc, 0, contextAttribs);
-            if (!::wglMakeCurrent(hdc, context))
+            if (!wglMakeCurrent(hdc, context))
             {
                 return false;
             }
@@ -606,7 +606,7 @@ inline namespace Mojo
             clearBits |= (flags & ClearFlag::Color)   ? GL_COLOR_BUFFER_BIT   : 0;
             clearBits |= (flags & ClearFlag::Depth)   ? GL_DEPTH_BUFFER_BIT   : 0;
             clearBits |= (flags & ClearFlag::Stencil) ? GL_STENCIL_BUFFER_BIT : 0;
-            ::glClear(clearBits);
+            glClear(clearBits);
         }
     }
 }

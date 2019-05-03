@@ -44,13 +44,13 @@ inline namespace Mojo
     {
         void* _handle = 0;
 
-        // Open file context at given path
+        // Open file _context at given path
         bool Open(const char* path, int flags);
 
-        // Open file context at given path
+        // Open file _context at given path
         bool Open(const char* path, const char* flags);
 
-        // Close file context
+        // Close file _context
         void Close(void);
 
         // Set the position of file pointer
@@ -62,10 +62,10 @@ inline namespace Mojo
         // Get size of file pointer
         int  Size(void);
 
-        // Read content of file with context
+        // Read content of file with _context
         int  Read(void* buffer, int length);
 
-        // Read content of file with context
+        // Read content of file with _context
         int  Write(const void* buffer, int length);
 
         // Read content of file at given path, with async progress

@@ -6,6 +6,7 @@
 #include <string.h>
 #include <assert.h>
 
+#include <Mojo/AL.h>
 #include <Mojo/GL.h>
 #include <Mojo/Math.h>
 #include <Mojo/Input.h>
@@ -189,10 +190,14 @@ namespace Color
     }
 }
 
-
 namespace Game
 {
     static float totalTime;
+}
+
+namespace Audio
+{
+    void Init();
 }
 
 namespace ParticleSystem
@@ -1282,7 +1287,7 @@ namespace Game
         Renderer::Init();
 
         // Initialize audio
-        //audio::init();
+        Audio::Init();
 
         //SDL_InitSubSystem(SDL_INIT_JOYSTICK);
         //if (SDL_NumJoysticks() > 0)
@@ -1426,53 +1431,25 @@ namespace Game
     }
 }
 
-#if 0
-
-
-
-
-namespace audio
+namespace Audio
 {
-    struct audio_t
+    struct AudioDefine
     {
-        ALuint source;
-        ALuint buffer;
+        AudioSource source;
+        AudioBuffer buffer;
     };
 
-    ALCdevice*  device;
-    ALCcontext* context;
+    HashTable<AudioDefine> _audios;
 
-    table_t<const char*, audio_t> audios(membuf_heap());
-
-    void init()
+    void Init()
     {
-        device = alcOpenDevice(NULL);
-        if (!device)
+        if (!AL::Setup())
         {
-            fprintf(stderr, "audio::init(): Cannot open audio device '%s'\n", alcGetString(NULL, alcGetError(NULL)));
-            return;
+            exit(1);
         }
-
-        fprintf(stderr, "audio::init(): %s\n", alcGetString(device, ALC_DEVICE_SPECIFIER));
-
-        context = alcCreateContext(device, NULL);
-        if (!context)
-        {
-            fprintf(stderr, "audio::init(): Cannot create audio context '%s'", alcGetString(device, alcGetError(device)));
-            return;
-        }
-
-        alcMakeContextCurrent(context);
-        printf("Audio version: %s\n", alGetString(AL_VERSION));
-        printf("Audio renderer: %s\n", alGetString(AL_RENDERER));
-
-        alListener3f(AL_POSITION, 0, 0, 0);
-        alListener3f(AL_VELOCITY, 0, 0, 0);
-
-        ALfloat listenerOri[] = { 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f };
-        alListenerfv(AL_ORIENTATION, listenerOri);
     }
 
+#if 0
     static void* LoadWAV(const char* path, ALenum* format, int* size, int* freq)
     {
     #pragma push(1)
@@ -1566,8 +1543,8 @@ namespace audio
         SDL_AudioSpec spec;
         if (SDL_LoadWAV(path, &spec, &wav, &len))
         {
-            // Lock audio context
-            alcSuspendContext(context);
+            // Lock audio _context
+            alcSuspendContext(_context);
 
             alGenSources(1, &audio.source);
             error = alGetError();
@@ -1681,8 +1658,8 @@ namespace audio
                 return false;
             }
 
-            // Unlock audio context
-            alcProcessContext(context);
+            // Unlock audio _context
+            alcProcessContext(_context);
 
             if (out_audio)
             {
@@ -1797,177 +1774,5 @@ namespace audio
             stop(spawn_audio_paths[i]);
         }
     }
-}
-
-namespace Game
-{
-    SDL_Window* window;
-
-    float2 aim;
-    bool fire;
-
-	float axis_vertical   = 0.0f;
-	float axis_horizontal = 0.0f;
-
-	void init(SDL_Window* window)
-	{
-        // System
-        srand(time(NULL));
-
-        // Initialize screen
-        Game::window = window;
-        SDL_GetWindowSize(window, &screen_width, &screen_height);
-
-        // Initialize World
-        World::init(window);
-
-        // Initialize Render engine
-		renderer::init(window);
-
-        // Initialize audio
-        audio::init();
-
-        SDL_InitSubSystem(SDL_INIT_JOYSTICK);
-        if (SDL_NumJoysticks() > 0)
-        {
-            SDL_Joystick* joystick = SDL_JoystickOpen(0);
-            
-            if (joystick)
-            {
-                printf("Opened Joystick 0\n");
-                printf("Name: %s\n", SDL_JoystickNameForIndex(0));
-                printf("Number of Axes: %d\n", SDL_JoystickNumAxes(joystick));
-                printf("Number of Buttons: %d\n", SDL_JoystickNumButtons(joystick));
-                printf("Number of Balls: %d\n", SDL_JoystickNumBalls(joystick));
-            }
-            else
-            {
-                printf("Couldn't open Joystick 0\n");
-            }
-
-        }
-	}
-
-	void input()
-	{
-        const Uint8* keys = SDL_GetKeyboardState(NULL);
-
-        if (keys[SDL_SCANCODE_W])
-        {
-            axis_vertical = step(axis_vertical, 1.0f, 0.1f);
-        }
-        else
-        {
-            axis_vertical = step(axis_vertical, 0.0f, 0.1f);
-        }
-
-        if (keys[SDL_SCANCODE_S])
-        {
-            axis_vertical = step(axis_vertical, -1.0f, 0.1f);
-        }
-        else
-        {
-            axis_vertical = step(axis_vertical, 0.0f, 0.1f);
-        }
-
-        if (keys[SDL_SCANCODE_A])
-        {
-            axis_horizontal = step(axis_horizontal, -1.0f, 0.1f);
-        }
-        else
-        {
-            axis_horizontal = step(axis_horizontal, 0.0f, 0.1f);
-        }
-
-        if (keys[SDL_SCANCODE_D])
-        {
-            axis_horizontal = step(axis_horizontal, 1.0f, 0.1f);
-        }
-        else
-        {
-            axis_horizontal = step(axis_horizontal, 0.0f, 0.1f);
-        }
-
-        int mx;
-        int my;
-        Uint32 mouse = SDL_GetMouseState(&mx, &my);
-        fire = mouse & SDL_BUTTON(SDL_BUTTON_LEFT);
-        {
-            float2 clip = float2(2.0f * mx / (float)screen_width - 1.0f, 1.0f - 2.0f * my / (float)screen_height);
-
-            float2 mpos = float2(clip.x * screen_width, clip.y * screen_height);
-            
-            float2 taim = normalize(mpos - World::player->position);
-
-        #if 0
-            float cur_angle = vec2_angle(aim);
-            float aim_angle = vec2_angle(taim);
-
-            cur_angle = step(cur_angle, aim_angle, 0.8f);
-            aim = float2(cosf(cur_angle), sinf(cur_angle));
-        #endif
-
-            aim = step(aim, taim, 0.8f);
-        }
-
-        SDL_Joystick* joystick = SDL_JoystickOpen(0);
-        if (joystick)
-        {
-            axis_vertical = step(axis_vertical, -(SDL_JoystickGetAxis(joystick, 1)) / (float)SHRT_MAX, 0.1f);
-            axis_horizontal = step(axis_horizontal, (SDL_JoystickGetAxis(joystick, 0)) / (float)SHRT_MAX, 0.1f);
-
-            float x = (SDL_JoystickGetAxis(joystick, 3)) / (float)SHRT_MAX;
-            float y = -(SDL_JoystickGetAxis(joystick, 4)) / (float)SHRT_MAX;
-            if (length(float2(x, y)) < 0.01f)
-            {
-                aim = float2();
-            }
-            else
-            {
-                fire = true;
-            
-            #if 0
-                float cur_angle = vec2_angle(aim);
-                float aim_angle = atan2f(y, x);
-
-                cur_angle = step(cur_angle, aim_angle, 0.8f);
-                aim = float2(cosf(cur_angle), sinf(cur_angle));
-            #endif
-
-                aim.x = step(aim.x, x, 0.6f);
-                aim.y = step(aim.y, y, 0.6f);
-            }
-        }
-
-        float2 axes = float2(axis_horizontal, axis_vertical);
-        if (length(axes) < 0.01f)
-        {
-            axes = float2();
-        }
-        else
-        {
-            axes = clamplength(axes, 0, 1.0f);;
-        }
-        axis_vertical   = axes.y;
-        axis_horizontal = axes.x;
-	}
-
-    void Update(float dt)
-    {
-        totalTime += dt;
-
-        World::Update(dt, axis_vertical, axis_horizontal, aim, fire);
-        ParticleSystem::Update(dt);
-    }
-
-    void Render(void)
-    {
-		renderer::Prepair();
-
-        ParticleSystem::Render();
-        World::Render();
-
-		renderer::Present();
-    }
-}
 #endif
+}

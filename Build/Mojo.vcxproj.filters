@@ -21,6 +21,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\AL.h">
+      <Filter>Include\Mojo</Filter>
+    </ClInclude>
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Allocator.h">
       <Filter>Include\Mojo</Filter>
     </ClInclude>
@@ -34,9 +37,6 @@
       <Filter>Include\Mojo</Filter>
     </ClInclude>
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Atomic.h">
-      <Filter>Include\Mojo</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Audio.h">
       <Filter>Include\Mojo</Filter>
     </ClInclude>
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Coroutine.h">
@@ -89,6 +89,9 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_AL.cc">
+      <Filter>Sources</Filter>
+    </ClCompile>
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Allocator.cc">
       <Filter>Sources</Filter>
     </ClCompile>
@@ -96,9 +99,6 @@
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Atomic.cc">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Audio.cc">
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Coroutine.cc">

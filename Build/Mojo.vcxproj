@@ -94,7 +94,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>GLEW_STATIC;AL_LIBTYPE_STATIC;_HAS_EXCEPTIONS=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\ThirdParty\Mojo\ThirdParty\stb;..\ThirdParty\Mojo\ThirdParty\glew-2.1.0\include;..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\include;..\ThirdParty\Mojo\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\ThirdParty\Mojo\ThirdParty\stb;..\ThirdParty\Mojo\ThirdParty\glew-2.1.0\include;..\ThirdParty\Mojo\ThirdParty\OpenAL-1.1\include;..\ThirdParty\Mojo\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>false</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
@@ -102,13 +102,17 @@
     <Link>
       <SubSystem>Windows</SubSystem>
     </Link>
+    <Lib>
+      <AdditionalDependencies>OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\ThirdParty\Mojo\ThirdParty\OpenAL-1.1\libs\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>GLEW_STATIC;AL_LIBTYPE_STATIC;_HAS_EXCEPTIONS=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\ThirdParty\Mojo\ThirdParty\stb;..\ThirdParty\Mojo\ThirdParty\glew-2.1.0\include;..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\include;..\ThirdParty\Mojo\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\ThirdParty\Mojo\ThirdParty\stb;..\ThirdParty\Mojo\ThirdParty\glew-2.1.0\include;..\ThirdParty\Mojo\ThirdParty\OpenAL-1.1\include;..\ThirdParty\Mojo\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>false</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
@@ -116,13 +120,17 @@
     <Link>
       <SubSystem>Windows</SubSystem>
     </Link>
+    <Lib>
+      <AdditionalDependencies>OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\ThirdParty\Mojo\ThirdParty\OpenAL-1.1\libs\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>GLEW_STATIC;AL_LIBTYPE_STATIC;_HAS_EXCEPTIONS=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\ThirdParty\Mojo\ThirdParty\stb;..\ThirdParty\Mojo\ThirdParty\glew-2.1.0\include;..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\include;..\ThirdParty\Mojo\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\ThirdParty\Mojo\ThirdParty\stb;..\ThirdParty\Mojo\ThirdParty\glew-2.1.0\include;..\ThirdParty\Mojo\ThirdParty\OpenAL-1.1\include;..\ThirdParty\Mojo\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>false</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
@@ -130,13 +138,17 @@
     <Link>
       <SubSystem>Windows</SubSystem>
     </Link>
+    <Lib>
+      <AdditionalDependencies>OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\ThirdParty\Mojo\ThirdParty\OpenAL-1.1\libs\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>GLEW_STATIC;AL_LIBTYPE_STATIC;_HAS_EXCEPTIONS=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\ThirdParty\Mojo\ThirdParty\stb;..\ThirdParty\Mojo\ThirdParty\glew-2.1.0\include;..\ThirdParty\Mojo\ThirdParty\openal-soft-1.19.1\include;..\ThirdParty\Mojo\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\ThirdParty\Mojo\ThirdParty\stb;..\ThirdParty\Mojo\ThirdParty\glew-2.1.0\include;..\ThirdParty\Mojo\ThirdParty\OpenAL-1.1\include;..\ThirdParty\Mojo\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>false</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
@@ -144,14 +156,18 @@
     <Link>
       <SubSystem>Windows</SubSystem>
     </Link>
+    <Lib>
+      <AdditionalDependencies>OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\ThirdParty\Mojo\ThirdParty\OpenAL-1.1\libs\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\AL.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Allocator.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Array.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Assets.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\AsyncOperation.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Atomic.h" />
-    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Audio.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Coroutine.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Delegate.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\DrawCanvas.h" />
@@ -170,10 +186,10 @@
     <ClInclude Include="..\ThirdParty\Mojo\Sources\Mojo_Input.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_AL.cc" />
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Allocator.cc" />
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Assets.cc" />
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Atomic.cc" />
-    <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Audio.cc" />
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Coroutine.cc" />
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_FileSystem.cc" />
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_GL.cc" />
