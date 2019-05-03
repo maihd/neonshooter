@@ -585,6 +585,8 @@ inline namespace Mojo
             GL::Enable(GraphicsMode::Blend);
             GL::SetBlendOp(BlendOp::Add);
             GL::SetBlendFunc(BlendFactor::SrcAlpha, BlendFactor::InvertSrcAlpha);
+
+            return true;
         }
 
         void Shutdown(void)
