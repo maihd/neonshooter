@@ -24,18 +24,17 @@ function thirdpartydefines()
 end
 
 function thirdpartylibdirs()
-    libdirs {
-        path.join(THIRDPARTY_DIR, "OpenAL-1.1/libs/Win32"),
-    }
-    filter { "x32" }
+    filter { "platforms:x32" }
     do
-        
+        libdirs {
+            path.join(THIRDPARTY_DIR, "OpenAL-1.1/libs/Win32"),
+        }
     end
 
-    filter { "x64" }
+    filter { "platforms:x64" }
     do
-        linkoptions {
-            "/LIBPATH:" .. path.join(THIRDPARTY_DIR, "OpenAL-1.1/libs/Win64"),
+        libdirs {
+            path.join(THIRDPARTY_DIR, "OpenAL-1.1/libs/Win64"),
         }
     end
 
