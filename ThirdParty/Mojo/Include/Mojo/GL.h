@@ -79,14 +79,6 @@ inline namespace Mojo
         Double,
     };
 
-    enum struct TextureType
-    {
-        None,
-        Texture1D,
-        Texture2D,
-        TextureCube,  
-    };
-
     enum struct TextureFilter
     {
         Linear,
@@ -213,20 +205,25 @@ inline namespace Mojo
 
     struct Texture
     {
-        TextureType _type   = TextureType::None;
-        unsigned    _handle = 0;
+        unsigned _handle = 0;
 
-        int         width  = 0;
-        int         height = 0;
+        int      width  = 0;
+        int      height = 0;
         
-        static Texture   Create(TextureType type);
+        static Texture   Create(void);
         static void      Destroy(Texture& texture);
     
         void      SetWrap(TextureWrap wrap);
         void      SetWrap(TextureWrap wrapU, TextureWrap wrapV);
 
+        void      SetWrapU(TextureWrap wrap);
+        void      SetWrapV(TextureWrap wrap);
+
         void      SetFilter(TextureFilter filter);
         void      SetFilter(TextureFilter minFilter, TextureFilter magFilter);
+
+        void      SetMinFilter(TextureFilter minFilter);
+        void      SetMagFilter(TextureFilter magFilter);
 
         void      SetPixels(int width, int height, PixelFormat format, const void* pixels, PixelFormat targetFormat = PixelFormat::RGBA);
     };

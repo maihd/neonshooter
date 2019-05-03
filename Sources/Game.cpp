@@ -156,7 +156,7 @@ Texture LoadTexture(const char* path)
     void* pixels = Assets::LoadImage(path, &w, &h, &n);
     if (pixels)
     {
-        texture = Texture::Create(TextureType::Texture2D);
+        texture = Texture::Create();
 
         texture.SetWrap(TextureWrap::Repeat);
         texture.SetFilter(TextureFilter::Linear);
