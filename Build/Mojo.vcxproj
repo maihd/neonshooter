@@ -23,7 +23,6 @@
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>Mojo</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -171,6 +170,7 @@
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Atomic.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Coroutine.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Delegate.h" />
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Dialog.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\DrawCanvas.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\FileSystem.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\GL.h" />
@@ -185,6 +185,7 @@
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Thread.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Window.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Sources\Mojo_Input.h" />
+    <ClInclude Include="..\ThirdParty\Mojo\Sources\Mojo_Window.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_AL.cc" />
@@ -192,6 +193,7 @@
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Assets.cc" />
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Atomic.cc" />
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Coroutine.cc" />
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Dialog.cc" />
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_FileSystem.cc" />
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_GL.cc" />
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Input.cc" />

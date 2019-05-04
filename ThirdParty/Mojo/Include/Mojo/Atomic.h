@@ -52,9 +52,9 @@ inline namespace Mojo
     AtomicI64& operator--(AtomicI64& atomic);
     AtomicI64  operator++(AtomicI64& atomic, int);
     AtomicI64  operator--(AtomicI64& atomic, int);
-    AtomicI64& operator+=(AtomicI64& atomic, int value);
-    AtomicI64& operator-=(AtomicI64& atomic, int value);
-    AtomicI64& operator^=(AtomicI64& atomic, int value);
-    AtomicI64& operator|=(AtomicI64& atomic, int value);
-    AtomicI64& operator&=(AtomicI64& atomic, int value);
+    AtomicI64& operator+=(AtomicI64& atomic, long long value);
+    AtomicI64& operator-=(AtomicI64& atomic, long long value);
+    AtomicI64& operator^=(AtomicI64& atomic, long long value);
+    AtomicI64& operator|=(AtomicI64& atomic, long long value);
+    AtomicI64& operator&=(AtomicI64& atomic, long long value);
 }

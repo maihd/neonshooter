@@ -45,6 +45,9 @@
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Delegate.h">
       <Filter>Include\Mojo</Filter>
     </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Dialog.h">
+      <Filter>Include\Mojo</Filter>
+    </ClInclude>
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\DrawCanvas.h">
       <Filter>Include\Mojo</Filter>
     </ClInclude>
@@ -87,6 +90,9 @@
     <ClInclude Include="..\ThirdParty\Mojo\Sources\Mojo_Input.h">
       <Filter>Sources</Filter>
     </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Sources\Mojo_Window.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_AL.cc">
@@ -102,6 +108,9 @@
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Coroutine.cc">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Dialog.cc">
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_FileSystem.cc">

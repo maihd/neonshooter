@@ -4,8 +4,8 @@
 
 inline namespace Mojo
 {
-    struct DrawCanvas
+    struct SpriteBatch
     {
-
+        
     };
 }

@@ -1,18 +1,11 @@
 #include <Mojo/GL.h>
 #include <Mojo/Window.h>
 
-#define VC_EXTRALEAN
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
-#include <windowsx.h>
-
 #include <GL/glew.h>
 #include <GL/wglew.h>
 
 #include "./Mojo_Input.h"
-
-#pragma comment(lib, "GDI32.lib")
-#pragma comment(lib, "OpenGL32.lib")
+#include "./Mojo_Window.h"
 
 // Allow compilation with old Windows SDK. MinGW doesn't have default _WIN32_WINNT/WINVER versions.
 #ifndef WM_MOUSEHWHEEL
@@ -24,16 +17,8 @@
 
 inline namespace Mojo
 {
-    inline namespace Window_Variables
+    namespace
     {
-        static HWND  _mainWindow;
-        static HDC   _mainDevice;
-        static HGLRC _mainContext;
-
-        static int   _windowFlags;
-        static int   _windowedWidth;
-        static int   _windowedHeight;
-
         constexpr const char* WINDOW_CLASS = "__mojo_window__";
         constexpr const char* DUMMY_WINDOW = "__dummy_window__";
 
@@ -190,7 +175,7 @@ inline namespace Mojo
         static LRESULT CALLBACK Window_Proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
         {
             // Donot handle event from other window
-            if (hwnd != _mainWindow)
+            if (!Window::_mainWindow || hwnd != Window::_mainWindow)
             {
                 return ::DefWindowProcA(hwnd, msg, wparam, lparam);;
             }
@@ -363,6 +348,14 @@ inline namespace Mojo
 
     namespace Window
     {
+        HWND  _mainWindow;
+        HDC   _mainDevice;
+        HGLRC _mainContext;
+
+        int   _windowFlags;
+        int   _windowedWidth;
+        int   _windowedHeight;
+
         bool Setup(const char* title, int width, int height, int flags)
         {
             if (!RegisterWindowClass())
@@ -706,7 +699,7 @@ inline namespace Mojo
         bool Setup(const GraphicsSettings& settings)
         {
             // Make sure window is initialized
-            HDC hdc = _mainDevice;
+            HDC hdc = Window::_mainDevice;
             if (!hdc)
             {
                 return false;
@@ -753,7 +746,7 @@ inline namespace Mojo
                 return false;
             }
 
-            if (!SetPixelFormat(hdc, format, NULL))
+            if (!::SetPixelFormat(hdc, format, NULL))
             {
                 return false;
             }
@@ -792,7 +785,7 @@ inline namespace Mojo
                 wglDeleteContext(context);
                 return false;
             }
-            _mainContext = context;
+            Window::_mainContext = context;
 
             // By default, vsync is enable
             Window::SetVSyncEnabled(true);
@@ -812,13 +805,13 @@ inline namespace Mojo
 
         void Shutdown(void)
         {
-            wglDeleteContext(_mainContext);
-            _mainContext = NULL;
+            wglDeleteContext(Window::_mainContext);
+            Window::_mainContext = NULL;
         }
 
         void SwapBuffers(void)
         {
-            ::SwapBuffers(_mainDevice);
+            ::SwapBuffers(Window::_mainDevice);
         }
 
         void ClearBuffer(int flags)
