@@ -232,8 +232,6 @@ inline namespace Mojo
     struct RenderTarget
     {
         Texture      _texture;
-        VertexArray  _vertexArray;
-        VertexBuffer _vertexBuffer;
 
         unsigned _frameBuffer  = 0;
         unsigned _renderBuffer = 0;
@@ -243,9 +241,6 @@ inline namespace Mojo
         //static RenderTarget Create(void);
         static RenderTarget Create(int width, int height, PixelFormat pixelFormat = PixelFormat::Depth24Stencil8);
         static void         Destroy(RenderTarget& renderTarget);
-
-        void Clear(int flags = ClearFlag::Color);
-        void Present(const Shader& shader);
     };
 
     namespace GL
@@ -274,6 +269,7 @@ inline namespace Mojo
         void BindVertexBuffer(const VertexBuffer& buffer);
 
         void BindRenderTarget(RenderTarget* renderTarget);
+        void BlitRenderTarget(RenderTarget* src, RenderTarget* dst, const Shader& shader);
 
         void DrawArrays(DrawType type, int count, int offset = 0);
         void DrawIndices(DrawType type, DataType dataType, int count, int offset = 0);

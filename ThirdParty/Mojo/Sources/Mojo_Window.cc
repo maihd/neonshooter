@@ -30,6 +30,10 @@ inline namespace Mojo
         static HDC   _mainDevice;
         static HGLRC _mainContext;
 
+        static int   _windowFlags;
+        static int   _windowedWidth;
+        static int   _windowedHeight;
+
         constexpr const char* WINDOW_CLASS = "__mojo_window__";
         constexpr const char* DUMMY_WINDOW = "__dummy_window__";
 
@@ -360,7 +364,7 @@ inline namespace Mojo
 
     namespace Window
     {
-        bool Setup(const char* title, int width, int height)
+        bool Setup(const char* title, int width, int height, int flags)
         {
             if (!RegisterWindowClass())
             {
@@ -372,9 +376,20 @@ inline namespace Mojo
                 return false;
             }
             
+            DWORD winFlags = WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU;
+            if (flags & WindowFlag::Visible)
+            {
+                winFlags |= WS_VISIBLE;
+            }
+            if (flags & WindowFlag::Resizable)
+            {
+                winFlags |= WS_OVERLAPPEDWINDOW;
+            }
+
             HWND hwnd = CreateWindowA(
-                WINDOW_CLASS, title,
-                WS_VISIBLE | WS_OVERLAPPEDWINDOW,
+                WINDOW_CLASS, 
+                title,
+                winFlags,
                 -1, -1, width, height,
                 nullptr, nullptr, ::GetModuleHandleA(nullptr), nullptr);
             if (!hwnd)
@@ -384,6 +399,19 @@ inline namespace Mojo
 
             _mainWindow  = hwnd;
             _mainDevice  = ::GetDC(hwnd);
+
+            switch (flags & (WindowFlag::Borderless | WindowFlag::Fullscreen))
+            {
+            case WindowFlag::Borderless:
+            case WindowFlag::Borderless | WindowFlag::Fullscreen:
+                SetBorderless();
+                break;
+
+            case WindowFlag::Fullscreen:
+                SetFullscreen();
+                break;
+            }
+
             return true;
         }
 
@@ -465,10 +493,177 @@ inline namespace Mojo
             ::GetClientRect((HWND)_mainWindow, &rect);
             return (float)(rect.bottom - rect.top);
         }
+
+        void SetBorderless(void)
+        {
+            if (_mainWindow)
+            {
+                LONG_PTR styles = WS_VISIBLE;
+                int      width = ::GetSystemMetrics(SM_CXSCREEN);
+                int      height = ::GetSystemMetrics(SM_CYSCREEN);
+
+                SetWindowLongPtr(_mainWindow, GWL_STYLE, styles);
+                SetWindowPos(_mainWindow, HWND_TOP, 0, 0, width, height, 0);
+            }
+        }
+
+        void SetFullscreen(void)
+        {
+            if (_mainWindow)
+            {
+                LONG_PTR styles = WS_POPUP | WS_VISIBLE;
+                int      width = ::GetSystemMetrics(SM_CXSCREEN);
+                int      height = ::GetSystemMetrics(SM_CYSCREEN);
+
+                ::SetWindowLongPtr(_mainWindow, GWL_STYLE, styles);
+                ::SetWindowLongPtr(_mainWindow, GWL_EXSTYLE, WS_EX_APPWINDOW | WS_EX_TOPMOST);
+                ::SetWindowPos(_mainWindow, HWND_TOPMOST, 0, 0, width, height, 0);
+            }
+        }
+
+        bool IsBorderless(void)
+        {
+            return _windowFlags & WindowFlag::Borderless;
+        }
+
+        bool IsFullscreen(void)
+        {
+            return _windowFlags & WindowFlag::Fullscreen;
+        }
+
+        bool IsWindowed(void)
+        {
+            return !IsBorderless() || !IsFullscreen();
+        }
+
+        void SetWindowed(void)
+        {
+            if (_mainWindow)
+            {
+                RECT clientRect;
+                RECT windowRect;
+                ::GetClientRect(_mainWindow, &clientRect);
+                ::GetWindowRect(_mainWindow, &windowRect);
+
+                int moreWidth = (int)((windowRect.right - windowRect.left) - (clientRect.right - clientRect.left));
+                int moreHeight = (int)((windowRect.bottom - windowRect.top) - (clientRect.bottom - clientRect.top));
+
+                int width  = _windowedWidth + moreWidth;
+                int height = _windowedHeight + moreHeight;
+
+                int x, y;
+                DWORD flags = 0;
+                if (!IsWindowed())
+                {
+                    x = (::GetSystemMetrics(SM_CXSCREEN) - width) / 2;
+                    y = (::GetSystemMetrics(SM_CYSCREEN) - height) / 2;
+                    flags = SWP_NOZORDER;
+                }
+                else
+                {
+                    x = 0;
+                    y = 0;
+                    flags = SWP_NOMOVE | SWP_NOZORDER;
+                }
+
+                LONG_PTR styles = WS_VISIBLE | WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME;
+                ::SetWindowLongPtr(_mainWindow, GWL_STYLE, styles);
+                ::SetWindowPos(_mainWindow, HWND_TOP, x, y, width, height, flags);
+            }
+        }
+
+        bool IsVisible(void)
+        {
+            return ::IsWindowVisible(_mainWindow);
+        }
+
+        void SetVisible(bool visible)
+        {
+            if (_mainWindow)
+            {
+                ::ShowWindow(_mainWindow, visible);
+            }
+        }
+
+        void SetCenter(void)
+        {
+            if (_mainWindow && IsWindowed())
+            {
+                int width = _windowedWidth + ::GetSystemMetrics(SM_CXBORDER);
+                int height = _windowedHeight + ::GetSystemMetrics(SM_CYBORDER);
+
+                int x = (::GetSystemMetrics(SM_CXSCREEN) - width) / 2;
+                int y = (::GetSystemMetrics(SM_CYSCREEN) - height) / 2;
+
+                ::SetWindowPos(_mainWindow, 0, x, y, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+            }
+        }
+
+        void EnableVSync(void)
+        {
+            SetVSyncEnabled(true);
+        }
+
+        void DisableVSync(void)
+        {
+            SetVSyncEnabled(false);
+        }
+
+        bool IsVSyncEnabled(void)
+        {
+            if (wglGetSwapIntervalEXT)
+            {
+                return wglGetSwapIntervalEXT() != 0;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        void SetVSyncEnabled(bool vsync)
+        {
+            if (wglSwapIntervalEXT)
+            {
+                wglSwapIntervalEXT((int)vsync);
+            }
+        }
+
+        bool HasInputFocus(void)
+        {
+            return (_mainWindow && ::GetActiveWindow() == _mainWindow);
+        }
+
+        bool HasMouseFocus(void)
+        {
+            if (_mainWindow && ::GetActiveWindow() == _mainWindow)
+            {
+                RECT r;
+                POINT p;
+                ::GetCursorPos(&p);
+                ::GetWindowRect(_mainWindow, &r);
+
+                if (!(p.x < r.left || p.y < r.top || p.x > r.right || p.y > r.bottom))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 
     namespace GL
     {
+        void ApplyDefaultSettings(void);
+        void CreateDefaultObjects(void);
+
         static bool IsSettingsValid(const GraphicsSettings& settings)
         {
             if (settings.redBits < 1)
@@ -567,7 +762,9 @@ inline namespace Mojo
             {
                 WGL_CONTEXT_MAJOR_VERSION_ARB, 4, // Highest current supported version
                 WGL_CONTEXT_MINOR_VERSION_ARB, 5, // Highest current supported version
-                WGL_CONTEXT_FLAGS_ARB, 0,
+                WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
+                WGL_CONTEXT_LAYER_PLANE_ARB, 0, // main plane
+                WGL_CONTEXT_FLAGS_ARB, 0, // prevent use deprecated features
                 0
             };
 
@@ -578,13 +775,15 @@ inline namespace Mojo
             }
             _mainContext = context;
 
+            // By default, vsync is enable
+            Window::SetVSyncEnabled(true);
+
             // Set viewport
             GL::Viewport(0, 0, Window::GetWidth(), Window::GetHeight());
 
-            // Default blend
-            GL::Enable(GraphicsMode::Blend);
-            GL::SetBlendOp(BlendOp::Add);
-            GL::SetBlendFunc(BlendFactor::SrcAlpha, BlendFactor::InvertSrcAlpha);
+            // Default settings
+            ApplyDefaultSettings();
+            CreateDefaultObjects();
 
             return true;
         }

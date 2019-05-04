@@ -1036,9 +1036,11 @@ namespace Renderer
     VertexBuffer _spriteVertexBuffer;
 
     Shader _spriteShader;
-    Shader _postProcessShader;
+    Shader _glowShader;
+    Shader _fxaaShader;
 
-    RenderTarget _renderTarget;
+    RenderTarget _glowRenderTarget;
+    RenderTarget _fxaaRenderTarget;
 
     float4x4 proj_matrix;
 
@@ -1090,60 +1092,8 @@ namespace Renderer
 
         _spriteVertexArray.SetAttribute(_spriteVertexBuffer, 0, 4, DataType::Float, false, sizeof(Vertex));
 
-        _renderTarget = RenderTarget::Create(w, h);
-        //frametex = new Texture();
-        //texture::apply(frametex);
-        //glBindTexture(GL_TEXTURE_2D, frametex->handle);
-        //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, w, h, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
-        //glBindTexture(GL_TEXTURE_2D, 0);
-        //glGenFramebuffersEXT(1, &framebuf);
-        //glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, framebuf);
-        //glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, frametex->handle, 0);
-
-        //GLenum status;
-        //status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
-        //switch (status)
-        //{
-        //case GL_FRAMEBUFFER_COMPLETE_EXT:
-        //    printf("renderer::init(): Success create framebuffer.\n");
-        //    break;
-        //
-        //default:
-        //    fprintf(stderr, "Failed to create framebuffer.\n");
-        //    fprintf(stderr, "An error occured, press any key to exit...");
-        //    getchar();
-        //    exit(1);
-        //    break;
-        //}
-        //
-        //glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-
-        // Create framebuffer Render object
-        {
-            //glGenVertexArrays(1, &framevao);
-            //glGenBuffers(1, &framevbo);
-            //
-            //float2 _vertices[] =
-            //{
-            //    // First triangle
-            //    float2(-1.0f, -1.0f), float2(0.0f, 0.0f),
-            //    float2(-1.0f,  1.0f), float2(0.0f, 1.0f),
-            //    float2(1.0f,  1.0f), float2(1.0f, 1.0f),
-            //
-            //    // Second triangle
-            //    float2(1.0f,  1.0f), float2(1.0f, 1.0f),
-            //    float2(1.0f, -1.0f), float2(1.0f, 0.0f),
-            //    float2(-1.0f, -1.0f), float2(0.0f, 0.0f),
-            //};
-            //
-            //glBindVertexArray(framevao);
-            //glBindBuffer(GL_ARRAY_BUFFER, framevbo);
-            //glBufferData(GL_ARRAY_BUFFER, sizeof(_vertices), _vertices, GL_STATIC_DRAW);
-            //glEnableVertexAttribArray(0);
-            //glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), NULL);
-            //glBindBuffer(GL_ARRAY_BUFFER, 0);
-            //glBindVertexArray(0);
-        }
+        _glowRenderTarget = RenderTarget::Create(w, h);
+        _fxaaRenderTarget = RenderTarget::Create(w, h);
 
         // Create post processing _spriteShader
         printf("renderer::init(): Starting create framebuffer's shader...\n");
@@ -1175,7 +1125,83 @@ namespace Renderer
                 "result = pow(result, vec3(1.0 / 2.2));"
                 "fragColor = vec4(result, 1.0);"
                 "}";
-            _postProcessShader = Shader::Create(vshader_src, fshader_src);
+            _glowShader = Shader::Create(vshader_src, fshader_src);
+        }
+
+        // FXAA shader
+        {
+            const char* vshader_src =
+                "#version 330 core\n"
+                "layout (location = 0) in vec4 vertex;"
+                "out vec2 uv;"
+                "void main() {"
+                "uv = vertex.zw;"
+                "gl_Position = vec4(vertex.xy, 0, 1.0);"
+                "}";
+
+            const char* fshader_src =
+                "#version 330 core\n"
+                "in vec2 uv;"
+                "out vec4 fragColor;"
+                "uniform vec2 frameSize;"
+                "uniform sampler2D image;"
+
+                "void main() {"
+
+                "float FXAA_SPAN_MAX = 8.0;"
+                "float FXAA_REDUCE_MUL = 1.0 / 8.0;"
+                "float FXAA_REDUCE_MIN = 1.0 / 128.0;"
+
+                "vec3 rgbNW = texture2D(image, uv + (vec2(-1.0, -1.0) / frameSize)).xyz;"
+                "vec3 rgbNE = texture2D(image, uv + (vec2(1.0, -1.0) / frameSize)).xyz;"
+                "vec3 rgbSW = texture2D(image, uv + (vec2(-1.0, 1.0) / frameSize)).xyz;"
+                "vec3 rgbSE = texture2D(image, uv + (vec2(1.0, 1.0) / frameSize)).xyz;"
+                "vec3 rgbM = texture2D(image, uv).xyz;"
+
+                "vec3 luma = vec3(0.299, 0.587, 0.114);"
+                "float lumaNW = dot(rgbNW, luma);"
+                "float lumaNE = dot(rgbNE, luma);"
+                "float lumaSW = dot(rgbSW, luma);"
+                "float lumaSE = dot(rgbSE, luma);"
+                "float lumaM = dot(rgbM, luma);"
+
+                "float lumaMin = min(lumaM, min(min(lumaNW, lumaNE), min(lumaSW, lumaSE)));"
+                "float lumaMax = max(lumaM, max(max(lumaNW, lumaNE), max(lumaSW, lumaSE)));"
+                
+                "vec2 dir;"
+                "dir.x = -((lumaNW + lumaNE) - (lumaSW + lumaSE));"
+                "dir.y = ((lumaNW + lumaSW) - (lumaNE + lumaSE));"
+                
+                "float dirReduce = max("
+                "    (lumaNW + lumaNE + lumaSW + lumaSE) * (0.25 * FXAA_REDUCE_MUL),"
+                "    FXAA_REDUCE_MIN);"
+                
+                "float rcpDirMin = 1.0 / (min(abs(dir.x), abs(dir.y)) + dirReduce);"
+                
+                "dir = min(vec2(FXAA_SPAN_MAX, FXAA_SPAN_MAX),"
+                "    max(vec2(-FXAA_SPAN_MAX, -FXAA_SPAN_MAX),"
+                "        dir * rcpDirMin)) / frameSize;"
+                
+                "vec3 rgbA = (1.0 / 2.0) * ("
+                "    texture2D(image, uv.xy + dir * (1.0 / 3.0 - 0.5)).xyz +"
+                "    texture2D(image, uv.xy + dir * (2.0 / 3.0 - 0.5)).xyz);"
+                "vec3 rgbB = rgbA * (1.0 / 2.0) + (1.0 / 4.0) * ("
+                "    texture2D(image, uv.xy + dir * (0.0 / 3.0 - 0.5)).xyz +"
+                "    texture2D(image, uv.xy + dir * (3.0 / 3.0 - 0.5)).xyz);"
+                "float lumaB = dot(rgbB, luma);"
+                
+                "if ((lumaB < lumaMin) || (lumaB > lumaMax)) {"
+                "    fragColor = vec4(rgbA, 1.0);"
+                "}"
+                "else {"
+                "    fragColor = vec4(rgbB, 1.0);"
+                "}"
+
+                // End main()
+                "}";
+
+            _fxaaShader = Shader::Create(vshader_src, fshader_src);
+            _fxaaShader.SetFloat2("frameSize", w, h);
         }
     }
 
@@ -1229,8 +1255,8 @@ namespace Renderer
 
     void Present()
     {
-        _renderTarget.Clear();
-        GL::BindRenderTarget(&_renderTarget);
+        GL::BindRenderTarget(&_fxaaRenderTarget);
+        GL::ClearBuffer(ClearFlag::Color);
 
         GL::BindShader(_spriteShader);
         GL::BindVertexArray(_spriteVertexArray);
@@ -1260,8 +1286,9 @@ namespace Renderer
             offset += cmd.drawCount;
         }
 
-        GL::BindRenderTarget(NULL);
-        _renderTarget.Present(_postProcessShader);
+        GL::BlitRenderTarget(&_fxaaRenderTarget, &_glowRenderTarget, _fxaaShader);
+        GL::BlitRenderTarget(&_glowRenderTarget, NULL, _glowShader);
+        //GL::BlitRenderTarget(&_fxaaRenderTarget, NULL, _fxaaShader);
     }
 }
 

@@ -234,6 +234,9 @@ inline namespace Mojo
 
     namespace
     {
+        VertexArray  _renderTargetVertexArray;
+        VertexBuffer _renderTargetVertexBuffer;
+
         static GLuint CreateGLShader(GLenum type, const char* src)
         {
             GLuint shader = glCreateShader(type);
@@ -694,24 +697,6 @@ inline namespace Mojo
         //glGenVertexArrays(1, &framevao);
         //glGenBuffers(1, &framevbo);
         //
-        float2 vertices[] =
-        {
-            // First triangle
-            float2(-1.0f, -1.0f), float2(0.0f, 0.0f),
-            float2(-1.0f,  1.0f), float2(0.0f, 1.0f),
-            float2( 1.0f,  1.0f), float2(1.0f, 1.0f),
-        
-            // Second triangle
-            float2( 1.0f,  1.0f), float2(1.0f, 1.0f),
-            float2( 1.0f, -1.0f), float2(1.0f, 0.0f),
-            float2(-1.0f, -1.0f), float2(0.0f, 0.0f),
-        };
-
-        renderTarget._vertexArray = VertexArray::Create();
-        renderTarget._vertexBuffer = VertexBuffer::Create();
-
-        renderTarget._vertexBuffer.SetData(vertices, sizeof(vertices), BufferUsage::StaticDraw);
-        renderTarget._vertexArray.SetAttribute(renderTarget._vertexBuffer, 0, 4, DataType::Float, false, 4 * sizeof(float));
 
         return renderTarget;
     }
@@ -721,36 +706,38 @@ inline namespace Mojo
 
     }
 
-    void RenderTarget::Clear(int flags)
-    {
-        GLint bindingFramebuffer;
-        glGetIntegerv(GL_FRAMEBUFFER_BINDING_EXT, &bindingFramebuffer);
-        if ((GLuint)bindingFramebuffer == _frameBuffer)
-        {
-            GL::ClearBuffer(flags);
-        }
-        else
-        {
-            glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, _frameBuffer);
-            GL::ClearBuffer(flags);
-            glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, (GLuint)bindingFramebuffer);
-        }
-    }
-
-    void RenderTarget::Present(const Shader& shader)
-    {
-        GLint bindingFramebuffer;
-        glGetIntegerv(GL_FRAMEBUFFER_BINDING_EXT, &bindingFramebuffer);
-        if ((GLuint)bindingFramebuffer == _frameBuffer)
-        {
-            return;
-        }
-
-        GL::DrawArrays(DrawType::Triangles, shader, _vertexArray, _texture, 6, 0);
-    }
-
     namespace GL
     {
+        void ApplyDefaultSettings(void)
+        {
+            // Default blend
+            GL::Enable(GraphicsMode::Blend);
+            GL::SetBlendOp(BlendOp::Add);
+            GL::SetBlendFunc(BlendFactor::SrcAlpha, BlendFactor::InvertSrcAlpha);
+        }
+
+        void CreateDefaultObjects(void)
+        {
+            float2 vertices[] =
+            {
+                // First triangle
+                float2(-1.0f, -1.0f), float2(0.0f, 0.0f),
+                float2(-1.0f,  1.0f), float2(0.0f, 1.0f),
+                float2(1.0f,  1.0f), float2(1.0f, 1.0f),
+
+                // Second triangle
+                float2(1.0f,  1.0f), float2(1.0f, 1.0f),
+                float2(1.0f, -1.0f), float2(1.0f, 0.0f),
+                float2(-1.0f, -1.0f), float2(0.0f, 0.0f),
+            };
+
+            _renderTargetVertexArray = VertexArray::Create();
+            _renderTargetVertexBuffer = VertexBuffer::Create();
+
+            _renderTargetVertexBuffer.SetData(vertices, sizeof(vertices), BufferUsage::StaticDraw);
+            _renderTargetVertexArray.SetAttribute(_renderTargetVertexBuffer, 0, 4, DataType::Float, false, 4 * sizeof(float));
+        }
+
         void Enable(GraphicsMode mode)
         {
             switch (mode)
@@ -862,6 +849,22 @@ inline namespace Mojo
         void BindRenderTarget(RenderTarget* renderTarget)
         {
             glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, renderTarget ? renderTarget->_frameBuffer : 0);
+        }
+
+        void BlitRenderTarget(RenderTarget* src, RenderTarget* dst, const Shader& shader)
+        {
+            if (src)
+            {
+                GLint bindingFramebuffer;
+                glGetIntegerv(GL_FRAMEBUFFER_BINDING_EXT, &bindingFramebuffer);
+
+                glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, dst ? dst->_frameBuffer : 0);
+
+                GL::ClearBuffer(ClearFlag::Color | ClearFlag::Depth | ClearFlag::Stencil);
+                GL::DrawArrays(DrawType::Triangles, shader, _renderTargetVertexArray, src->_texture, 6, 0);
+
+                glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, bindingFramebuffer);
+            }
         }
 
         void DrawArrays(DrawType type, int count, int offset)
