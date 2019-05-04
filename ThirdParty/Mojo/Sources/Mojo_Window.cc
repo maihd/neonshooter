@@ -316,20 +316,19 @@ inline namespace Mojo
             PIXELFORMATDESCRIPTOR pfd = {
                 sizeof(PIXELFORMATDESCRIPTOR),
                 1,
-                PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,    // Flags
+                PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER | PFD_STEREO,    // Flags
                 PFD_TYPE_RGBA,        // The kind of framebuffer. RGBA or palette.
-                32,                   // Colordepth of the framebuffer.
-                0, 0, 0, 0, 0, 0,
-                0,
-                0,
-                0,
-                0, 0, 0, 0,
+                32,                   // Color bits of the framebuffer.
+                8, 0, 8, 8, 8, 16,    // Red, Green, Blue - [bits, shift]
+                8, 24,                // Alpha - [bits, shift]
+                0,                    // Accum bits
+                0, 0, 0, 0,           // Accum channel bits: r, g, b, a
                 24,                   // Number of bits for the depthbuffer
                 8,                    // Number of bits for the stencilbuffer
                 0,                    // Number of Aux buffers in the framebuffer.
-                PFD_MAIN_PLANE,
-                0,
-                0, 0, 0
+                PFD_MAIN_PLANE,       // Layer type
+                0,                    // Is rerversed
+                0, 0, 0               // Unused
             };
             if ((format = ::ChoosePixelFormat(hdc, &pfd)) == 0)
             {
@@ -706,6 +705,13 @@ inline namespace Mojo
 
         bool Setup(const GraphicsSettings& settings)
         {
+            // Make sure window is initialized
+            HDC hdc = _mainDevice;
+            if (!hdc)
+            {
+                return false;
+            }
+
             // Settings affect image result
             // It should be check
             if (!IsSettingsValid(settings))
@@ -719,21 +725,15 @@ inline namespace Mojo
                 return false;
             }
 
-            HDC hdc = _mainDevice;
-            if (!hdc)
-            {
-                return false;
-            }
-
             int format;
             int numFormats;
             int formatAttribs[] = {
-                WGL_DOUBLE_BUFFER_ARB, 1,
-                WGL_SUPPORT_OPENGL_ARB, 1,
-                WGL_DRAW_TO_WINDOW_ARB, 1,
+                WGL_DOUBLE_BUFFER_ARB, GL_TRUE,
+                WGL_SUPPORT_OPENGL_ARB, GL_TRUE,
+                WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
 
                 WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
-                WGL_ACCELERATION_ARB, WGL_FULL_ACCELERATION_ARB,
+                //WGL_ACCELERATION_ARB, WGL_FULL_ACCELERATION_ARB,
 
                 WGL_RED_BITS_ARB, settings.redBits,
                 WGL_GREEN_BITS_ARB, settings.greenBits,
@@ -758,7 +758,19 @@ inline namespace Mojo
                 return false;
             }
 
-            int contextAttribs[] =
+            // We initialize wgl runtime, so wglCreateContext will do it
+            HGLRC tmpContext = wglCreateContext(hdc);
+            if (!tmpContext)
+            {
+                return false;
+            }
+            if (!wglMakeCurrent(hdc, tmpContext))
+            {
+                wglDeleteContext(tmpContext);
+                return false;
+            }
+
+            int contextAttribs[16] =
             {
                 WGL_CONTEXT_MAJOR_VERSION_ARB, 4, // Highest current supported version
                 WGL_CONTEXT_MINOR_VERSION_ARB, 5, // Highest current supported version
@@ -767,10 +779,17 @@ inline namespace Mojo
                 WGL_CONTEXT_FLAGS_ARB, 0, // prevent use deprecated features
                 0
             };
-
             HGLRC context = wglCreateContextAttribsARB(hdc, 0, contextAttribs);
+            if (!context)
+            {
+                wglDeleteContext(tmpContext);
+                return false;
+            }
+
             if (!wglMakeCurrent(hdc, context))
             {
+                wglDeleteContext(tmpContext);
+                wglDeleteContext(context);
                 return false;
             }
             _mainContext = context;
@@ -784,6 +803,9 @@ inline namespace Mojo
             // Default settings
             ApplyDefaultSettings();
             CreateDefaultObjects();
+
+            // Delete 2.x context
+            wglDeleteContext(tmpContext);
 
             return true;
         }

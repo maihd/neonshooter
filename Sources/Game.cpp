@@ -1066,6 +1066,7 @@ namespace Renderer
 
     void Init(void)
     {
+        //GL::Enable(GraphicsMode::Depth);
         GL::Enable(GraphicsMode::Blend);
         GL::SetBlendFunc(BlendFactor::SrcAlpha, BlendFactor::InvertSrcAlpha);
 
@@ -1076,6 +1077,7 @@ namespace Renderer
         float w = Window::GetWidth();
         float h = Window::GetHeight();
         proj_matrix = float4x4::ortho(-w, w, -h, h, -10.0f, 10.0f);
+        GL::Viewport(0, 0, w, h);
 
         _spriteVertexArray = VertexArray::Create();
         _spriteVertexBuffer = VertexBuffer::Create();
@@ -1256,7 +1258,7 @@ namespace Renderer
     void Present()
     {
         GL::BindRenderTarget(&_fxaaRenderTarget);
-        GL::ClearBuffer(ClearFlag::Color);
+        GL::ClearBuffer(ClearFlag::Color | ClearFlag::Depth);
 
         GL::BindShader(_spriteShader);
         GL::BindVertexArray(_spriteVertexArray);

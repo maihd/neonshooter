@@ -6,6 +6,12 @@
 #include <stdlib.h>
 #include <Windows.h>
 
+#if _WIN32_WINNT == 0x0a00
+#define WIN10_SDK 1
+#else
+#define WIN10_SDK 0
+#endif
+
 inline namespace Mojo
 {
     AtomicI32& AtomicI32::operator=(int value)
@@ -53,14 +59,14 @@ inline namespace Mojo
 
     AtomicI32& operator+=(AtomicI32& atomic, int value)
     {
-        _InterlockedAdd((volatile LONG*)&atomic.value, (LONG)value);
+        _InlineInterlockedAdd((volatile LONG*)&atomic.value, (LONG)value);
 
         return atomic;
     }
 
     AtomicI32& operator-=(AtomicI32& atomic, int value)
     {
-        _InterlockedAdd((volatile LONG*)&atomic.value, (LONG)-value);
+        _InlineInterlockedAdd((volatile LONG*)&atomic.value, (LONG)-value);
 
         return atomic;
     }
@@ -88,26 +94,26 @@ inline namespace Mojo
 
     AtomicI64& AtomicI64::operator=(int value)
     {
-        _InterlockedExchange64(&this->value, value);
+        _InlineInterlockedExchange64(&this->value, value);
         return *this;
     }
 
     AtomicI64& AtomicI64::operator=(const AtomicI64& other)
     {
-        _InterlockedExchange64(&this->value, other.value);
+        _InlineInterlockedExchange64(&this->value, other.value);
         return *this;
     }
 
     AtomicI64& operator++(AtomicI64& atomic)
     {
-        _InterlockedIncrement64(&atomic.value);
+        _InlineInterlockedIncrement64(&atomic.value);
 
         return atomic;
     }
 
     AtomicI64& operator--(AtomicI64& atomic)
     {
-        _InterlockedDecrement64(&atomic.value);
+        _InlineInterlockedDecrement64(&atomic.value);
         return atomic;
     }
 
@@ -115,7 +121,7 @@ inline namespace Mojo
     {
         AtomicI32 result = atomic;
 
-        _InterlockedIncrement64(&atomic.value);
+        _InlineInterlockedIncrement64(&atomic.value);
 
         return result;
     }
@@ -123,43 +129,43 @@ inline namespace Mojo
     AtomicI64 operator--(AtomicI64& atomic, int)
     {
         auto result = atomic;
-
-        _InterlockedDecrement64(&atomic.value);
+        
+        _InlineInterlockedDecrement64(&atomic.value);
 
         return result;
     }
 
     AtomicI64& operator+=(AtomicI64& atomic, int value)
     {
-        _InterlockedAdd64(&atomic.value, (LONG)value);
+        _InlineInterlockedAdd64(&atomic.value, (LONG)value);
 
         return atomic;
     }
 
     AtomicI64& operator-=(AtomicI64& atomic, int value)
     {
-        _InterlockedAdd64(&atomic.value, (LONG)-value);
+        _InlineInterlockedAdd64(&atomic.value, (LONG)-value);
 
         return atomic;
     }
 
     AtomicI64& operator^=(AtomicI64& atomic, int value)
     {
-        _InterlockedXor64(&atomic.value, (LONG)value);
+        _InlineInterlockedXor64(&atomic.value, (LONG)value);
 
         return atomic;
     }
 
     AtomicI64& operator|=(AtomicI64& atomic, int value)
     {
-        _InterlockedOr64(&atomic.value, (LONG)value);
+        _InlineInterlockedOr64(&atomic.value, (LONG)value);
 
         return atomic;
     }
 
     AtomicI64& operator&=(AtomicI64& atomic, int value)
     {
-        _InterlockedAnd64(&atomic.value, (LONG)value);
+        _InlineInterlockedAnd64(&atomic.value, (LONG)value);
 
         return atomic;
     }
