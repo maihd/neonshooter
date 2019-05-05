@@ -27,16 +27,15 @@ inline namespace Mojo
         }
     };
 
-    namespace __ClearFlag
+    namespace ClearFlag
     {
-        enum Type
+        enum
         {
             Color   = 1 << 0,
             Depth   = 1 << 1,
             Stencil = 1 << 2,
         };
     };
-    using ClearFlag = __ClearFlag::Type;
 
     enum struct DrawType
     {
@@ -199,7 +198,7 @@ inline namespace Mojo
         static void         Destroy(RenderTarget& renderTarget);
     };
 
-    namespace GL
+    namespace Graphics
     {
         bool Setup(const GraphicsSettings& settings = GraphicsSettings());
         void Shutdown(void);

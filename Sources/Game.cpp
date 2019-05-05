@@ -6,15 +6,18 @@
 #include <string.h>
 #include <assert.h>
 
-#include <Mojo/AL.h>
-#include <Mojo/GL.h>
 #include <Mojo/Math.h>
+#include <Mojo/Audio.h>
 #include <Mojo/Input.h>
 #include <Mojo/Assets.h>
 #include <Mojo/Window.h>
+#include <Mojo/Graphics.h>
 
 #include <Mojo/Array.h>
 #include <Mojo/HashTable.h>
+#include <Mojo/JobSystem.h>
+#include <Mojo/JobCounter.h>
+#include <Mojo/FileSystem.h>
 
 #define PI 3.14f
 
@@ -195,9 +198,11 @@ namespace Game
     static float totalTime;
 }
 
-namespace Audio
+namespace GameAudio
 {
     void Init();
+
+    void PlayShoot();
 }
 
 namespace ParticleSystem
@@ -938,23 +943,23 @@ namespace ParticleSystem
             p.scale.x = 1.0f - p.timer / p.duration;
             p.color.w = 1.0f - p.timer / p.duration;
 
-            if (p.position.x < -Window::GetWidth())
+            if (p.position.x <= -Window::GetWidth())
             {
                 p.velocity.x = fabsf(p.velocity.x);
                 p.position.x = -Window::GetWidth();
             }
-            else if (p.position.x > Window::GetWidth())
+            else if (p.position.x >= Window::GetWidth())
             {
                 p.velocity.x = -fabsf(p.velocity.x);
                 p.position.x = Window::GetWidth();
             }
 
-            if (p.position.y < -Window::GetWidth())
+            if (p.position.y <= -Window::GetHeight())
             {
                 p.velocity.y = fabsf(p.velocity.y);
                 p.position.y = -Window::GetHeight();
             }
-            else if (p.position.y > Window::GetWidth())
+            else if (p.position.y >= Window::GetHeight())
             {
                 p.velocity.y = -fabsf(p.velocity.y);
                 p.position.y = Window::GetHeight();
@@ -1066,9 +1071,9 @@ namespace Renderer
 
     void Init(void)
     {
-        //GL::Enable(GraphicsMode::Depth);
-        GL::Enable(GraphicsMode::Blend);
-        GL::SetBlendFunc(BlendFactor::SrcAlpha, BlendFactor::InvertSrcAlpha);
+        //Graphics::Enable(GraphicsMode::Depth);
+        Graphics::Enable(GraphicsMode::Blend);
+        Graphics::SetBlendFunc(BlendFactor::SrcAlpha, BlendFactor::InvertSrcAlpha);
 
         _drawCmds.Expand(50 * 1024);
         _vertices.Expand(50 * 1024);
@@ -1077,7 +1082,7 @@ namespace Renderer
         float w = Window::GetWidth();
         float h = Window::GetHeight();
         proj_matrix = float4x4::ortho(-w, w, -h, h, -10.0f, 10.0f);
-        GL::Viewport(0, 0, w, h);
+        Graphics::Viewport(0, 0, w, h);
 
         _spriteVertexArray = VertexArray::Create();
         _spriteVertexBuffer = VertexBuffer::Create();
@@ -1257,13 +1262,13 @@ namespace Renderer
 
     void Present()
     {
-        GL::BindRenderTarget(&_fxaaRenderTarget);
-        GL::ClearBuffer(ClearFlag::Color | ClearFlag::Depth);
+        Graphics::BindRenderTarget(&_fxaaRenderTarget);
+        Graphics::ClearBuffer(ClearFlag::Color | ClearFlag::Depth);
 
-        GL::BindShader(_spriteShader);
-        GL::BindVertexArray(_spriteVertexArray);
-        GL::BindIndexBuffer(_spriteIndexBuffer);
-        GL::BindVertexBuffer(_spriteVertexBuffer);
+        Graphics::BindShader(_spriteShader);
+        Graphics::BindVertexArray(_spriteVertexArray);
+        Graphics::BindIndexBuffer(_spriteIndexBuffer);
+        Graphics::BindVertexBuffer(_spriteVertexBuffer);
 
         _spriteVertexBuffer.SetData(_vertices.elements, _vertices.count * sizeof(Vertex), BufferUsage::StreamDraw);
         _spriteIndexBuffer.SetData(_indices.elements, _indices.count * sizeof(unsigned short), DataType::Ushort, BufferUsage::StreamDraw);
@@ -1273,7 +1278,7 @@ namespace Renderer
         {
             const DrawCommand& cmd = _drawCmds[i];
 
-            GL::SetBlendFunc(cmd.blend);
+            Graphics::SetBlendFunc(cmd.blend);
             //_spriteVertexBuffer.SetBlendFunc(cmd.blend);
 
             float4x4 model_matrix = float4x4::translation(cmd.position) * float4x4::rotation_z(cmd.rotation) * float4x4::scalation(cmd.scale);
@@ -1282,15 +1287,15 @@ namespace Renderer
             _spriteShader.SetFloat4x4("MVP", (float*)&MVP_matrix);
             _spriteShader.SetFloat4("color", cmd.color.x, cmd.color.y, cmd.color.z, cmd.color.w);
 
-            GL::BindTexture(cmd.texture);
-            GL::DrawIndices(DrawType::Triangles, _spriteIndexBuffer._dataType, cmd.drawCount, offset);
+            Graphics::BindTexture(cmd.texture);
+            Graphics::DrawIndices(DrawType::Triangles, _spriteIndexBuffer._dataType, cmd.drawCount, offset);
 
             offset += cmd.drawCount;
         }
 
-        GL::BlitRenderTarget(&_fxaaRenderTarget, &_glowRenderTarget, _fxaaShader);
-        GL::BlitRenderTarget(&_glowRenderTarget, NULL, _glowShader);
-        //GL::BlitRenderTarget(&_fxaaRenderTarget, NULL, _fxaaShader);
+        Graphics::BlitRenderTarget(&_fxaaRenderTarget, &_glowRenderTarget, _fxaaShader);
+        Graphics::BlitRenderTarget(&_glowRenderTarget, NULL, _glowShader);
+        //Graphics::BlitRenderTarget(&_fxaaRenderTarget, NULL, _fxaaShader);
     }
 }
 
@@ -1316,7 +1321,7 @@ namespace Game
         Renderer::Init();
 
         // Initialize audio
-        Audio::Init();
+        GameAudio::Init();
 
         //SDL_InitSubSystem(SDL_INIT_JOYSTICK);
         //if (SDL_NumJoysticks() > 0)
@@ -1460,7 +1465,7 @@ namespace Game
     }
 }
 
-namespace Audio
+namespace GameAudio
 {
     struct AudioDefine
     {
@@ -1472,14 +1477,13 @@ namespace Audio
 
     void Init()
     {
-        if (!AL::Setup())
+        if (!Audio::Setup())
         {
             exit(1);
         }
     }
 
-#if 0
-    static void* LoadWAV(const char* path, ALenum* format, int* size, int* freq)
+    static void* LoadWAV(const char* path, AudioFormat* format, int* size, int* freq)
     {
     #pragma push(1)
         struct WAVHeader
@@ -1503,22 +1507,14 @@ namespace Audio
         };
     #pragma pop
 
-        HANDLE file = CreateFileA(
-            path,
-            GENERIC_READ,
-            0,
-            NULL,
-            OPEN_EXISTING,
-            FILE_ATTRIBUTE_NORMAL,
-            NULL
-        );
-        if (file != INVALID_HANDLE_VALUE)
+        File file;
+        if (file.Open(path, FileOpen::Read | FileOpen::Direct))
         {
             WAVHeader header;
-            ReadFile(file, &header, sizeof(header), NULL, NULL);
+            file.Read(&header, sizeof(header));
 
             void* result = malloc(header.size);
-            ReadFile(file, result, header.size, NULL, NULL);
+            file.Read(result, header.size);
 
             *size = header.size;
             *freq = header.samplerate;
@@ -1527,176 +1523,177 @@ namespace Audio
             {
                 if (header.bitspersample == 8)
                 {
-                    *format = AL_FORMAT_MONO8;
+                    *format = AudioFormat::Mono8;
                 }
                 else
                 {
-                    *format = AL_FORMAT_MONO16;
+                    *format = AudioFormat::Mono16;
                 }
             }
             else
             {
                 if (header.bitspersample == 8)
                 {
-                    *format = AL_FORMAT_STEREO8;
+                    *format = AudioFormat::Stereo8;
                 }
                 else
                 {
-                    *format = AL_FORMAT_STEREO16;
+                    *format = AudioFormat::Stereo16;
                 }
             }
 
-            CloseHandle(file);
+            file.Close();
             return result;
         }
 
         return NULL;
     }
 
-    bool load(const char* path, audio_t* out_audio)
+    bool Load(const char* path, AudioDefine* outAudio)
     {
-        audio_t audio;
-        if (table::tryget(audios, path, audio))
+        AudioDefine audio;
+        if (_audios.TryGetValue(HashString(path), &audio))
         {
-            if (out_audio)
+            if (outAudio)
             {
-                out_audio[0] = audio;
+                outAudio[0] = audio;
             }
             return true;
         }
 
-        Uint32 len;
-        Uint8* wav;
-        ALenum format;
-        ALenum error;
-        SDL_AudioSpec spec;
-        if (SDL_LoadWAV(path, &spec, &wav, &len))
+        int   len;
+        void* wav;
+        int   freq;
+        AudioFormat format;
+        //ALenum error;
+        //SDL_AudioSpec spec;
+        if (wav = LoadWAV(path, &format, &len, &freq))
         {
             // Lock audio _context
-            alcSuspendContext(_context);
-
-            alGenSources(1, &audio.source);
-            error = alGetError();
-            if (error != AL_NO_ERROR)
-            {
-                SDL_FreeWAV(wav);
-                alDeleteSources(1, &audio.source);
-                alDeleteBuffers(1, &audio.buffer);
-                printf("audio::play(): alGenSources: %s\n", alGetString(error));
-                return false;
-            }
-
-            alGenBuffers(1, &audio.buffer);
-            error = alGetError();
-            if (error != AL_NO_ERROR)
-            {
-                SDL_FreeWAV(wav);
-                alDeleteSources(1, &audio.source);
-                alDeleteBuffers(1, &audio.buffer);
-                printf("audio::play(): alGenBuffers: %s\n", alGetString(error));
-                return false;
-            }
-
-            alSourcef(audio.source, AL_GAIN, 0.3f);
-            error = alGetError();
-            if (error != AL_NO_ERROR)
-            {
-                SDL_FreeWAV(wav);
-                alDeleteSources(1, &audio.source);
-                alDeleteBuffers(1, &audio.buffer);
-                printf("audio::play(): set source gain failed: %s\n", alGetString(error));
-                return false;
-            }
-
-            alSourcef(audio.source, AL_PITCH, 1);
-            error = alGetError();
-            if (error != AL_NO_ERROR)
-            {
-                SDL_FreeWAV(wav);
-                alDeleteSources(1, &audio.source);
-                alDeleteBuffers(1, &audio.buffer);
-                printf("audio::play(): set source pitch failed: %s\n", alGetString(error));
-                return false;
-            }
-
-            alSource3f(audio.source, AL_POSITION, 0, 0, 0);
-            error = alGetError();
-            if (error != AL_NO_ERROR)
-            {
-                SDL_FreeWAV(wav);
-                alDeleteSources(1, &audio.source);
-                alDeleteBuffers(1, &audio.buffer);
-                printf("audio::play(): set source position failed: %s\n", alGetString(error));
-                return false;
-            }
-
-            alSource3f(audio.source, AL_VELOCITY, 0, 0, 0);
-            error = alGetError();
-            if (error != AL_NO_ERROR)
-            {
-                SDL_FreeWAV(wav);
-                alDeleteSources(1, &audio.source);
-                alDeleteBuffers(1, &audio.buffer);
-                printf("audio::play(): set source velocity failed: %s\n", alGetString(error));
-                return false;
-            }
-
-            alSourcei(audio.source, AL_LOOPING, AL_FALSE);
-            error = alGetError();
-            if (error != AL_NO_ERROR)
-            {
-                SDL_FreeWAV(wav);
-                alDeleteSources(1, &audio.source);
-                alDeleteBuffers(1, &audio.buffer);
-                printf("audio::play(): set source loop failed: %s\n", alGetString(error));
-                return false;
-            }
-
-            switch (spec.format)
-            {
-            case AUDIO_U8:
-            case AUDIO_S8:
-                format = spec.channels == 2 ? AL_FORMAT_STEREO8 : AL_FORMAT_MONO8;
-                break;
-
-            case AUDIO_U16:
-            case AUDIO_S16:
-                format = spec.channels == 2 ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16;
-                break;
-            }
-
-            alBufferData(audio.buffer, format, wav, len, spec.freq);
-            error = alGetError();
-            if (error != AL_NO_ERROR)
-            {
-                SDL_FreeWAV(wav);
-                alDeleteSources(1, &audio.source);
-                alDeleteBuffers(1, &audio.buffer);
-                printf("audio::play(): set buffer data failed: %s\n", alGetString(error));
-                return false;
-            }
-
-            alSourcei(audio.source, AL_BUFFER, audio.buffer);
-            error = alGetError();
-            if (error != AL_NO_ERROR)
-            {
-                free(wav);
-                alDeleteSources(1, &audio.source);
-                alDeleteBuffers(1, &audio.buffer);
-                printf("audio::play(): set buffer failed: %s\n", alGetString(error));
-                return false;
-            }
-
-            // Unlock audio _context
-            alcProcessContext(_context);
-
-            if (out_audio)
-            {
-                out_audio[0] = audio;
-            }
-            table::set(audios, path, audio);
-            
-            SDL_FreeWAV(wav);
+            //alcSuspendContext(_context);
+            //
+            //alGenSources(1, &audio.source);
+            //error = alGetError();
+            //if (error != AL_NO_ERROR)
+            //{
+            //    SDL_FreeWAV(wav);
+            //    alDeleteSources(1, &audio.source);
+            //    alDeleteBuffers(1, &audio.buffer);
+            //    printf("audio::play(): alGenSources: %s\n", alGetString(error));
+            //    return false;
+            //}
+            //
+            //alGenBuffers(1, &audio.buffer);
+            //error = alGetError();
+            //if (error != AL_NO_ERROR)
+            //{
+            //    SDL_FreeWAV(wav);
+            //    alDeleteSources(1, &audio.source);
+            //    alDeleteBuffers(1, &audio.buffer);
+            //    printf("audio::play(): alGenBuffers: %s\n", alGetString(error));
+            //    return false;
+            //}
+            //
+            //alSourcef(audio.source, AL_GAIN, 0.3f);
+            //error = alGetError();
+            //if (error != AL_NO_ERROR)
+            //{
+            //    SDL_FreeWAV(wav);
+            //    alDeleteSources(1, &audio.source);
+            //    alDeleteBuffers(1, &audio.buffer);
+            //    printf("audio::play(): set source gain failed: %s\n", alGetString(error));
+            //    return false;
+            //}
+            //
+            //alSourcef(audio.source, AL_PITCH, 1);
+            //error = alGetError();
+            //if (error != AL_NO_ERROR)
+            //{
+            //    SDL_FreeWAV(wav);
+            //    alDeleteSources(1, &audio.source);
+            //    alDeleteBuffers(1, &audio.buffer);
+            //    printf("audio::play(): set source pitch failed: %s\n", alGetString(error));
+            //    return false;
+            //}
+            //
+            //alSource3f(audio.source, AL_POSITION, 0, 0, 0);
+            //error = alGetError();
+            //if (error != AL_NO_ERROR)
+            //{
+            //    SDL_FreeWAV(wav);
+            //    alDeleteSources(1, &audio.source);
+            //    alDeleteBuffers(1, &audio.buffer);
+            //    printf("audio::play(): set source position failed: %s\n", alGetString(error));
+            //    return false;
+            //}
+            //
+            //alSource3f(audio.source, AL_VELOCITY, 0, 0, 0);
+            //error = alGetError();
+            //if (error != AL_NO_ERROR)
+            //{
+            //    SDL_FreeWAV(wav);
+            //    alDeleteSources(1, &audio.source);
+            //    alDeleteBuffers(1, &audio.buffer);
+            //    printf("audio::play(): set source velocity failed: %s\n", alGetString(error));
+            //    return false;
+            //}
+            //
+            //alSourcei(audio.source, AL_LOOPING, AL_FALSE);
+            //error = alGetError();
+            //if (error != AL_NO_ERROR)
+            //{
+            //    SDL_FreeWAV(wav);
+            //    alDeleteSources(1, &audio.source);
+            //    alDeleteBuffers(1, &audio.buffer);
+            //    printf("audio::play(): set source loop failed: %s\n", alGetString(error));
+            //    return false;
+            //}
+            //
+            //switch (spec.format)
+            //{
+            //case AUDIO_U8:
+            //case AUDIO_S8:
+            //    format = spec.channels == 2 ? AL_FORMAT_STEREO8 : AL_FORMAT_MONO8;
+            //    break;
+            //
+            //case AUDIO_U16:
+            //case AUDIO_S16:
+            //    format = spec.channels == 2 ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16;
+            //    break;
+            //}
+            //
+            //alBufferData(audio.buffer, format, wav, len, spec.freq);
+            //error = alGetError();
+            //if (error != AL_NO_ERROR)
+            //{
+            //    SDL_FreeWAV(wav);
+            //    alDeleteSources(1, &audio.source);
+            //    alDeleteBuffers(1, &audio.buffer);
+            //    printf("audio::play(): set buffer data failed: %s\n", alGetString(error));
+            //    return false;
+            //}
+            //
+            //alSourcei(audio.source, AL_BUFFER, audio.buffer);
+            //error = alGetError();
+            //if (error != AL_NO_ERROR)
+            //{
+            //    free(wav);
+            //    alDeleteSources(1, &audio.source);
+            //    alDeleteBuffers(1, &audio.buffer);
+            //    printf("audio::play(): set buffer failed: %s\n", alGetString(error));
+            //    return false;
+            //}
+            //
+            //// Unlock audio _context
+            //alcProcessContext(_context);
+            //
+            //if (out_audio)
+            //{
+            //    out_audio[0] = audio;
+            //}
+            //table::set(audios, path, audio);
+            //
+            //SDL_FreeWAV(wav);
             return true;
         }
         return false;
@@ -1704,23 +1701,23 @@ namespace Audio
 
     void play(const char* path)
     {
-        audio_t audio;
-        if (load(path, &audio))
+        AudioDefine audio;
+        if (Load(path, &audio))
         {
-            ALint state;
-            alGetSourcei(audio.source, AL_SOURCE_STATE, &state);
-            alSourcePlay(audio.source);
+            //ALint state;
+            //alGetSourcei(audio.source, AL_SOURCE_STATE, &state);
+            //alSourcePlay(audio.source);
         }
     }
 
     void stop(const char* path)
     {
-        audio_t audio;
-        if (table::tryget(audios, path, audio))
+        AudioDefine audio;
+        if (_audios.TryGetValue(HashString(path), &audio))
         {                        
-            ALint state;
-            alGetSourcei(audio.source, AL_SOURCE_STATE, &state);
-            alSourceStop(audio.source);
+            //ALint state;
+            //alGetSourcei(audio.source, AL_SOURCE_STATE, &state);
+            //alSourceStop(audio.source);
         }
     }
 
@@ -1803,5 +1800,4 @@ namespace Audio
             stop(spawn_audio_paths[i]);
         }
     }
-#endif
 }

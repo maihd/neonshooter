@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Mojo/GL.h>
 #include <Mojo/Math.h>
+#include <Mojo/Graphics.h>
 #include <Mojo/HashTable.h>
 
 inline namespace Mojo

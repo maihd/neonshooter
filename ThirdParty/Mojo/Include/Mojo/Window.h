@@ -2,9 +2,9 @@
 
 inline namespace Mojo
 {
-    namespace __WindowFlag
+    namespace WindowFlag
     {
-        enum Type
+        enum
         {
             None       = 0,
             Visible    = 1 << 0,
@@ -15,7 +15,6 @@ inline namespace Mojo
             Default = Visible,
         };
     }
-    using WindowFlag = __WindowFlag::Type;
 
     namespace Window
     {

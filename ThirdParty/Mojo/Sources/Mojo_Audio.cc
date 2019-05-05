@@ -1,4 +1,4 @@
-#include <Mojo/AL.h>
+#include <Mojo/Audio.h>
 
 #include <AL/al.h>
 #include <AL/alc.h>
@@ -37,7 +37,7 @@ inline namespace Mojo
         buffer._handle = 0;
     }
 
-    namespace AL
+    namespace Audio
     {
         bool Setup(void)
         {

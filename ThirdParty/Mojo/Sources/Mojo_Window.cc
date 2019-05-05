@@ -1,5 +1,5 @@
-#include <Mojo/GL.h>
 #include <Mojo/Window.h>
+#include <Mojo/Graphics.h>
 
 #include <GL/glew.h>
 #include <GL/wglew.h>
@@ -247,7 +247,7 @@ inline namespace Mojo
                 return 0;
 
             case WM_SIZE:
-                GL::Viewport(0, 0, Window::GetWidth(), Window::GetHeight());
+                Graphics::Viewport(0, 0, Window::GetWidth(), Window::GetHeight());
                 return 0;
             }
 
@@ -651,7 +651,7 @@ inline namespace Mojo
         }
     }
 
-    namespace GL
+    namespace Graphics
     {
         void ApplyDefaultSettings(void);
         void CreateDefaultObjects(void);
@@ -791,7 +791,7 @@ inline namespace Mojo
             Window::SetVSyncEnabled(true);
 
             // Set viewport
-            GL::Viewport(0, 0, Window::GetWidth(), Window::GetHeight());
+            Graphics::Viewport(0, 0, Window::GetWidth(), Window::GetHeight());
 
             // Default settings
             ApplyDefaultSettings();

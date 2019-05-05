@@ -162,7 +162,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\AL.h" />
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Audio.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Allocator.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Array.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Assets.h" />
@@ -171,9 +171,8 @@
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Coroutine.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Delegate.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Dialog.h" />
-    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\DrawCanvas.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\FileSystem.h" />
-    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\GL.h" />
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Graphics.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\HashTable.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Input.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\JobCounter.h" />
@@ -188,14 +187,14 @@
     <ClInclude Include="..\ThirdParty\Mojo\Sources\Mojo_Window.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_AL.cc" />
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Audio.cc" />
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Allocator.cc" />
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Assets.cc" />
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Atomic.cc" />
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Coroutine.cc" />
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Dialog.cc" />
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_FileSystem.cc" />
-    <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_GL.cc" />
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Graphics.cc" />
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Input.cc" />
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_JobSystem.cc" />
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Material.cc" />

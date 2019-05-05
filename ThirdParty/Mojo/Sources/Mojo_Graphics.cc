@@ -1,8 +1,9 @@
 #include <stdint.h>
 #include <assert.h>
 #include <GL/glew.h>
-#include <Mojo/GL.h>
+
 #include <Mojo/Math.h>
+#include <Mojo/Graphics.h>
 
 inline namespace Mojo
 {
@@ -706,14 +707,14 @@ inline namespace Mojo
 
     }
 
-    namespace GL
+    namespace Graphics
     {
         void ApplyDefaultSettings(void)
         {
             // Default blend
-            GL::Enable(GraphicsMode::Blend);
-            GL::SetBlendOp(BlendOp::Add);
-            GL::SetBlendFunc(BlendFactor::SrcAlpha, BlendFactor::InvertSrcAlpha);
+            Graphics::Enable(GraphicsMode::Blend);
+            Graphics::SetBlendOp(BlendOp::Add);
+            Graphics::SetBlendFunc(BlendFactor::SrcAlpha, BlendFactor::InvertSrcAlpha);
         }
 
         void CreateDefaultObjects(void)
@@ -860,8 +861,8 @@ inline namespace Mojo
 
                 glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, dst ? dst->_frameBuffer : 0);
 
-                GL::ClearBuffer(ClearFlag::Color | ClearFlag::Depth | ClearFlag::Stencil);
-                GL::DrawArrays(DrawType::Triangles, shader, _renderTargetVertexArray, src->_texture, 6, 0);
+                Graphics::ClearBuffer(ClearFlag::Color | ClearFlag::Depth | ClearFlag::Stencil);
+                Graphics::DrawArrays(DrawType::Triangles, shader, _renderTargetVertexArray, src->_texture, 6, 0);
 
                 glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, bindingFramebuffer);
             }

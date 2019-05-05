@@ -2,6 +2,14 @@
 
 inline namespace Mojo
 {
+    enum struct AudioFormat
+    {
+        Mono8,
+        Mono16,
+        Stereo8,
+        Stereo16,
+    };
+
     struct AudioSource
     {
         unsigned _handle;
@@ -20,7 +28,7 @@ inline namespace Mojo
         static void        Destroy(AudioBuffer& source);
     };
 
-    namespace AL
+    namespace Audio
     {
         bool Setup(void);
         void Shutdown(void);
