@@ -14,6 +14,8 @@
 #include <Mojo/Graphics.h>
 
 #include <Mojo/Array.h>
+#include <Mojo/Shader.h>
+#include <Mojo/Texture.h>
 #include <Mojo/HashTable.h>
 #include <Mojo/JobSystem.h>
 #include <Mojo/JobCounter.h>

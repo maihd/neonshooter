@@ -192,6 +192,7 @@
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\JobSystem.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Material.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Math.h" />
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Shader.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\SpinLock.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\SpriteBatch.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\System.h" />
@@ -214,6 +215,7 @@
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Input.cc" />
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_JobSystem.cc" />
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Material.cc" />
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Shader.cc" />
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_SpinLock.cc" />
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_System.cc" />
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Texture.cc" />

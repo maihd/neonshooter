@@ -75,6 +75,9 @@
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Math.h">
       <Filter>Include\Mojo</Filter>
     </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Shader.h">
+      <Filter>Include\Mojo</Filter>
+    </ClInclude>
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\SpinLock.h">
       <Filter>Include\Mojo</Filter>
     </ClInclude>
@@ -135,6 +138,9 @@
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Material.cc">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Shader.cc">
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_SpinLock.cc">

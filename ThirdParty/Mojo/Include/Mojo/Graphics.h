@@ -1,28 +1,16 @@
-#pragma once 
-
-#include "./Texture.h"
+#pragma once
 
 inline namespace Mojo
 {
+    struct Shader;
+    struct Texture;
+
     struct GraphicsSettings
     {
-        int redBits;
-        int greenBits;
-        int blueBits;
-        int alphaBits;
-        int depthBits;
-        int stencilBits;
-
         int multisamples;
 
         constexpr GraphicsSettings(void)
-            : redBits(8)
-            , greenBits(8)
-            , blueBits(8)
-            , alphaBits(8)
-            , depthBits(24)
-            , stencilBits(8)
-            , multisamples(1)
+            : multisamples(1)
         {
         }
     };
@@ -100,32 +88,6 @@ inline namespace Mojo
     {
         BlendFactor src;
         BlendFactor dst;
-    };
-
-    struct Shader
-    {
-        unsigned _handle = 0;
-
-        static Shader Create(const char* vertexSource, const char* pixelsSource);
-        static void   Destroy(Shader& shader);
-
-        int FindAttribute(const char* name);
-        int FindUniform(const char* name);
-
-        bool SetFloat(int location, float x);
-        bool SetFloat(const char* name, float x);
-        
-        bool SetFloat2(int location, float x, float y);
-        bool SetFloat2(const char* name, float x, float y);
-        
-        bool SetFloat3(int location, float x, float y, float z);
-        bool SetFloat3(const char* name, float x, float y, float z);
-        
-        bool SetFloat4(int location, float x, float y, float z, float w);
-        bool SetFloat4(const char* name, float x, float y, float z, float w);
-
-        bool SetFloat4x4(int location, const float* value, bool transpose = false);
-        bool SetFloat4x4(const char* name, const float* value, bool transpose = false);
     };
 
     struct IndexBuffer

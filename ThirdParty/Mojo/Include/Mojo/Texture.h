@@ -20,7 +20,6 @@ inline namespace Mojo
     {
         RGB,
         RGBA,
-        Depth24Stencil8,
     };
     
     struct Texture

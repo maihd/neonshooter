@@ -306,8 +306,8 @@ inline namespace Mojo
                 32,                   // Color bits of the framebuffer.
                 8, 0, 8, 8, 8, 16,    // Red, Green, Blue - [bits, shift]
                 8, 24,                // Alpha - [bits, shift]
-                0,                    // Accum bits
-                0, 0, 0, 0,           // Accum channel bits: r, g, b, a
+                32,                   // Accum bits
+                8, 8, 8, 8,           // Accum channel bits: r, g, b, a
                 24,                   // Number of bits for the depthbuffer
                 8,                    // Number of bits for the stencilbuffer
                 0,                    // Number of Aux buffers in the framebuffer.
@@ -658,36 +658,6 @@ inline namespace Mojo
 
         static bool IsSettingsValid(const GraphicsSettings& settings)
         {
-            if (settings.redBits < 1)
-            {
-                return false;
-            }
-
-            if (settings.greenBits < 1)
-            {
-                return false;
-            }
-
-            if (settings.blueBits < 1)
-            {
-                return false;
-            }
-
-            if (settings.alphaBits < 1)
-            {
-                return false;
-            }
-
-            if (settings.depthBits < 1)
-            {
-                return false;
-            }
-
-            if (settings.stencilBits < 1)
-            {
-                return false;
-            }
-
             if (settings.multisamples < 1)
             {
                 return false;
@@ -728,13 +698,25 @@ inline namespace Mojo
                 WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
                 //WGL_ACCELERATION_ARB, WGL_FULL_ACCELERATION_ARB,
 
-                WGL_RED_BITS_ARB, settings.redBits,
-                WGL_GREEN_BITS_ARB, settings.greenBits,
-                WGL_BLUE_BITS_ARB, settings.blueBits,
-                WGL_ALPHA_BITS_ARB, settings.alphaBits,
-                
-                WGL_DEPTH_BITS_ARB, settings.depthBits,
-                WGL_STENCIL_BITS_ARB, settings.stencilBits,
+                WGL_ACCUM_RED_BITS_ARB, 8,
+                WGL_ACCUM_GREEN_BITS_ARB, 8,
+                WGL_ACCUM_BLUE_BITS_ARB, 8,
+                WGL_ACCUM_ALPHA_BITS_ARB, 8,
+
+                WGL_RED_BITS_ARB, 8,
+                WGL_GREEN_BITS_ARB, 8,
+                WGL_BLUE_BITS_ARB, 8,
+                WGL_ALPHA_BITS_ARB, 8,
+
+                WGL_RED_SHIFT_ARB, 0,
+                WGL_GREEN_SHIFT_ARB, 8,
+                WGL_BLUE_SHIFT_ARB, 16,
+                WGL_ALPHA_SHIFT_ARB, 24,
+
+                WGL_ACCUM_BITS_ARB, 32,
+                WGL_COLOR_BITS_ARB, 32,
+                WGL_DEPTH_BITS_ARB, 24,
+                WGL_STENCIL_BITS_ARB, 8,
 
                 WGL_ARB_multisample && settings.multisamples > 1 ? WGL_SAMPLE_BUFFERS_ARB : 0, 1,
                 WGL_ARB_multisample && settings.multisamples > 1 ? WGL_SAMPLES_ARB : 0, settings.multisamples,
