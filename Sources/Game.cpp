@@ -85,11 +85,11 @@ struct Particle
 {
     bool       active;
     Texture    texture;
-    float2       velocity;
-    float2       position;
+    float2     velocity;
+    float2     position;
     float      rotation;
-    float2       scale;
-    float4       color;
+    float2     scale;
+    float4     color;
     float      timer;
     float      duration;
 };
@@ -1026,10 +1026,10 @@ namespace Renderer
     {
         Texture   texture;
         int       drawCount;
-        float2      position;
-        float2      scale;
+        float2    position;
+        float2    scale;
         float     rotation;
-        float4      color;
+        float4    color;
 
         BlendFunc blend;
     };
@@ -1073,8 +1073,6 @@ namespace Renderer
 
     void Init(void)
     {
-        //Graphics::Enable(GraphicsMode::Depth);
-        //Graphics::Enable(GraphicsMode::Blend);
         Graphics::SetBlendFunc(BlendFactor::SrcAlpha, BlendFactor::InvertSrcAlpha);
 
         _drawCmds.Expand(50 * 1024);
@@ -1139,18 +1137,9 @@ namespace Renderer
 
         // FXAA shader
         {
-            const char* vshader_src =
+            const char* shaderSource =
                 "#version 330 core\n"
-                "layout (location = 0) in vec4 vertex;"
-                "out vec2 uv;"
-                "void main() {"
-                "uv = vertex.zw;"
-                "gl_Position = vec4(vertex.xy, 0, 1.0);"
-                "}";
-
-            const char* fshader_src =
-                "#version 330 core\n"
-                "in vec2 uv;"
+                "in vec2 mj_UV;"
                 "out vec4 fragColor;"
                 "uniform vec2 frameSize;"
                 "uniform sampler2D image;"
@@ -1161,11 +1150,11 @@ namespace Renderer
                 "float FXAA_REDUCE_MUL = 1.0 / 8.0;"
                 "float FXAA_REDUCE_MIN = 1.0 / 128.0;"
 
-                "vec3 rgbNW = texture2D(image, uv + (vec2(-1.0, -1.0) / frameSize)).xyz;"
-                "vec3 rgbNE = texture2D(image, uv + (vec2(1.0, -1.0) / frameSize)).xyz;"
-                "vec3 rgbSW = texture2D(image, uv + (vec2(-1.0, 1.0) / frameSize)).xyz;"
-                "vec3 rgbSE = texture2D(image, uv + (vec2(1.0, 1.0) / frameSize)).xyz;"
-                "vec3 rgbM = texture2D(image, uv).xyz;"
+                "vec3 rgbNW = texture2D(image, mj_UV + (vec2(-1.0, -1.0) / frameSize)).xyz;"
+                "vec3 rgbNE = texture2D(image, mj_UV + (vec2(1.0, -1.0) / frameSize)).xyz;"
+                "vec3 rgbSW = texture2D(image, mj_UV + (vec2(-1.0, 1.0) / frameSize)).xyz;"
+                "vec3 rgbSE = texture2D(image, mj_UV + (vec2(1.0, 1.0) / frameSize)).xyz;"
+                "vec3 rgbM = texture2D(image, mj_UV).xyz;"
 
                 "vec3 luma = vec3(0.299, 0.587, 0.114);"
                 "float lumaNW = dot(rgbNW, luma);"
@@ -1192,11 +1181,11 @@ namespace Renderer
                 "        dir * rcpDirMin)) / frameSize;"
                 
                 "vec3 rgbA = (1.0 / 2.0) * ("
-                "    texture2D(image, uv.xy + dir * (1.0 / 3.0 - 0.5)).xyz +"
-                "    texture2D(image, uv.xy + dir * (2.0 / 3.0 - 0.5)).xyz);"
+                "    texture2D(image, mj_UV.xy + dir * (1.0 / 3.0 - 0.5)).xyz +"
+                "    texture2D(image, mj_UV.xy + dir * (2.0 / 3.0 - 0.5)).xyz);"
                 "vec3 rgbB = rgbA * (1.0 / 2.0) + (1.0 / 4.0) * ("
-                "    texture2D(image, uv.xy + dir * (0.0 / 3.0 - 0.5)).xyz +"
-                "    texture2D(image, uv.xy + dir * (3.0 / 3.0 - 0.5)).xyz);"
+                "    texture2D(image, mj_UV.xy + dir * (0.0 / 3.0 - 0.5)).xyz +"
+                "    texture2D(image, mj_UV.xy + dir * (3.0 / 3.0 - 0.5)).xyz);"
                 "float lumaB = dot(rgbB, luma);"
                 
                 "if ((lumaB < lumaMin) || (lumaB > lumaMax)) {"
@@ -1209,7 +1198,7 @@ namespace Renderer
                 // End main()
                 "}";
 
-            _fxaaShader = Shader::Create(vshader_src, fshader_src);
+            _fxaaShader = Shader::CreateEffect(shaderSource);
             _fxaaShader.SetFloat2("frameSize", w, h);
         }
     }
@@ -1295,9 +1284,10 @@ namespace Renderer
             offset += cmd.drawCount;
         }
 
-        Graphics::BlitRenderTarget(&_fxaaRenderTarget, &_glowRenderTarget, _fxaaShader);
-        Graphics::BlitRenderTarget(&_glowRenderTarget, NULL, _glowShader);
-        //Graphics::BlitRenderTarget(&_fxaaRenderTarget, NULL, _fxaaShader);
+        //Graphics::BlitRenderTarget(&_fxaaRenderTarget, &_glowRenderTarget, _fxaaShader);
+        //Graphics::BlitRenderTarget(&_glowRenderTarget, &_fxaaRenderTarget, _fxaaShader);
+        //Graphics::BlitRenderTarget(&_glowRenderTarget, NULL, _glowShader);
+        Graphics::BlitRenderTarget(&_fxaaRenderTarget, NULL, _glowShader);
     }
 }
 

@@ -8,6 +8,15 @@ inline namespace Mojo
 {
     namespace
     {
+        const char* _defaultEffectVertexSource =
+            "#version 330 core\n"
+            "layout (location = 0) in vec4 vertex;"
+            "out vec2 mj_UV;"
+            "void main() {"
+            "mj_UV = vertex.zw;"
+            "gl_Position = vec4(vertex.xy, 0, 1.0);"
+            "}";
+
         static GLuint CreateGLShader(GLenum type, const char* src)
         {
             GLuint shader = glCreateShader(type);
@@ -93,6 +102,11 @@ inline namespace Mojo
 
         shader._handle = program;
         return shader;
+    }
+
+    Shader Shader::CreateEffect(const char* pixelsSource)
+    {
+        return Shader::Create(_defaultEffectVertexSource, pixelsSource);
     }
 
     void Shader::Destroy(Shader& shader)

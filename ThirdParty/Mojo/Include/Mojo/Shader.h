@@ -27,6 +27,6 @@ inline namespace Mojo
         static Shader Create(const char* vertexSource, const char* pixelsSource);
         static void   Destroy(Shader& shader);
         
-        static Shader CreateEffectShader(const char* pixelsSource);
+        static Shader CreateEffect(const char* pixelsSource);
     };
 }
