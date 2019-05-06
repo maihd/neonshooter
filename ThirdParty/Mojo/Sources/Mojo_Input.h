@@ -10,6 +10,7 @@ inline namespace Mojo
         void EndFrame(void);
 
         void UpdateCharInput(int character);
+        void UpdateCharInput(const char* string);
 
         void UpdateKey(KeyCode key, bool down);
 

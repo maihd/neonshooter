@@ -1,6 +1,8 @@
 #include <Mojo/Input.h>
 #include "Mojo_Input.h"
 
+#include <string.h>
+
 #define COUNTOF(array) (sizeof(array) / sizeof((array)[0]))
 
 inline namespace Mojo
@@ -55,6 +57,12 @@ inline namespace Mojo
         void UpdateCharInput(int character)
         {
             _inputText[_inputTextLength++] = (char)character;
+        }
+
+        void UpdateCharInput(const char* string)
+        {
+            strcat(_inputText, string);
+            _inputTextLength += strlen(string);
         }
 
         void UpdateKey(KeyCode key, bool down)

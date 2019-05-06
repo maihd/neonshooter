@@ -4,8 +4,8 @@
 #include <GL/glew.h>
 #include <GL/wglew.h>
 
-#include "./Mojo_Input.h"
-#include "./Mojo_Window.h"
+#include "../Mojo_Input.h"
+#include "Mojo_Windows_Window.h"
 
 // Allow compilation with old Windows SDK. MinGW doesn't have default _WIN32_WINNT/WINVER versions.
 #ifndef WM_MOUSEHWHEEL

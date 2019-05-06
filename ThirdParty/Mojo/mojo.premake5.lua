@@ -34,10 +34,15 @@ do
         path.join(MOJO_DIR, "Sources/*.c"),
         path.join(MOJO_DIR, "Sources/*.cc"),
         path.join(MOJO_DIR, "Sources/*.cpp"),
+        
+        path.join(MOJO_DIR, "Sources/Mojo_SDL2/*.h"),
+        path.join(MOJO_DIR, "Sources/Mojo_SDL2/*.c"),
+        path.join(MOJO_DIR, "Sources/Mojo_SDL2/*.cc"),
+        path.join(MOJO_DIR, "Sources/Mojo_SDL2/*.cpp"),
 
-        path.join(MOJO_DIR, "Sources/**/*.h"),
-        path.join(MOJO_DIR, "Sources/**/*.c"),
-        path.join(MOJO_DIR, "Sources/**/*.cc"),
-        path.join(MOJO_DIR, "Sources/**/*.cpp"),
+        --path.join(MOJO_DIR, "Sources/**/*.h"),
+        --path.join(MOJO_DIR, "Sources/**/*.c"),
+        --path.join(MOJO_DIR, "Sources/**/*.cc"),
+        --path.join(MOJO_DIR, "Sources/**/*.cpp"),
     }
 end

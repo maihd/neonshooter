@@ -1,5 +1,5 @@
 #include <Mojo/Dialog.h>
-#include "Mojo_Window.h"
+#include "Mojo_Windows_Window.h"
 
 #include <assert.h>
 #include <shlobj.h>
