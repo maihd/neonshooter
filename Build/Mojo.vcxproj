@@ -93,7 +93,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>GLEW_STATIC;AL_LIBTYPE_STATIC;_HAS_EXCEPTIONS=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GLEW_STATIC;_HAS_EXCEPTIONS=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\ThirdParty\Mojo\ThirdParty\stb;..\ThirdParty\Mojo\ThirdParty\glew-2.1.0\include;..\ThirdParty\Mojo\ThirdParty\SDL2-2.0.9\include;..\ThirdParty\Mojo\ThirdParty\OpenAL-Soft-1.19.1\include;..\ThirdParty\Mojo\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>false</ExceptionHandling>
@@ -107,15 +107,15 @@
       <AdditionalLibraryDirectories>..\ThirdParty\Mojo\ThirdParty\SDL2-2.0.9\lib\Win32;..\ThirdParty\Mojo\ThirdParty\OpenAL-Soft-1.19.1\libs\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
     <PostBuildEvent>
-      <Command>IF EXIST D:\neonshooter\ThirdParty\Mojo\ThirdParty\SDL2-2.0.9\lib\Win32\SDL2.dll\ (xcopy /Q /E /Y /I D:\neonshooter\ThirdParty\Mojo\ThirdParty\SDL2-2.0.9\lib\Win32\SDL2.dll &gt; nul) ELSE (xcopy /Q /Y /I D:\neonshooter\ThirdParty\Mojo\ThirdParty\SDL2-2.0.9\lib\Win32\SDL2.dll &gt; nul)
-IF EXIST D:\neonshooter\ThirdParty\Mojo\ThirdParty\OpenAL-Soft-1.19.1\libs\Win32\OpenAL32.dll\ (xcopy /Q /E /Y /I D:\neonshooter\ThirdParty\Mojo\ThirdParty\OpenAL-Soft-1.19.1\libs\Win32\OpenAL32.dll &gt; nul) ELSE (xcopy /Q /Y /I D:\neonshooter\ThirdParty\Mojo\ThirdParty\OpenAL-Soft-1.19.1\libs\Win32\OpenAL32.dll &gt; nul)</Command>
+      <Command>IF EXIST E:\neonshooter\ThirdParty\Mojo\ThirdParty\SDL2-2.0.9\lib\Win32\SDL2.dll\ (xcopy /Q /E /Y /I E:\neonshooter\ThirdParty\Mojo\ThirdParty\SDL2-2.0.9\lib\Win32\SDL2.dll &gt; nul) ELSE (xcopy /Q /Y /I E:\neonshooter\ThirdParty\Mojo\ThirdParty\SDL2-2.0.9\lib\Win32\SDL2.dll &gt; nul)
+IF EXIST E:\neonshooter\ThirdParty\Mojo\ThirdParty\OpenAL-Soft-1.19.1\libs\Win32\OpenAL32.dll\ (xcopy /Q /E /Y /I E:\neonshooter\ThirdParty\Mojo\ThirdParty\OpenAL-Soft-1.19.1\libs\Win32\OpenAL32.dll &gt; nul) ELSE (xcopy /Q /Y /I E:\neonshooter\ThirdParty\Mojo\ThirdParty\OpenAL-Soft-1.19.1\libs\Win32\OpenAL32.dll &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>GLEW_STATIC;AL_LIBTYPE_STATIC;_HAS_EXCEPTIONS=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GLEW_STATIC;_HAS_EXCEPTIONS=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\ThirdParty\Mojo\ThirdParty\stb;..\ThirdParty\Mojo\ThirdParty\glew-2.1.0\include;..\ThirdParty\Mojo\ThirdParty\SDL2-2.0.9\include;..\ThirdParty\Mojo\ThirdParty\OpenAL-Soft-1.19.1\include;..\ThirdParty\Mojo\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>false</ExceptionHandling>
@@ -129,15 +129,15 @@ IF EXIST D:\neonshooter\ThirdParty\Mojo\ThirdParty\OpenAL-Soft-1.19.1\libs\Win32
       <AdditionalLibraryDirectories>..\ThirdParty\Mojo\ThirdParty\SDL2-2.0.9\lib\Win64;..\ThirdParty\Mojo\ThirdParty\OpenAL-Soft-1.19.1\libs\Win64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
     <PostBuildEvent>
-      <Command>IF EXIST D:\neonshooter\ThirdParty\Mojo\ThirdParty\SDL2-2.0.9\lib\Win64\SDL2.dll\ (xcopy /Q /E /Y /I D:\neonshooter\ThirdParty\Mojo\ThirdParty\SDL2-2.0.9\lib\Win64\SDL2.dll &gt; nul) ELSE (xcopy /Q /Y /I D:\neonshooter\ThirdParty\Mojo\ThirdParty\SDL2-2.0.9\lib\Win64\SDL2.dll &gt; nul)
-IF EXIST D:\neonshooter\ThirdParty\Mojo\ThirdParty\OpenAL-Soft-1.19.1\libs\Win64\OpenAL32.dll\ (xcopy /Q /E /Y /I D:\neonshooter\ThirdParty\Mojo\ThirdParty\OpenAL-Soft-1.19.1\libs\Win64\OpenAL32.dll &gt; nul) ELSE (xcopy /Q /Y /I D:\neonshooter\ThirdParty\Mojo\ThirdParty\OpenAL-Soft-1.19.1\libs\Win64\OpenAL32.dll &gt; nul)</Command>
+      <Command>IF EXIST E:\neonshooter\ThirdParty\Mojo\ThirdParty\SDL2-2.0.9\lib\Win64\SDL2.dll\ (xcopy /Q /E /Y /I E:\neonshooter\ThirdParty\Mojo\ThirdParty\SDL2-2.0.9\lib\Win64\SDL2.dll &gt; nul) ELSE (xcopy /Q /Y /I E:\neonshooter\ThirdParty\Mojo\ThirdParty\SDL2-2.0.9\lib\Win64\SDL2.dll &gt; nul)
+IF EXIST E:\neonshooter\ThirdParty\Mojo\ThirdParty\OpenAL-Soft-1.19.1\libs\Win64\OpenAL32.dll\ (xcopy /Q /E /Y /I E:\neonshooter\ThirdParty\Mojo\ThirdParty\OpenAL-Soft-1.19.1\libs\Win64\OpenAL32.dll &gt; nul) ELSE (xcopy /Q /Y /I E:\neonshooter\ThirdParty\Mojo\ThirdParty\OpenAL-Soft-1.19.1\libs\Win64\OpenAL32.dll &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>GLEW_STATIC;AL_LIBTYPE_STATIC;_HAS_EXCEPTIONS=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GLEW_STATIC;_HAS_EXCEPTIONS=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\ThirdParty\Mojo\ThirdParty\stb;..\ThirdParty\Mojo\ThirdParty\glew-2.1.0\include;..\ThirdParty\Mojo\ThirdParty\SDL2-2.0.9\include;..\ThirdParty\Mojo\ThirdParty\OpenAL-Soft-1.19.1\include;..\ThirdParty\Mojo\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>false</ExceptionHandling>
@@ -151,15 +151,15 @@ IF EXIST D:\neonshooter\ThirdParty\Mojo\ThirdParty\OpenAL-Soft-1.19.1\libs\Win64
       <AdditionalLibraryDirectories>..\ThirdParty\Mojo\ThirdParty\SDL2-2.0.9\lib\Win32;..\ThirdParty\Mojo\ThirdParty\OpenAL-Soft-1.19.1\libs\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
     <PostBuildEvent>
-      <Command>IF EXIST D:\neonshooter\ThirdParty\Mojo\ThirdParty\SDL2-2.0.9\lib\Win32\SDL2.dll\ (xcopy /Q /E /Y /I D:\neonshooter\ThirdParty\Mojo\ThirdParty\SDL2-2.0.9\lib\Win32\SDL2.dll &gt; nul) ELSE (xcopy /Q /Y /I D:\neonshooter\ThirdParty\Mojo\ThirdParty\SDL2-2.0.9\lib\Win32\SDL2.dll &gt; nul)
-IF EXIST D:\neonshooter\ThirdParty\Mojo\ThirdParty\OpenAL-Soft-1.19.1\libs\Win32\OpenAL32.dll\ (xcopy /Q /E /Y /I D:\neonshooter\ThirdParty\Mojo\ThirdParty\OpenAL-Soft-1.19.1\libs\Win32\OpenAL32.dll &gt; nul) ELSE (xcopy /Q /Y /I D:\neonshooter\ThirdParty\Mojo\ThirdParty\OpenAL-Soft-1.19.1\libs\Win32\OpenAL32.dll &gt; nul)</Command>
+      <Command>IF EXIST E:\neonshooter\ThirdParty\Mojo\ThirdParty\SDL2-2.0.9\lib\Win32\SDL2.dll\ (xcopy /Q /E /Y /I E:\neonshooter\ThirdParty\Mojo\ThirdParty\SDL2-2.0.9\lib\Win32\SDL2.dll &gt; nul) ELSE (xcopy /Q /Y /I E:\neonshooter\ThirdParty\Mojo\ThirdParty\SDL2-2.0.9\lib\Win32\SDL2.dll &gt; nul)
+IF EXIST E:\neonshooter\ThirdParty\Mojo\ThirdParty\OpenAL-Soft-1.19.1\libs\Win32\OpenAL32.dll\ (xcopy /Q /E /Y /I E:\neonshooter\ThirdParty\Mojo\ThirdParty\OpenAL-Soft-1.19.1\libs\Win32\OpenAL32.dll &gt; nul) ELSE (xcopy /Q /Y /I E:\neonshooter\ThirdParty\Mojo\ThirdParty\OpenAL-Soft-1.19.1\libs\Win32\OpenAL32.dll &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>GLEW_STATIC;AL_LIBTYPE_STATIC;_HAS_EXCEPTIONS=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GLEW_STATIC;_HAS_EXCEPTIONS=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\ThirdParty\Mojo\ThirdParty\stb;..\ThirdParty\Mojo\ThirdParty\glew-2.1.0\include;..\ThirdParty\Mojo\ThirdParty\SDL2-2.0.9\include;..\ThirdParty\Mojo\ThirdParty\OpenAL-Soft-1.19.1\include;..\ThirdParty\Mojo\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>false</ExceptionHandling>
@@ -173,8 +173,8 @@ IF EXIST D:\neonshooter\ThirdParty\Mojo\ThirdParty\OpenAL-Soft-1.19.1\libs\Win32
       <AdditionalLibraryDirectories>..\ThirdParty\Mojo\ThirdParty\SDL2-2.0.9\lib\Win64;..\ThirdParty\Mojo\ThirdParty\OpenAL-Soft-1.19.1\libs\Win64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
     <PostBuildEvent>
-      <Command>IF EXIST D:\neonshooter\ThirdParty\Mojo\ThirdParty\SDL2-2.0.9\lib\Win64\SDL2.dll\ (xcopy /Q /E /Y /I D:\neonshooter\ThirdParty\Mojo\ThirdParty\SDL2-2.0.9\lib\Win64\SDL2.dll &gt; nul) ELSE (xcopy /Q /Y /I D:\neonshooter\ThirdParty\Mojo\ThirdParty\SDL2-2.0.9\lib\Win64\SDL2.dll &gt; nul)
-IF EXIST D:\neonshooter\ThirdParty\Mojo\ThirdParty\OpenAL-Soft-1.19.1\libs\Win64\OpenAL32.dll\ (xcopy /Q /E /Y /I D:\neonshooter\ThirdParty\Mojo\ThirdParty\OpenAL-Soft-1.19.1\libs\Win64\OpenAL32.dll &gt; nul) ELSE (xcopy /Q /Y /I D:\neonshooter\ThirdParty\Mojo\ThirdParty\OpenAL-Soft-1.19.1\libs\Win64\OpenAL32.dll &gt; nul)</Command>
+      <Command>IF EXIST E:\neonshooter\ThirdParty\Mojo\ThirdParty\SDL2-2.0.9\lib\Win64\SDL2.dll\ (xcopy /Q /E /Y /I E:\neonshooter\ThirdParty\Mojo\ThirdParty\SDL2-2.0.9\lib\Win64\SDL2.dll &gt; nul) ELSE (xcopy /Q /Y /I E:\neonshooter\ThirdParty\Mojo\ThirdParty\SDL2-2.0.9\lib\Win64\SDL2.dll &gt; nul)
+IF EXIST E:\neonshooter\ThirdParty\Mojo\ThirdParty\OpenAL-Soft-1.19.1\libs\Win64\OpenAL32.dll\ (xcopy /Q /E /Y /I E:\neonshooter\ThirdParty\Mojo\ThirdParty\OpenAL-Soft-1.19.1\libs\Win64\OpenAL32.dll &gt; nul) ELSE (xcopy /Q /Y /I E:\neonshooter\ThirdParty\Mojo\ThirdParty\OpenAL-Soft-1.19.1\libs\Win64\OpenAL32.dll &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -203,7 +203,7 @@ IF EXIST D:\neonshooter\ThirdParty\Mojo\ThirdParty\OpenAL-Soft-1.19.1\libs\Win64
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Texture.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Thread.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Window.h" />
-    <ClInclude Include="..\ThirdParty\Mojo\Sources\Mojo_Input.h" />
+    <ClInclude Include="..\ThirdParty\Mojo\Sources\Mojo_SDL2\Mojo_SDL2_Input.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Allocator.cc" />
@@ -214,9 +214,9 @@ IF EXIST D:\neonshooter\ThirdParty\Mojo\ThirdParty\OpenAL-Soft-1.19.1\libs\Win64
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_FileSystem.cc" />
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Font.cc" />
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Graphics.cc" />
-    <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Input.cc" />
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_JobSystem.cc" />
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Material.cc" />
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_SDL2\Mojo_SDL2_Input.cc" />
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_SDL2\Mojo_SDL2_Window.cc" />
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Shader.cc" />
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_SpinLock.cc" />

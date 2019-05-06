@@ -99,8 +99,8 @@
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Window.h">
       <Filter>Include\Mojo</Filter>
     </ClInclude>
-    <ClInclude Include="..\ThirdParty\Mojo\Sources\Mojo_Input.h">
-      <Filter>Sources</Filter>
+    <ClInclude Include="..\ThirdParty\Mojo\Sources\Mojo_SDL2\Mojo_SDL2_Input.h">
+      <Filter>Sources\Mojo_SDL2</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -128,14 +128,14 @@
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Graphics.cc">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Input.cc">
-      <Filter>Sources</Filter>
-    </ClCompile>
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_JobSystem.cc">
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Material.cc">
       <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_SDL2\Mojo_SDL2_Input.cc">
+      <Filter>Sources\Mojo_SDL2</Filter>
     </ClCompile>
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_SDL2\Mojo_SDL2_Window.cc">
       <Filter>Sources\Mojo_SDL2</Filter>

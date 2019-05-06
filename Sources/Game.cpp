@@ -1314,26 +1314,6 @@ namespace Game
 
         // Initialize audio
         GameAudio::Init();
-
-        //SDL_InitSubSystem(SDL_INIT_JOYSTICK);
-        //if (SDL_NumJoysticks() > 0)
-        //{
-        //    SDL_Joystick* joystick = SDL_JoystickOpen(0);
-        //
-        //    if (joystick)
-        //    {
-        //        printf("Opened Joystick 0\n");
-        //        printf("Name: %s\n", SDL_JoystickNameForIndex(0));
-        //        printf("Number of Axes: %d\n", SDL_JoystickNumAxes(joystick));
-        //        printf("Number of Buttons: %d\n", SDL_JoystickNumButtons(joystick));
-        //        printf("Number of Balls: %d\n", SDL_JoystickNumBalls(joystick));
-        //    }
-        //    else
-        //    {
-        //        printf("Couldn't open Joystick 0\n");
-        //    }
-        //
-        //}
     }
 
     void Input()
@@ -1388,36 +1368,32 @@ namespace Game
             aim = lerp(aim, taim, 0.8f);
         }
 
-        //
-        //SDL_Joystick* joystick = SDL_JoystickOpen(0);
-        //if (joystick)
-        //{
-        //    axis_vertical = step(axis_vertical, -(SDL_JoystickGetAxis(joystick, 1)) / (float)SHRT_MAX, 0.1f);
-        //    axis_horizontal = step(axis_horizontal, (SDL_JoystickGetAxis(joystick, 0)) / (float)SHRT_MAX, 0.1f);
-        //
-        //    float x = (SDL_JoystickGetAxis(joystick, 3)) / (float)SHRT_MAX;
-        //    float y = -(SDL_JoystickGetAxis(joystick, 4)) / (float)SHRT_MAX;
-        //    if (length(float2(x, y)) < 0.01f)
-        //    {
-        //        aim = float2();
-        //    }
-        //    else
-        //    {
-        //        fire = true;
-        //
-#if 0   //
-        //        float cur_angle = vec2_angle(aim);
-        //        float aim_angle = atan2f(y, x);
-        //
-        //        cur_angle = step(cur_angle, aim_angle, 0.8f);
-        //        aim = float2(cosf(cur_angle), sinf(cur_angle));
-#endif  //
-        //
-        //        aim.x = step(aim.x, x, 0.6f);
-        //        aim.y = step(aim.y, y, 0.6f);
-        //    }
-        //}
-        //
+        
+        axis_vertical = lerp(axis_vertical, Input::GetAxis(0, GamepadAxis::LeftVertical), LERP_RATE);
+        axis_horizontal = lerp(axis_horizontal, Input::GetAxis(0, GamepadAxis::LeftHorizontal), LERP_RATE);
+        
+        float x = Input::GetAxis(0, GamepadAxis::RightHorizontal);
+        float y = Input::GetAxis(0, GamepadAxis::RightVertical);
+        if (length(float2(x, y)) < 0.01f)
+        {
+            aim = float2();
+        }
+        else
+        {
+            fire = true;
+        
+   
+            float cur_angle = atan2f(aim.y, aim.x);
+            float aim_angle = atan2f(y, x);
+        
+            cur_angle = lerp(cur_angle, aim_angle, 0.8f);
+            aim = float2(cosf(cur_angle), sinf(cur_angle));
+
+        
+            aim.x = lerp(aim.x, x, 0.6f);
+            aim.y = lerp(aim.y, y, 0.6f);
+        }
+        
 
         float2 axes = float2(axis_horizontal, axis_vertical);
         if (length(axes) < 0.01f)

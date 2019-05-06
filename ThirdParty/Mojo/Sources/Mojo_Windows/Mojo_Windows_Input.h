@@ -6,6 +6,8 @@ inline namespace Mojo
 {
     namespace Input
     {
+        void Setup(void);
+
         void NewFrame(void);
         void EndFrame(void);
 

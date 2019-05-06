@@ -18,43 +18,41 @@ inline namespace Mojo
 
     enum struct GamepadAxis
     {
-        None,
-
-        MoveVertical,
-        MoveHorizontal,
+        None = -1,
 
         LeftVertical,
         LeftHorizontal,
 
         RightVertical,
         RightHorizontal,
+
+        LeftTrigger,
+        RightTrigger,
     };
 
     enum struct GamepadButton
     {
-        None, 
+        None = -1, 
 
-        Back, 
-        Start,
-
-        Square,
         Cross,
         Circle,
+        Square,
         Triangle,
 
-        LeftBumper,
-        LeftTrigger,
-
-        RightBumper,
-        RightTrigger,
-
-        Up,
-        Down,
-        Left,
-        Right,
+        Back,
+        Guide,
+        Start,
 
         LeftStick,
         RightStick,
+
+        LeftBumper,
+        RightBumper,
+
+        DpadUp,
+        DpadDown,
+        DpadLeft,
+        DpadRight,
 
         Menu = Start,
         Map = Back,

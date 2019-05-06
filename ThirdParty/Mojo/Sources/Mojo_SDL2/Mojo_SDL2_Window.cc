@@ -1,11 +1,14 @@
 #include <Mojo/Window.h>
 #include <Mojo/Graphics.h>
 
+#include <stdio.h>
+#include <limits.h>
 #include <GL/glew.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>
 
-#include "../Mojo_Input.h"
+#include "Mojo_SDL2_Input.h"
+
 #pragma comment(lib, "OpenGL32.lib")
 
 inline namespace Mojo
@@ -187,6 +190,8 @@ inline namespace Mojo
 
         void HandleEvent(const SDL_Event& event)
         {
+            constexpr float axisFactor = 1 / (float)SHRT_MAX;
+
             switch (event.type)
             {
             case SDL_MOUSEBUTTONUP:
@@ -240,6 +245,11 @@ inline namespace Mojo
 
         bool Setup(const char* title, int width, int height, int flags)
         {
+            if (_mainWindow)
+            {
+                return true;
+            }
+
             Uint32 sdlFlags = SDL_WINDOW_OPENGL;
             if (flags & WindowFlag::Visible)
             {
@@ -276,11 +286,14 @@ inline namespace Mojo
             _mainWindow = window;
             _windowFlags = flags;
 
+            Input::Setup();
             return true;
         }
 
         void Shutdown(void)
         {
+            Input::Shutdown();
+
             SDL_DestroyWindow(_mainWindow);
 
             _mainWindow  = NULL;
@@ -538,8 +551,8 @@ inline namespace Mojo
             //    0
             //};
 
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
             SDL_GLContext context = SDL_GL_CreateContext(Window::_mainWindow);
             if (!context)
