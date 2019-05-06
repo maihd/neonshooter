@@ -27,16 +27,6 @@ inline namespace Mojo
         }
     };
 
-    namespace ClearFlag
-    {
-        enum
-        {
-            Color   = 1 << 0,
-            Depth   = 1 << 1,
-            Stencil = 1 << 2,
-        };
-    };
-
     enum struct DrawType
     {
         Point,
@@ -78,13 +68,6 @@ inline namespace Mojo
 
         Float,
         Double,
-    };
-
-    enum struct GraphicsMode
-    {
-        Blend,
-        Depth,
-        Stencil,
     };
 
     enum struct BlendOp
@@ -186,15 +169,16 @@ inline namespace Mojo
 
     struct RenderTarget
     {
-        Texture  _texture;
-
-        unsigned _frameBuffer  = 0;
-        unsigned _renderBuffer = 0;
-        int      width         = 0;
-        int      height        = 0;
+        unsigned texture                = 0;
+        int      width                  = 0;
+        int      height                 = 0;        
+        
+        unsigned frameBuffer            = 0;
+        unsigned renderBuffer           = 0;
+        //unsigned depthStencilTexture    = 0;
 
         //static RenderTarget Create(void);
-        static RenderTarget Create(int width, int height, PixelFormat pixelFormat = PixelFormat::Depth24Stencil8);
+        static RenderTarget Create(int width, int height);
         static void         Destroy(RenderTarget& renderTarget);
     };
 
@@ -203,12 +187,8 @@ inline namespace Mojo
         bool Setup(const GraphicsSettings& settings = GraphicsSettings());
         void Shutdown(void);
 
-        void ClearBuffer(int flags = ClearFlag::Color);
+        void ClearBuffer(void);
         void SwapBuffers(void);
-
-        void Enable(GraphicsMode mode);
-        void Disable(GraphicsMode mode);
-        bool IsEnabled(GraphicsMode mode);
 
         void SetBlendOp(BlendOp op);
         void SetBlendFunc(BlendFunc func);

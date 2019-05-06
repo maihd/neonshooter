@@ -1072,7 +1072,7 @@ namespace Renderer
     void Init(void)
     {
         //Graphics::Enable(GraphicsMode::Depth);
-        Graphics::Enable(GraphicsMode::Blend);
+        //Graphics::Enable(GraphicsMode::Blend);
         Graphics::SetBlendFunc(BlendFactor::SrcAlpha, BlendFactor::InvertSrcAlpha);
 
         _drawCmds.Expand(50 * 1024);
@@ -1263,7 +1263,7 @@ namespace Renderer
     void Present()
     {
         Graphics::BindRenderTarget(&_fxaaRenderTarget);
-        Graphics::ClearBuffer(ClearFlag::Color | ClearFlag::Depth);
+        Graphics::ClearBuffer();
 
         Graphics::BindShader(_spriteShader);
         Graphics::BindVertexArray(_spriteVertexArray);

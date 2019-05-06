@@ -664,40 +664,61 @@ inline namespace Mojo
         HandleError();
     }
 
-    RenderTarget RenderTarget::Create(int width, int height, PixelFormat pixelFormat)
+    RenderTarget RenderTarget::Create(int width, int height)
     {
         RenderTarget renderTarget;
 
-        renderTarget._texture = Texture::Create();
-        glBindTexture(GL_TEXTURE_2D, renderTarget._texture._handle);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+        // Generate color texture
+        glGenTextures(1, &renderTarget.texture);
+        if (!renderTarget.texture)
+        {
+            return renderTarget;
+        }
+
+        glBindTexture(GL_TEXTURE_2D, renderTarget.texture);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
         glBindTexture(GL_TEXTURE_2D, 0);
 
-        glGenFramebuffersEXT(1, &renderTarget._frameBuffer);
-        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, renderTarget._frameBuffer);
-        glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, renderTarget._texture._handle, 0);
+        // Generate depth stencil buffer
+        //glGenTextures(1, &renderTarget.depthStencilTexture);
+        //if (!renderTarget.depthStencilTexture)
+        //{
+        //    return renderTarget;
+        //}
+        //glBindTexture(GL_TEXTURE_2D, renderTarget.colorTexture);
+        //glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, width, height, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
+        //glBindTexture(GL_TEXTURE_2D, 0);
+
+        // Generate render buffer
+        glGenRenderbuffers(1, &renderTarget.renderBuffer);
+        glNamedRenderbufferStorage(renderTarget.renderBuffer, GL_DEPTH24_STENCIL8, width, height);
+
+        // Generate frame buffer
+        GLint bindingFramebuffer;
+        glGetIntegerv(GL_FRAMEBUFFER_BINDING, &bindingFramebuffer);
+
+        glGenFramebuffers(1, &renderTarget.frameBuffer);
+        glBindFramebuffer(GL_FRAMEBUFFER, renderTarget.frameBuffer);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderTarget.texture, 0); 
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, renderTarget.renderBuffer);
+        //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, renderTarget.depthStencilTexture, 0);
 
         GLenum status;
-        status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+        status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
         switch (status)
         {
-        case GL_FRAMEBUFFER_COMPLETE_EXT:
-            //printf("renderer::init(): Success create framebuffer.\n");
+        case GL_FRAMEBUFFER_COMPLETE:
             break;
         
         default:
-            //fprintf(stderr, "Failed to create framebuffer.\n");
-            //fprintf(stderr, "An error occured, press any key to exit...");
-            //getchar();
-            //exit(1);
-            break;
+            return renderTarget;
         }
         
-        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-
-        //glGenVertexArrays(1, &framevao);
-        //glGenBuffers(1, &framevbo);
-        //
+        glBindFramebuffer(GL_FRAMEBUFFER, bindingFramebuffer);
 
         return renderTarget;
     }
@@ -711,8 +732,12 @@ inline namespace Mojo
     {
         void ApplyDefaultSettings(void)
         {
+            // Default graphics mode
+            glEnable(GL_BLEND);
+            glEnable(GL_DEPTH_TEST);
+            glEnable(GL_STENCIL_TEST);
+
             // Default blend
-            Graphics::Enable(GraphicsMode::Blend);
             Graphics::SetBlendOp(BlendOp::Add);
             Graphics::SetBlendFunc(BlendFactor::SrcAlpha, BlendFactor::InvertSrcAlpha);
         }
@@ -737,63 +762,6 @@ inline namespace Mojo
 
             _renderTargetVertexBuffer.SetData(vertices, sizeof(vertices), BufferUsage::StaticDraw);
             _renderTargetVertexArray.SetAttribute(_renderTargetVertexBuffer, 0, 4, DataType::Float, false, 4 * sizeof(float));
-        }
-
-        void Enable(GraphicsMode mode)
-        {
-            switch (mode)
-            {
-            case GraphicsMode::Blend:
-                glEnable(GL_BLEND);
-                break;
-
-            case GraphicsMode::Depth:
-                glEnable(GL_DEPTH);
-                glEnable(GL_DEPTH_TEST);
-                break;
-
-            case GraphicsMode::Stencil:
-                glEnable(GL_STENCIL);
-                glEnable(GL_STENCIL_TEST);
-                break;
-            }
-        }
-
-        void Disable(GraphicsMode mode)
-        {
-            switch (mode)
-            {
-            case GraphicsMode::Blend:
-                glDisable(GL_BLEND);
-                break;
-
-            case GraphicsMode::Depth:
-                glDisable(GL_DEPTH);
-                glDisable(GL_DEPTH_TEST);
-                break;
-
-            case GraphicsMode::Stencil:
-                glDisable(GL_STENCIL);
-                glDisable(GL_STENCIL_TEST);
-                break;
-            }
-        }
-
-        bool IsEnabled(GraphicsMode mode)
-        {
-            switch (mode)
-            {
-            case GraphicsMode::Blend:
-                return glIsEnabled(GL_BLEND);
-
-            case GraphicsMode::Depth:
-                return glIsEnabled(GL_DEPTH_TEST);
-
-            case GraphicsMode::Stencil:
-                return glIsEnabled(GL_STENCIL_TEST);
-            }
-
-            return false;
         }
 
         void SetBlendOp(BlendOp op)
@@ -849,7 +817,7 @@ inline namespace Mojo
 
         void BindRenderTarget(RenderTarget* renderTarget)
         {
-            glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, renderTarget ? renderTarget->_frameBuffer : 0);
+            glBindFramebuffer(GL_FRAMEBUFFER, renderTarget ? renderTarget->frameBuffer : 0);
         }
 
         void BlitRenderTarget(RenderTarget* src, RenderTarget* dst, const Shader& shader)
@@ -857,14 +825,27 @@ inline namespace Mojo
             if (src)
             {
                 GLint bindingFramebuffer;
-                glGetIntegerv(GL_FRAMEBUFFER_BINDING_EXT, &bindingFramebuffer);
+                glGetIntegerv(GL_FRAMEBUFFER_BINDING, &bindingFramebuffer);
 
-                glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, dst ? dst->_frameBuffer : 0);
+                glBindFramebuffer(GL_FRAMEBUFFER, dst ? dst->frameBuffer : 0);
 
-                Graphics::ClearBuffer(ClearFlag::Color | ClearFlag::Depth | ClearFlag::Stencil);
-                Graphics::DrawArrays(DrawType::Triangles, shader, _renderTargetVertexArray, src->_texture, 6, 0);
+                // Clear dst buffer
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-                glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, bindingFramebuffer);
+                glUseProgram(shader._handle);
+                glBindVertexArray(_renderTargetVertexArray._handle);
+
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, src->texture);
+
+                glDrawArrays(GL_TRIANGLES, 0, 6);
+
+                glBindTexture(GL_TEXTURE_2D, 0);
+
+                glBindVertexArray(0);
+                glUseProgram(0);
+
+                glBindFramebuffer(GL_FRAMEBUFFER, bindingFramebuffer);
             }
         }
 
@@ -937,7 +918,8 @@ inline namespace Mojo
             glBindVertexArray(array._handle);
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indices._handle);
             
-            glDrawElements(glDrawType, count, ConvertDataType(indices._dataType), (const void*)(offset * ConvertDataSize(indices._dataType)));
+            const void* memoryOffset = (const void*)(intptr_t)(offset * ConvertDataSize(indices._dataType));
+            glDrawElements(glDrawType, count, ConvertDataType(indices._dataType), memoryOffset);
             
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
             glBindVertexArray(0);

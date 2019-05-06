@@ -765,9 +765,9 @@ inline namespace Mojo
 
             int contextAttribs[16] =
             {
+                WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
                 WGL_CONTEXT_MAJOR_VERSION_ARB, 4, // Highest current supported version
                 WGL_CONTEXT_MINOR_VERSION_ARB, 5, // Highest current supported version
-                WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
                 WGL_CONTEXT_LAYER_PLANE_ARB, 0, // main plane
                 WGL_CONTEXT_FLAGS_ARB, 0, // prevent use deprecated features
                 0
@@ -814,13 +814,9 @@ inline namespace Mojo
             ::SwapBuffers(Window::_mainDevice);
         }
 
-        void ClearBuffer(int flags)
+        void ClearBuffer(void)
         {
-            GLenum clearBits = 0;
-            clearBits |= (flags & ClearFlag::Color)   ? GL_COLOR_BUFFER_BIT   : 0;
-            clearBits |= (flags & ClearFlag::Depth)   ? GL_DEPTH_BUFFER_BIT   : 0;
-            clearBits |= (flags & ClearFlag::Stencil) ? GL_STENCIL_BUFFER_BIT : 0;
-            glClear(clearBits);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         }
     }
 }
