@@ -46,4 +46,13 @@ do
         path.join(PROJ_DIR, "Sources/**/*.cc"),
         path.join(PROJ_DIR, "Sources/**/*.cpp"),
     }
+
+    filter "action:vs*"
+    do
+        linkoptions {
+            "/SAFESEH:NO"
+        }
+    end
+
+    filter {}
 end

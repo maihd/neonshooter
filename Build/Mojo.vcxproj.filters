@@ -36,6 +36,9 @@
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Atomic.h">
       <Filter>Include\Mojo</Filter>
     </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Audio.h">
+      <Filter>Include\Mojo</Filter>
+    </ClInclude>
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Coroutine.h">
       <Filter>Include\Mojo</Filter>
     </ClInclude>
@@ -46,6 +49,12 @@
       <Filter>Include\Mojo</Filter>
     </ClInclude>
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\FileSystem.h">
+      <Filter>Include\Mojo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Font.h">
+      <Filter>Include\Mojo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Graphics.h">
       <Filter>Include\Mojo</Filter>
     </ClInclude>
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\HashTable.h">
@@ -69,7 +78,13 @@
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\SpinLock.h">
       <Filter>Include\Mojo</Filter>
     </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\SpriteBatch.h">
+      <Filter>Include\Mojo</Filter>
+    </ClInclude>
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\System.h">
+      <Filter>Include\Mojo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Texture.h">
       <Filter>Include\Mojo</Filter>
     </ClInclude>
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Thread.h">
@@ -84,12 +99,6 @@
     <ClInclude Include="..\ThirdParty\Mojo\Sources\Mojo_Window.h">
       <Filter>Sources</Filter>
     </ClInclude>
-    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Graphics.h">
-      <Filter>Include\Mojo</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Audio.h">
-      <Filter>Include\Mojo</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Allocator.cc">
@@ -101,6 +110,9 @@
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Atomic.cc">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Audio.cc">
+      <Filter>Sources</Filter>
+    </ClCompile>
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Coroutine.cc">
       <Filter>Sources</Filter>
     </ClCompile>
@@ -108,6 +120,12 @@
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_FileSystem.cc">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Font.cc">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Graphics.cc">
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Input.cc">
@@ -125,6 +143,9 @@
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_System.cc">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Texture.cc">
+      <Filter>Sources</Filter>
+    </ClCompile>
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Thread.cc">
       <Filter>Sources</Filter>
     </ClCompile>
@@ -133,12 +154,6 @@
     </ClCompile>
     <ClCompile Include="..\ThirdParty\Mojo\ThirdParty\glew-2.1.0\src\glew.c">
       <Filter>ThirdParty\glew-2.1.0\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Graphics.cc">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Audio.cc">
-      <Filter>Sources</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
