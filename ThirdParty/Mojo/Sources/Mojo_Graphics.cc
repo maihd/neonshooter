@@ -210,20 +210,20 @@ inline namespace Mojo
     {
         _dataType = type;
 
-        //GLint boundHandle;
-        //glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &boundHandle);
-        //if (boundHandle == _handle)
-        //{
-        //    ::glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, data, ConvertBufferUsage(usage));
-        //}
-        //else
-        //{
-        //    ::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _handle);
-        //    ::glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, data, ConvertBufferUsage(usage));
-        //    ::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, boundHandle);
-        //}
+        GLint boundHandle;
+        glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &boundHandle);
+        if (boundHandle == _handle)
+        {
+            ::glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, data, ConvertBufferUsage(usage));
+        }
+        else
+        {
+            ::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _handle);
+            ::glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, data, ConvertBufferUsage(usage));
+            ::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, (GLuint)boundHandle);
+        }
 
-        glNamedBufferData(_handle, size, data, ConvertBufferUsage(usage));
+        //glNamedBufferData(_handle, size, data, ConvertBufferUsage(usage));
     }
 
     void IndexBuffer::SetBlendOp(BlendOp op)
@@ -262,18 +262,18 @@ inline namespace Mojo
         GLint boundHandle;
         glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &boundHandle);
         
-        //if (boundHandle == _handle)
-        //{
-        //    ::glBufferData(GL_ARRAY_BUFFER, size, data, ConvertBufferUsage(usage));
-        //}
-        //else
-        //{
-        //    ::glBindBuffer(GL_ARRAY_BUFFER, _handle);
-        //    ::glBufferData(GL_ARRAY_BUFFER, size, data, ConvertBufferUsage(usage));
-        //    ::glBindBuffer(GL_ARRAY_BUFFER, boundHandle);
-        //}
+        if (boundHandle == _handle)
+        {
+            ::glBufferData(GL_ARRAY_BUFFER, size, data, ConvertBufferUsage(usage));
+        }
+        else
+        {
+            ::glBindBuffer(GL_ARRAY_BUFFER, _handle);
+            ::glBufferData(GL_ARRAY_BUFFER, size, data, ConvertBufferUsage(usage));
+            ::glBindBuffer(GL_ARRAY_BUFFER, (GLuint)boundHandle);
+        }
 
-        glNamedBufferData(_handle, size, data, ConvertBufferUsage(usage));
+        //glNamedBufferData(_handle, size, data, ConvertBufferUsage(usage));
     }
 
     void VertexBuffer::SetBlendOp(BlendOp op) 
@@ -490,7 +490,7 @@ inline namespace Mojo
                 glBindFramebuffer(GL_FRAMEBUFFER, dst ? dst->frameBuffer : 0);
 
                 // Clear dst buffer
-                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+                Graphics::ClearBuffer();
 
                 glUseProgram(shader._handle);
                 glBindVertexArray(_renderTargetVertexArray._handle);

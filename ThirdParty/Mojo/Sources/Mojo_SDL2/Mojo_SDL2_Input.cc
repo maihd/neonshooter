@@ -96,6 +96,8 @@ inline namespace Mojo
                     _gameControllers[i] = NULL;
                 }
             }
+
+            SDL_QuitSubSystem(SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER);
         }
 
         void NewFrame(void)

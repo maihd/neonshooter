@@ -245,6 +245,13 @@ inline namespace Mojo
 
         bool Setup(const char* title, int width, int height, int flags)
         {
+            if (SDL_InitSubSystem(SDL_INIT_VIDEO) != 0)
+            {
+                fprintf(stderr, "[Error] SDL_Init: %s\n", SDL_GetError());
+                //goto error;
+                return false;
+            }
+
             if (_mainWindow)
             {
                 return true;
@@ -295,6 +302,7 @@ inline namespace Mojo
             Input::Shutdown();
 
             SDL_DestroyWindow(_mainWindow);
+            SDL_QuitSubSystem(SDL_INIT_VIDEO);
 
             _mainWindow  = NULL;
             _windowFlags = 0;
@@ -552,7 +560,7 @@ inline namespace Mojo
             //};
 
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
             SDL_GLContext context = SDL_GL_CreateContext(Window::_mainWindow);
             if (!context)
@@ -568,7 +576,7 @@ inline namespace Mojo
             Window::_mainContext = context;
 
             // Initialize glew
-            glewExperimental = false;
+            //glewExperimental = false;
             GLenum glewState = glewInit();
             if (glewState != GLEW_OK)
             {
@@ -601,7 +609,9 @@ inline namespace Mojo
 
         void ClearBuffer(void)
         {
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+            //GLbitfield flags = GL_COLOR_BUFFER_BIT;// | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT;
+            GLbitfield flags = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT;
+            glClear(flags);
         }
     }
 }

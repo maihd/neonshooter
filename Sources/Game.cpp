@@ -588,20 +588,20 @@ namespace World
             float alpha = 0.7f;
 
             float2 mid_vel = vel;
-            ParticleSystem::SpawnParticle(glow_tex, pos, float4(1.0f, 0.7f, 0.1f, 1.0f) * alpha, 0.4f, float2(1.0f, 2.0f), angle, mid_vel);
-            ParticleSystem::SpawnParticle(line_tex, pos, float4(1.0f, 1.0f, 1.0f, 1.0f) * alpha, 0.4f, float2(1.0f, 1.0f), angle, mid_vel);
+            ParticleSystem::SpawnParticle(glow_tex, pos, float4(1.0f, 0.7f, 0.1f, 1.0f) * alpha, 0.4f, float2(3.0f, 2.0f), angle, mid_vel);
+            ParticleSystem::SpawnParticle(line_tex, pos, float4(1.0f, 1.0f, 1.0f, 1.0f) * alpha, 0.4f, float2(3.0f, 1.0f), angle, mid_vel);
 
             speed = rand() % 101 / 100.0f * 40.0f;
             angle = rand() % 101 / 100.0f * 2.0f * PI;
             float2 side_vel1 = vel + nvel + float2(cosf(angle), sinf(angle)) * speed;
-            ParticleSystem::SpawnParticle(glow_tex, pos, float4(0.8f, 0.2f, 0.1f, 1.0f) * alpha, 0.4f, float2(1.0f, 2.0f), angle, side_vel1);
-            ParticleSystem::SpawnParticle(line_tex, pos, float4(1.0f, 1.0f, 1.0f, 1.0f) * alpha, 0.4f, float2(1.0f, 1.0f), angle, side_vel1);
+            ParticleSystem::SpawnParticle(glow_tex, pos, float4(0.8f, 0.2f, 0.1f, 1.0f) * alpha, 0.4f, float2(3.0f, 2.0f), angle, side_vel1);
+            ParticleSystem::SpawnParticle(line_tex, pos, float4(1.0f, 1.0f, 1.0f, 1.0f) * alpha, 0.4f, float2(3.0f, 1.0f), angle, side_vel1);
 
             speed = rand() % 101 / 100.0f * 40.0f;
             angle = rand() % 101 / 100.0f * 2.0f * PI;
             float2 side_vel2 = vel - nvel + float2(cosf(angle), sinf(angle)) * speed;
-            ParticleSystem::SpawnParticle(glow_tex, pos, float4(0.8f, 0.2f, 0.1f, 1.0f) * alpha, 0.4f, float2(1.0f, 2.0f), angle, side_vel2);
-            ParticleSystem::SpawnParticle(line_tex, pos, float4(1.0f, 1.0f, 1.0f, 1.0f) * alpha, 0.4f, float2(1.0f, 1.0f), angle, side_vel2);
+            ParticleSystem::SpawnParticle(glow_tex, pos, float4(0.8f, 0.2f, 0.1f, 1.0f) * alpha, 0.4f, float2(3.0f, 2.0f), angle, side_vel2);
+            ParticleSystem::SpawnParticle(line_tex, pos, float4(1.0f, 1.0f, 1.0f, 1.0f) * alpha, 0.4f, float2(3.0f, 1.0f), angle, side_vel2);
         }
 
         for (int i = 0, n = bullets.count; i < n; i++)
@@ -1264,7 +1264,6 @@ namespace Renderer
         _spriteVertexBuffer.SetData(_vertices.elements, _vertices.count * sizeof(Vertex), BufferUsage::StreamDraw);
         _spriteIndexBuffer.SetData(_indices.elements, _indices.count * sizeof(unsigned short), DataType::Ushort, BufferUsage::StreamDraw);
 
-        int offset = 0;
         for (int i = 0, n = _drawCmds.count; i < n; i++)
         {
             const DrawCommand& cmd = _drawCmds[i];
@@ -1279,9 +1278,7 @@ namespace Renderer
             _spriteShader.SetFloat4("color", cmd.color.x, cmd.color.y, cmd.color.z, cmd.color.w);
 
             Graphics::BindTexture(cmd.texture);
-            Graphics::DrawIndices(DrawType::Triangles, _spriteIndexBuffer._dataType, cmd.drawCount, offset);
-
-            offset += cmd.drawCount;
+            Graphics::DrawIndices(DrawType::Triangles, _spriteIndexBuffer._dataType, cmd.drawCount, 0);
         }
 
         //Graphics::BlitRenderTarget(&_fxaaRenderTarget, &_glowRenderTarget, _fxaaShader);

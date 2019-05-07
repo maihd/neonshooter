@@ -132,7 +132,8 @@ inline namespace Mojo
             return false;
         }
 
-        glProgramUniform1f(_handle, location, x);
+        glUniform1f(location, x);
+        //glProgramUniform1f(_handle, location, x);
         return true;
     }
 
@@ -148,7 +149,8 @@ inline namespace Mojo
             return false;
         }
 
-        glProgramUniform2f(_handle, location, x, y);
+        glUniform2f(location, x, y);
+        //glProgramUniform2f(_handle, location, x, y);
         return true;
     }
 
@@ -164,7 +166,8 @@ inline namespace Mojo
             return false;
         }
 
-        glProgramUniform3f(_handle, location, x, y, z);
+        glUniform3f(location, x, y, z);
+        //glProgramUniform3f(_handle, location, x, y, z);
         return true;
     }
 
@@ -181,7 +184,7 @@ inline namespace Mojo
         }
 
         glUniform4f(location, x, y, z, w);
-        //::glProgramUniform4f(_handle, location, x, y, z, w);
+        //glProgramUniform4f(_handle, location, x, y, z, w);
         return true;
     }
 
@@ -198,7 +201,7 @@ inline namespace Mojo
         }
 
         glUniformMatrix4fv(location, 1, transpose, value);
-        //::glProgramUniformMatrix4fv(_handle, location, 1, transpose, value);
+        //glProgramUniformMatrix4fv(_handle, location, 1, transpose, value);
         return true;
     }
 
