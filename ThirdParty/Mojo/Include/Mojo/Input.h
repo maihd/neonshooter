@@ -176,6 +176,7 @@ inline namespace Mojo
         bool GetKeyUp(KeyCode button);
         bool GetKeyDown(KeyCode button);
 
+        bool  IsGamepadAttached(int gamepadID);
         float GetAxis(int gamepadID, GamepadAxis axis);
         bool  GetButton(int gamepadID, GamepadButton button);
         bool  GetButtonUp(int gamepadID, GamepadButton button);

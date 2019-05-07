@@ -394,5 +394,17 @@ inline namespace Mojo
         {
             return _inputText;
         }
+
+        bool IsGamepadAttached(int gamepadID)
+        {
+            if (gamepadID > -1 && gamepadID < MAX_GAME_CONTROLLERS)
+            {
+                return SDL_GameControllerGetAttached(_gameControllers[gamepadID]);
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }

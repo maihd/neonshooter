@@ -1368,32 +1368,33 @@ namespace Game
             aim = lerp(aim, taim, 0.8f);
         }
 
-        
-        axis_vertical = lerp(axis_vertical, Input::GetAxis(0, GamepadAxis::LeftVertical), LERP_RATE);
-        axis_horizontal = lerp(axis_horizontal, Input::GetAxis(0, GamepadAxis::LeftHorizontal), LERP_RATE);
-        
-        float x = Input::GetAxis(0, GamepadAxis::RightHorizontal);
-        float y = Input::GetAxis(0, GamepadAxis::RightVertical);
-        if (length(float2(x, y)) < 0.01f)
+        if (Input::IsGamepadAttached(0))
         {
-            aim = float2();
-        }
-        else
-        {
-            fire = true;
-        
-   
-            float cur_angle = atan2f(aim.y, aim.x);
-            float aim_angle = atan2f(y, x);
-        
-            cur_angle = lerp(cur_angle, aim_angle, 0.8f);
-            aim = float2(cosf(cur_angle), sinf(cur_angle));
+            axis_vertical = lerp(axis_vertical, Input::GetAxis(0, GamepadAxis::LeftVertical), LERP_RATE);
+            axis_horizontal = lerp(axis_horizontal, Input::GetAxis(0, GamepadAxis::LeftHorizontal), LERP_RATE);
 
-        
-            aim.x = lerp(aim.x, x, 0.6f);
-            aim.y = lerp(aim.y, y, 0.6f);
+            float x = Input::GetAxis(0, GamepadAxis::RightHorizontal);
+            float y = Input::GetAxis(0, GamepadAxis::RightVertical);
+            if (length(float2(x, y)) < 0.01f)
+            {
+                aim = float2();
+            }
+            else
+            {
+                fire = true;
+
+
+                float cur_angle = atan2f(aim.y, aim.x);
+                float aim_angle = atan2f(y, x);
+
+                cur_angle = lerp(cur_angle, aim_angle, 0.8f);
+                aim = float2(cosf(cur_angle), sinf(cur_angle));
+
+
+                aim.x = lerp(aim.x, x, 0.6f);
+                aim.y = lerp(aim.y, y, 0.6f);
+            }
         }
-        
 
         float2 axes = float2(axis_horizontal, axis_vertical);
         if (length(axes) < 0.01f)
