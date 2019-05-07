@@ -204,7 +204,14 @@ namespace GameAudio
 {
     void Init();
 
-    void PlayShoot();
+    void PlayShoot(void);
+    void StopShoot(void);
+
+    void PlayExplosion(void);
+    void StopExplosion(void);
+
+    void PlaySpawn(void);
+    void StopSpawn(void);
 }
 
 namespace ParticleSystem
@@ -330,7 +337,7 @@ namespace World
 
     void SpawnSeeker()
     {
-        //audio::play_spawn();
+        GameAudio::PlaySpawn();
 
         float2 pos = GetSpawnPosition();
 
@@ -358,7 +365,7 @@ namespace World
 
     void SpawnWanderer()
     {
-        //audio::play_spawn();
+        GameAudio::PlaySpawn();
 
         float2 pos = GetSpawnPosition();
 
@@ -386,7 +393,7 @@ namespace World
 
     void SpawnBlackhole()
     {
-        //audio::play_spawn();
+        GameAudio::PlaySpawn();
 
         float2 pos = GetSpawnPosition();
 
@@ -436,7 +443,7 @@ namespace World
 
     void DestroySeeker(Entity* seeker, int index)
     {
-        //audio::play_explosion();
+        GameAudio::PlayExplosion();
 
         seeker->active = false;
         freeSeekers.Push(index);
@@ -461,7 +468,7 @@ namespace World
 
     void DestroyWanderer(Entity* wanderer, int index)
     {
-        //audio::play_explosion();
+        GameAudio::PlayExplosion();
 
         wanderer->active = false;
         freeWanderers.Push(index);
@@ -486,7 +493,7 @@ namespace World
 
     void DestroyBlackhole(Entity* blaclhole, int index)
     {
-        //audio::play_explosion();
+        GameAudio::PlayExplosion();
 
         blaclhole->active = false;
         freeBlackHoles.Push(index);
@@ -511,7 +518,7 @@ namespace World
 
     void OnGameOver()
     {
-        //audio::play_explosion();
+        GameAudio::PlayExplosion();
 
         bullets.Clear();
         seekers.Clear();
@@ -827,7 +834,7 @@ namespace World
         if (!fire)
         {
             fireTimer = 0.0f;
-            //audio::stop_shoot();
+            //GameAudio::StopShoot();
         }
         else
         {
@@ -836,7 +843,7 @@ namespace World
             {
                 fireTimer = 0;
                 FireBullets(aim_dir);
-                //audio::play_shoot();
+                GameAudio::PlayShoot();
             }
         }
 
@@ -1449,72 +1456,6 @@ namespace GameAudio
         }
     }
 
-    static void* LoadWAV(const char* path, AudioFormat* format, int* size, int* freq)
-    {
-    #pragma push(1)
-        struct WAVHeader
-        {
-            uint32_t id;
-            uint32_t size;
-            uint32_t format;
-
-            uint32_t subchunk1;
-            uint32_t subchunk1size;
-
-            uint16_t audioformat;
-            uint16_t channels;
-            uint32_t samplerate;
-            uint32_t byterate;
-            uint32_t blockalign;
-            uint32_t bitspersample;
-
-            uint32_t subchunk2;
-            uint32_t subchunk2size;
-        };
-    #pragma pop
-
-        File file;
-        if (file.Open(path, FileOpen::Read | FileOpen::Direct))
-        {
-            WAVHeader header;
-            file.Read(&header, sizeof(header));
-
-            void* result = malloc(header.size);
-            file.Read(result, header.size);
-
-            *size = header.size;
-            *freq = header.samplerate;
-
-            if (header.channels == 1)
-            {
-                if (header.bitspersample == 8)
-                {
-                    *format = AudioFormat::Mono8;
-                }
-                else
-                {
-                    *format = AudioFormat::Mono16;
-                }
-            }
-            else
-            {
-                if (header.bitspersample == 8)
-                {
-                    *format = AudioFormat::Stereo8;
-                }
-                else
-                {
-                    *format = AudioFormat::Stereo16;
-                }
-            }
-
-            file.Close();
-            return result;
-        }
-
-        return NULL;
-    }
-
     bool Load(const char* path, AudioDefine* outAudio)
     {
         AudioDefine audio;
@@ -1527,17 +1468,37 @@ namespace GameAudio
             return true;
         }
 
-        int   len;
         void* wav;
+        int   len;
         int   freq;
-        AudioFormat format;
-        //ALenum error;
-        //SDL_AudioSpec spec;
-        if (wav = LoadWAV(path, &format, &len, &freq))
+        int   format;
+        if (wav = Assets::LoadWave(path, &len, &freq, &format))
         {
+            AudioFormat audioFormat = AudioFormat::Mono8;
+            switch (format)
+            {
+            case 0:
+                audioFormat = AudioFormat::Mono8;
+                break;
+
+            case 1:
+                audioFormat = AudioFormat::Mono16;
+                break;
+
+            case 2:
+                audioFormat = AudioFormat::Stereo8;
+                break;
+
+            case 3:
+                audioFormat = AudioFormat::Stereo16;
+                break;
+            }
+
             // Lock audio _context
             //alcSuspendContext(_context);
             //
+
+
             //alGenSources(1, &audio.source);
             //error = alGetError();
             //if (error != AL_NO_ERROR)
@@ -1545,7 +1506,7 @@ namespace GameAudio
             //    SDL_FreeWAV(wav);
             //    alDeleteSources(1, &audio.source);
             //    alDeleteBuffers(1, &audio.buffer);
-            //    printf("audio::play(): alGenSources: %s\n", alGetString(error));
+            //    printf("audio::Play(): alGenSources: %s\n", alGetString(error));
             //    return false;
             //}
             //
@@ -1556,7 +1517,7 @@ namespace GameAudio
             //    SDL_FreeWAV(wav);
             //    alDeleteSources(1, &audio.source);
             //    alDeleteBuffers(1, &audio.buffer);
-            //    printf("audio::play(): alGenBuffers: %s\n", alGetString(error));
+            //    printf("audio::Play(): alGenBuffers: %s\n", alGetString(error));
             //    return false;
             //}
             //
@@ -1567,9 +1528,10 @@ namespace GameAudio
             //    SDL_FreeWAV(wav);
             //    alDeleteSources(1, &audio.source);
             //    alDeleteBuffers(1, &audio.buffer);
-            //    printf("audio::play(): set source gain failed: %s\n", alGetString(error));
+            //    printf("audio::Play(): set source gain failed: %s\n", alGetString(error));
             //    return false;
             //}
+
             //
             //alSourcef(audio.source, AL_PITCH, 1);
             //error = alGetError();
@@ -1578,7 +1540,7 @@ namespace GameAudio
             //    SDL_FreeWAV(wav);
             //    alDeleteSources(1, &audio.source);
             //    alDeleteBuffers(1, &audio.buffer);
-            //    printf("audio::play(): set source pitch failed: %s\n", alGetString(error));
+            //    printf("audio::Play(): set source pitch failed: %s\n", alGetString(error));
             //    return false;
             //}
             //
@@ -1589,7 +1551,7 @@ namespace GameAudio
             //    SDL_FreeWAV(wav);
             //    alDeleteSources(1, &audio.source);
             //    alDeleteBuffers(1, &audio.buffer);
-            //    printf("audio::play(): set source position failed: %s\n", alGetString(error));
+            //    printf("audio::Play(): set source position failed: %s\n", alGetString(error));
             //    return false;
             //}
             //
@@ -1600,7 +1562,7 @@ namespace GameAudio
             //    SDL_FreeWAV(wav);
             //    alDeleteSources(1, &audio.source);
             //    alDeleteBuffers(1, &audio.buffer);
-            //    printf("audio::play(): set source velocity failed: %s\n", alGetString(error));
+            //    printf("audio::Play(): set source velocity failed: %s\n", alGetString(error));
             //    return false;
             //}
             //
@@ -1611,7 +1573,7 @@ namespace GameAudio
             //    SDL_FreeWAV(wav);
             //    alDeleteSources(1, &audio.source);
             //    alDeleteBuffers(1, &audio.buffer);
-            //    printf("audio::play(): set source loop failed: %s\n", alGetString(error));
+            //    printf("audio::Play(): set source loop failed: %s\n", alGetString(error));
             //    return false;
             //}
             //
@@ -1627,6 +1589,20 @@ namespace GameAudio
             //    format = spec.channels == 2 ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16;
             //    break;
             //}
+
+
+            audio.source = AudioSource::Create();
+            audio.source.SetGain(0.3f);
+            audio.source.SetPitch(1.0f);
+            audio.source.SetLooping(false);
+            audio.source.SetPosition(0, 0, 0);
+            audio.source.SetVelocity(0, 0, 0);
+
+            audio.buffer = AudioBuffer::Create();
+            audio.buffer.SetData(wav, len, freq, audioFormat);
+            
+            audio.source.SetBuffer(&audio.buffer);
+
             //
             //alBufferData(audio.buffer, format, wav, len, spec.freq);
             //error = alGetError();
@@ -1635,7 +1611,7 @@ namespace GameAudio
             //    SDL_FreeWAV(wav);
             //    alDeleteSources(1, &audio.source);
             //    alDeleteBuffers(1, &audio.buffer);
-            //    printf("audio::play(): set buffer data failed: %s\n", alGetString(error));
+            //    printf("audio::Play(): set buffer data failed: %s\n", alGetString(error));
             //    return false;
             //}
             //
@@ -1646,44 +1622,41 @@ namespace GameAudio
             //    free(wav);
             //    alDeleteSources(1, &audio.source);
             //    alDeleteBuffers(1, &audio.buffer);
-            //    printf("audio::play(): set buffer failed: %s\n", alGetString(error));
+            //    printf("audio::Play(): set buffer failed: %s\n", alGetString(error));
             //    return false;
             //}
             //
             //// Unlock audio _context
             //alcProcessContext(_context);
             //
-            //if (out_audio)
-            //{
-            //    out_audio[0] = audio;
-            //}
-            //table::set(audios, path, audio);
-            //
-            //SDL_FreeWAV(wav);
+
+            if (outAudio)
+            {
+                outAudio[0] = audio;
+            }
+
+            _audios.SetValue(HashString(path), audio);
+            Assets::FreeWave(wav);
             return true;
         }
         return false;
     }
 
-    void play(const char* path)
+    void Play(const char* path)
     {
         AudioDefine audio;
         if (Load(path, &audio))
         {
-            //ALint state;
-            //alGetSourcei(audio.source, AL_SOURCE_STATE, &state);
-            //alSourcePlay(audio.source);
+            audio.source.Play();
         }
     }
 
-    void stop(const char* path)
+    void Stop(const char* path)
     {
         AudioDefine audio;
         if (_audios.TryGetValue(HashString(path), &audio))
         {                        
-            //ALint state;
-            //alGetSourcei(audio.source, AL_SOURCE_STATE, &state);
-            //alSourceStop(audio.source);
+            audio.source.Stop();
         }
     }
 
@@ -1695,19 +1668,19 @@ namespace GameAudio
         "Audios/shoot-04.wav",
     };
 
-    void play_shoot(void)
+    void PlayShoot(void)
     {
         const int count = _countof(shoot_audio_paths);
         
         int index = rand() % count;
-        play(shoot_audio_paths[index]);
+        Play(shoot_audio_paths[index]);
     }
 
-    void stop_shoot(void)
+    void StopShoot(void)
     {
         for (int i = 0, n = _countof(shoot_audio_paths); i < 0; i++)
         {
-            stop(shoot_audio_paths[i]);
+            Stop(shoot_audio_paths[i]);
         }
     }
 
@@ -1723,19 +1696,19 @@ namespace GameAudio
         "Audios/explosion-08.wav",
     };
 
-    void play_explosion(void)
+    void PlayExplosion(void)
     {
         const int count = _countof(explosion_audio_paths);
 
         int index = rand() % count;
-        play(explosion_audio_paths[index]);
+        Play(explosion_audio_paths[index]);
     }
 
-    void stop_explosion(void)
+    void StopExplosion(void)
     {
         for (int i = 0, n = _countof(explosion_audio_paths); i < 0; i++)
         {
-            stop(explosion_audio_paths[i]);
+            Stop(explosion_audio_paths[i]);
         }
     }
 
@@ -1751,19 +1724,19 @@ namespace GameAudio
         "Audios/spawn-08.wav",
     };
 
-    void play_spawn(void)
+    void PlaySpawn(void)
     {
         const int count = _countof(spawn_audio_paths);
 
         int index = rand() % count;
-        play(spawn_audio_paths[index]);
+        Play(spawn_audio_paths[index]);
     }
 
-    void stop_spawn(void)
+    void StopSpawn(void)
     {
         for (int i = 0, n = _countof(spawn_audio_paths); i < 0; i++)
         {
-            stop(spawn_audio_paths[i]);
+            Stop(spawn_audio_paths[i]);
         }
     }
 }

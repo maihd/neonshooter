@@ -54,7 +54,7 @@ inline namespace Mojo
         void Close(void);
 
         // Set the position of file pointer
-        int  Seek(FileSeek whence, int count);
+        int  Seek(int count, FileSeek whence);
 
         // Tell the position of file pointer
         int  Tell(void);

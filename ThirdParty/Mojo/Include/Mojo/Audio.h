@@ -10,22 +10,36 @@ inline namespace Mojo
         Stereo16,
     };
 
+    struct AudioBuffer
+    {
+        unsigned _handle = 0;
+
+        static AudioBuffer Create(void);
+        static void        Destroy(AudioBuffer& source);
+
+        void SetData(void* data, int size, int frequency, AudioFormat format);
+    };
+
     struct AudioSource
     {
-        unsigned _handle;
+        unsigned _handle = 0;
 
         static AudioSource Create(void);
         static void        Destroy(AudioSource& source);
 
-        
-    };
+        void SetGain(float value);
+        void SetPitch(float value);
+        void SetLooping(bool value);
 
-    struct AudioBuffer
-    {
-        unsigned _handle;
+        void SetPosition(float x, float y, float z = 0.0f);
+        void SetVelocity(float x, float y, float z = 0.0f);
 
-        static AudioBuffer Create(void);
-        static void        Destroy(AudioBuffer& source);
+        void SetBuffer(const AudioBuffer* buffer);
+
+        void Play(void);
+        void Stop(void);
+        void Pause(void);
+        void Resume(void);
     };
 
     namespace Audio

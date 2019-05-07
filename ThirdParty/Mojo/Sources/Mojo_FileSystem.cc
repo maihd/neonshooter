@@ -284,7 +284,7 @@ inline namespace Mojo
         return this->Open(path, intFlags);
     }
 
-    int File::Seek(FileSeek whence, int count)
+    int File::Seek(int count, FileSeek whence)
     {
         return (int)::SetFilePointer(_handle, count, NULL, (int)whence);
     }
@@ -309,6 +309,15 @@ inline namespace Mojo
         }
         else
         {
+            DWORD error = ::GetLastError();
+            LPSTR messageBuffer = nullptr;
+            DWORD size = ::FormatMessageA(
+                FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                NULL, error, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&messageBuffer, 0, NULL);
+
+
+
+            ::LocalFree(messageBuffer);
             return -1;
         }
     }

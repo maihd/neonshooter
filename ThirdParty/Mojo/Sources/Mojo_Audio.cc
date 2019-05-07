@@ -1,5 +1,6 @@
 #include <Mojo/Audio.h>
 
+#include <stdio.h>
 #include <AL/al.h>
 #include <AL/alc.h>
 
@@ -9,12 +10,37 @@ inline namespace Mojo
     {
         ALCdevice*  _device;
         ALCcontext* _context;
+
+        ALenum ConvertAudioFormat(AudioFormat format)
+        {
+            switch (format)
+            {
+            case AudioFormat::Mono8:
+                return AL_FORMAT_MONO8; 
+
+            case AudioFormat::Mono16:
+                return AL_FORMAT_MONO16;
+
+            case AudioFormat::Stereo8:
+                return AL_FORMAT_STEREO8;
+
+            case AudioFormat::Stereo16:
+                return AL_FORMAT_STEREO16;
+            }
+        }
     }
 
     AudioSource AudioSource::Create(void)
     {
         AudioSource source;
         alGenSources(1, &source._handle);
+        
+        source.SetGain(1.0f);
+        source.SetPitch(1.0f);
+        source.SetLooping(false);
+        source.SetPosition(0, 0, 0);
+        source.SetVelocity(0, 0, 0);
+
         return source;
     }
 
@@ -22,6 +48,92 @@ inline namespace Mojo
     {
         alDeleteSources(1, &source._handle);
         source._handle = 0;
+    }
+
+    void AudioSource::SetGain(float value)
+    {
+        alSourcef(_handle, AL_GAIN, value);
+
+        ALenum error = alGetError();
+        if (error != AL_NO_ERROR)
+        {
+            printf("AudioSource::SetGain: %s\n", alGetString(error));
+        }
+    }
+
+    void AudioSource::SetPitch(float value)
+    {
+        alSourcef(_handle, AL_PITCH, value);
+
+        ALenum error = alGetError();
+        if (error != AL_NO_ERROR)
+        {
+            printf("AudioSource::SetPitch: %s\n", alGetString(error));
+        }
+    }
+
+    void AudioSource::SetLooping(bool value)
+    {
+        alSourcei(_handle, AL_LOOPING, value);
+
+        ALenum error = alGetError();
+        if (error != AL_NO_ERROR)
+        {
+            printf("AudioSource::SetLooping: %s\n", alGetString(error));
+        }
+    }
+
+    void AudioSource::SetPosition(float x, float y, float z)
+    {
+        alSource3f(_handle, AL_POSITION, x, y, z);
+
+        ALenum error = alGetError();
+        if (error != AL_NO_ERROR)
+        {
+            printf("AudioSource::SetPosition: %s\n", alGetString(error));
+        }
+    }
+
+    void AudioSource::SetVelocity(float x, float y, float z)
+    {
+        alSource3f(_handle, AL_VELOCITY, x, y, z);
+
+        ALenum error = alGetError();
+        if (error != AL_NO_ERROR)
+        {
+            printf("AudioSource::SetVelocity: %s\n", alGetString(error));
+        }
+    }
+
+    void AudioSource::SetBuffer(const AudioBuffer* buffer)
+    {
+        alSourcei(_handle, AL_BUFFER, buffer ? buffer->_handle : 0);
+
+        ALenum error = alGetError();
+        if (error != AL_NO_ERROR)
+        {
+            printf("AudioSource::SetBuffer: %s\n", alGetString(error));
+        }
+    }
+
+    void AudioSource::Play(void)
+    {
+        alSourcePlay(_handle);
+    }
+
+    void AudioSource::Stop(void)
+    {
+        alSourceStop(_handle);
+    }
+
+    void AudioSource::Pause(void)
+    {
+        alSourcePause(_handle);
+    }
+    
+    void AudioSource::Resume(void)
+    {
+        alSourcePlay(_handle);
     }
 
     AudioBuffer AudioBuffer::Create(void)
@@ -35,6 +147,17 @@ inline namespace Mojo
     {
         alDeleteBuffers(1, &buffer._handle);
         buffer._handle = 0;
+    }
+
+    void AudioBuffer::SetData(void* data, int size, int frequency, AudioFormat format)
+    {
+        alBufferData(_handle, ConvertAudioFormat(format), data, size, frequency);
+
+        ALenum error = alGetError();
+        if (error != AL_NO_ERROR)
+        {
+            printf("AudioBuffer::SetData: %s\n", alGetString(error));
+        }
     }
 
     namespace Audio
