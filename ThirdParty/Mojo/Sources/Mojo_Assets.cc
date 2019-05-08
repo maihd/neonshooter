@@ -55,79 +55,81 @@ inline namespace Mojo
             };
 #pragma pack(pop, 1)
 
-            File file;
-            if (!file.Open(path, FileOpen::Read))
+            File* file = FileSystem::Open(path, FileOpen::Read);
+            if (!file)
             {
                 for (int i = 0, n = _searchPaths.count; i < n; i++)
                 {
                     const char* searchPath = _searchPaths[i];
 
                     char targetPath[1024];
-                    ::sprintf(targetPath, "%s/%s", searchPath, path);
-                    if (file.Open(targetPath, FileOpen::Read))
+                    ::sprintf(targetPath, "%s/%s", searchPath, path); 
+
+                    file = FileSystem::Open(targetPath, FileOpen::Read);
+                    if (file)
                     {
                         break;
                     }
                 }
             }
 
-            if (file._handle)
+            if (file)
             {
-                int fileSize = file.Size();
+                int fileSize = file->Size();
 
                 int nbytes;
                 WAVHeader header = {};
-                if ((nbytes = file.Read(&header, sizeof(header))) != sizeof(header))
+                if ((nbytes = file->Read(&header, sizeof(header))) != sizeof(header))
                 {
-                    file.Close();
+                    file->Close();
                     return NULL;
                 }
 
                 if (strncmp((char*)header.riff, "RIFF", 4) != 0)
                 {
-                    file.Close();
+                    file->Close();
                     return NULL;
                 }
 
                 if (strncmp((char*)header.wave, "WAVE", 4) != 0)
                 {
-                    file.Close();
+                    file->Close();
                     return NULL;
                 }
 
                 if (strncmp((char*)header.fmt, "fmt ", 4) != 0)
                 {
-                    file.Close();
+                    file->Close();
                     return NULL;
                 }
 
                 if (header.audioFormat == 1)
                 {
                     uint16_t extraParams = 0;
-                    file.Read(&extraParams, sizeof(extraParams));
-                    file.Seek(extraParams, FileSeek::Current);
+                    file->Read(&extraParams, sizeof(extraParams));
+                    file->Seek(extraParams, SeekWhence::Current);
                 }
 
                 char dataName[4];
-                if (file.Read(&dataName, 4) != 4 || strncmp(dataName, "data", 4) != 0)
+                if (file->Read(&dataName, 4) != 4 || strncmp(dataName, "data", 4) != 0)
                 {
-                    file.Close();
+                    file->Close();
                     return NULL;
                 }
                 
                 uint32_t dataChunkSize;
-                if (file.Read(&dataChunkSize, 4) != 4)
+                if (file->Read(&dataChunkSize, 4) != 4)
                 {
-                    file.Close();
+                    file->Close();
                     return NULL;
                 }
 
                 int resultSize = dataChunkSize;
                 void* result = ::malloc(resultSize);
-                if ((nbytes = file.Read(result, resultSize)) != resultSize)
+                if ((nbytes = file->Read(result, resultSize)) != resultSize)
                 {
                     ::free(result);
-                    file.Close();
+                    file->Close();
                     return NULL;
                 }
 
@@ -157,7 +159,7 @@ inline namespace Mojo
                     }
                 }
 
-                file.Close();
+                file->Close();
                 return result;
             }
 

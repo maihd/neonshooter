@@ -229,7 +229,7 @@ inline namespace Mojo
                 break;
 
             case SDL_KEYUP:
-                printf("keyup: %d\n", event.key.keysym.scancode);
+                //printf("keyup: %d\n", event.key.keysym.scancode);
                 Input::UpdateKey(ConvertKeyCode((int)event.key.keysym.scancode), false);
                 break;
 

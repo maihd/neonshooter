@@ -33,40 +33,61 @@ inline namespace Mojo
         };
     };
 
-    enum struct FileSeek
+    enum struct SeekWhence
     {
         Set     = 0,
         End     = 2,
         Current = 1,
     };
    
-    struct File
+    struct Stream
     {
-        void* _handle = 0;
+        int  (*seekFunc)(Stream*, int, SeekWhence);
+        int  (*tellFunc)(Stream*);
+        int  (*sizeFunc)(Stream*);
+        int  (*readFunc)(Stream*, void* buffer, int length);
+        int  (*writeFunc)(Stream*, const void* buffer, int length);
 
-        // Open file _context at given path
-        bool Open(const char* path, int flags);
+        // Set the cursor position of stream
+        inline int Seek(int count, SeekWhence whence = SeekWhence::Current)
+        {
+            return seekFunc(this, count, whence);
+        }
 
-        // Open file _context at given path
-        bool Open(const char* path, const char* flags);
+        // Tell the cursor position of stream
+        inline int Tell(void)
+        {
+            return tellFunc(this);
+        }
+
+        // Get size of stream
+        inline int Size(void)
+        {
+            return sizeFunc(this);
+        }
+
+        // Read content of file with _context
+        inline int Read(void* buffer, int length)
+        {
+            return readFunc(this, buffer, length);
+        }
+
+        // Read content of file with _context
+        inline int Write(const void* buffer, int length)
+        {
+            return writeFunc(this, buffer, length);
+        }
+    };
+
+    struct File : Stream
+    {
+        void (*closeFunc)(File*);
 
         // Close file _context
-        void Close(void);
-
-        // Set the position of file pointer
-        int  Seek(int count, FileSeek whence);
-
-        // Tell the position of file pointer
-        int  Tell(void);
-
-        // Get size of file pointer
-        int  Size(void);
-
-        // Read content of file with _context
-        int  Read(void* buffer, int length);
-
-        // Read content of file with _context
-        int  Write(const void* buffer, int length);
+        inline void Close(void)
+        {
+            closeFunc(this);
+        }
 
         // Read content of file at given path, with async progress
         //virtual FileAsyncOperation* ReadAsync(void* buffer, int length);
@@ -77,7 +98,7 @@ inline namespace Mojo
 
     struct FileAsyncOperation
     {
-        File        file;
+        File*       file;
         const char* path;
 
         bool const isDone;
@@ -90,7 +111,7 @@ inline namespace Mojo
               int   const length;
 
         FileAsyncOperation(void)
-            : file()
+            : file(0)
             , path(0)
             , isDone(false)
             , isSuccess(false)
@@ -117,11 +138,14 @@ inline namespace Mojo
         // Is file or directory exist at path
         bool Exists(const char* path);
 
+        // Open file _context at given path
+        File* Open(const char* path, int flags);
+
         // Read content of file at given path
-        int        ReadFile(const char* path, void* buffer, int length);
+        int   ReadFile(const char* path, void* buffer, int length);
 
         // Write content to file at given path
-        int        WriteFile(const char* path, const void* buffer, int length);
+        int   WriteFile(const char* path, const void* buffer, int length);
 
         // Read content of file at given path, with async progress
         FileAsyncOperation* ReadFileAsync(const char* path, void* buffer, int length);
