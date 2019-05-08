@@ -31,6 +31,7 @@ inline namespace Mojo
                 s_keyCodeMap[SDL_SCANCODE_BACKSPACE] = KeyCode::Backspace;
                 s_keyCodeMap[SDL_SCANCODE_RETURN] = KeyCode::Return;
                 s_keyCodeMap[SDL_SCANCODE_TAB] = KeyCode::Tab;
+                s_keyCodeMap[SDL_SCANCODE_ESCAPE] = KeyCode::Escape;
                 
                 s_keyCodeMap[SDL_SCANCODE_UP] = KeyCode::UpArrow;
                 s_keyCodeMap[SDL_SCANCODE_DOWN] = KeyCode::DownArrow;
@@ -156,9 +157,11 @@ inline namespace Mojo
                 s_keyCodeMap[SDL_SCANCODE_COMMA] = KeyCode::Comma;
                 //s_keyCodeMap[SDL_SCANCODE_COLON] = KeyCode::Colon;
                 s_keyCodeMap[SDL_SCANCODE_SEMICOLON] = KeyCode::SemiColon;
+                s_keyCodeMap[SDL_SCANCODE_APOSTROPHE] = KeyCode::Quote;
+                s_keyCodeMap[SDL_SCANCODE_GRAVE] = KeyCode::BackQuote;
                 //s_keyCodeMap['*'] = KeyCode::Aterisk;
                 //s_keyCodeMap['&'] = KeyCode::Ampersand;
-                s_keyCodeMap['`'] = KeyCode::BackQuote;
+                //s_keyCodeMap[SDL_SCANCODE_BACKQUOTE] = KeyCode::BackQuote;
                 //s_keyCodeMap['~'] = KeyCode::Tilde;
                 //s_keyCodeMap['%'] = KeyCode::Percent;
                 //s_keyCodeMap['$'] = KeyCode::Dolla;
@@ -168,21 +171,34 @@ inline namespace Mojo
                 //s_keyCodeMap['?'] = KeyCode::Question;
                 //s_keyCodeMap['^'] = KeyCode::Caret;
                 //s_keyCodeMap['<'] = KeyCode::Less;
+                s_keyCodeMap[SDL_SCANCODE_MINUS]  = KeyCode::Minus;
                 s_keyCodeMap[SDL_SCANCODE_EQUALS] = KeyCode::Equal;
                 //s_keyCodeMap['>'] = KeyCode::Greater;
 
-                s_keyCodeMap['('] = KeyCode::LeftParen;
-                s_keyCodeMap[')'] = KeyCode::RightParen;
+                //s_keyCodeMap['('] = KeyCode::LeftParen;
+                //s_keyCodeMap[')'] = KeyCode::RightParen;
                 s_keyCodeMap[SDL_SCANCODE_LEFTBRACKET] = KeyCode::LeftBracket;
                 s_keyCodeMap[SDL_SCANCODE_RIGHTBRACKET] = KeyCode::RightBracket;
-                s_keyCodeMap['{'] = KeyCode::LeftCurlyBracket;
-                s_keyCodeMap['}'] = KeyCode::RightCurlyBracket;
+                //s_keyCodeMap['{'] = KeyCode::LeftCurlyBracket;
+                //s_keyCodeMap['}'] = KeyCode::RightCurlyBracket;
 
                 //s_keyCodeMap[SDL_SCANCODE_Q] = KeyCode::Quote;
                 //s_keyCodeMap['\"'] = KeyCode::DoubleQuote;
 
                 s_keyCodeMap[SDL_SCANCODE_SLASH] = KeyCode::Slash;
                 s_keyCodeMap[SDL_SCANCODE_BACKSLASH] = KeyCode::BackSlash;
+                
+                s_keyCodeMap[SDL_SCANCODE_NUMLOCKCLEAR] = KeyCode::NumLock;
+                s_keyCodeMap[SDL_SCANCODE_CAPSLOCK] = KeyCode::CapsLock;
+                s_keyCodeMap[SDL_SCANCODE_SCROLLLOCK] = KeyCode::ScrollLock;
+
+                s_keyCodeMap[SDL_SCANCODE_PAUSE] = KeyCode::Pause;
+                s_keyCodeMap[SDL_SCANCODE_PRINTSCREEN] = KeyCode::PrintScreen;
+                //s_keyCodeMap[SDL_SCANCODE_FUNCTION] = KeyCode::Function;
+                s_keyCodeMap[SDL_SCANCODE_MENU] = KeyCode::Menu;
+
+                s_keyCodeMap[SDL_SCANCODE_LGUI] = KeyCode::LeftWindows;
+                s_keyCodeMap[SDL_SCANCODE_RGUI] = KeyCode::RightWindows;
 
                 return s_keyCodeMap[nativeKey];
             }
@@ -211,6 +227,7 @@ inline namespace Mojo
                 break;
 
             case SDL_KEYUP:
+                printf("keyup: %d\n", event.key.keysym.scancode);
                 Input::UpdateKey(ConvertKeyCode((int)event.key.keysym.scancode), false);
                 break;
 
