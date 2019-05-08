@@ -55,6 +55,7 @@ inline namespace Mojo
                 s_keyCodeMap[SDL_SCANCODE_KP_DIVIDE] = KeyCode::NumpadDivide;
                 s_keyCodeMap[SDL_SCANCODE_KP_PLUS] = KeyCode::NumpadAdd;
                 s_keyCodeMap[SDL_SCANCODE_KP_MINUS] = KeyCode::NumpadSubtract;
+                s_keyCodeMap[SDL_SCANCODE_KP_ENTER] = KeyCode::NumpadEnter;
                 s_keyCodeMap[SDL_SCANCODE_KP_0] = KeyCode::Numpad0;
                 s_keyCodeMap[SDL_SCANCODE_KP_1] = KeyCode::Numpad1;
                 s_keyCodeMap[SDL_SCANCODE_KP_2] = KeyCode::Numpad2;
@@ -196,6 +197,7 @@ inline namespace Mojo
                 s_keyCodeMap[SDL_SCANCODE_PRINTSCREEN] = KeyCode::PrintScreen;
                 //s_keyCodeMap[SDL_SCANCODE_FUNCTION] = KeyCode::Function;
                 s_keyCodeMap[SDL_SCANCODE_MENU] = KeyCode::Menu;
+                s_keyCodeMap[SDL_SCANCODE_APPLICATION] = KeyCode::Application;
 
                 s_keyCodeMap[SDL_SCANCODE_LGUI] = KeyCode::LeftWindows;
                 s_keyCodeMap[SDL_SCANCODE_RGUI] = KeyCode::RightWindows;
@@ -576,6 +578,19 @@ inline namespace Mojo
             //    0
             //};
 
+            SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+            SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+            SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+            SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
+
+            SDL_GL_SetAttribute(SDL_GL_ACCUM_RED_SIZE, 8);
+            SDL_GL_SetAttribute(SDL_GL_ACCUM_GREEN_SIZE, 8);
+            SDL_GL_SetAttribute(SDL_GL_ACCUM_BLUE_SIZE, 8);
+            SDL_GL_SetAttribute(SDL_GL_ACCUM_ALPHA_SIZE, 8);
+
+            SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+            SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -626,8 +641,8 @@ inline namespace Mojo
 
         void ClearBuffer(void)
         {
-            //GLbitfield flags = GL_COLOR_BUFFER_BIT;// | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT;
-            GLbitfield flags = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT;
+            GLbitfield flags = GL_COLOR_BUFFER_BIT;
+            //GLbitfield flags = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT;
             glClear(flags);
         }
     }

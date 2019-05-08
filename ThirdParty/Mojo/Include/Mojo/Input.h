@@ -85,6 +85,7 @@ inline namespace Mojo
         NumpadSubtract  = 109,
         NumpadPeriod    = 110,
         NumpadDivide    = 111,
+        NumpadEnter     = 112,
 
         Colon       = ':',
         SemiColon   = ';',
@@ -150,6 +151,7 @@ inline namespace Mojo
         RightShift,
 
         Menu, 
+        Application,
         PrintScreen,
 
         LeftWindows,

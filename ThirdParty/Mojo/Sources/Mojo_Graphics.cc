@@ -388,18 +388,18 @@ inline namespace Mojo
         {
             // Default graphics mode
             glEnable(GL_BLEND);
-            glEnable(GL_DEPTH_TEST);
-            glEnable(GL_STENCIL_TEST);
+            //glEnable(GL_DEPTH_TEST);
+            //glEnable(GL_STENCIL_TEST);
 
             // Default blend
             Graphics::SetBlendOp(BlendOp::Add);
             Graphics::SetBlendFunc(BlendFactor::SrcAlpha, BlendFactor::InvertSrcAlpha);
 
             // First clear and swap buffer
-            Graphics::ClearBuffer();
-            Graphics::SwapBuffers();
-            Graphics::ClearBuffer();
-            Graphics::SwapBuffers();
+            //Graphics::ClearBuffer();
+            //Graphics::SwapBuffers();
+            //Graphics::ClearBuffer();
+            //Graphics::SwapBuffers();
         }
 
         void CreateDefaultObjects(void)
