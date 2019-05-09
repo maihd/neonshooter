@@ -87,6 +87,9 @@
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\SpriteBatch.h">
       <Filter>Include\Mojo</Filter>
     </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Stream.h">
+      <Filter>Include\Mojo</Filter>
+    </ClInclude>
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\System.h">
       <Filter>Include\Mojo</Filter>
     </ClInclude>
@@ -135,6 +138,9 @@
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_SDL2\Mojo_SDL2_Input.cc">
+      <Filter>Sources\Mojo_SDL2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_SDL2\Mojo_SDL2_Thread.cc">
       <Filter>Sources\Mojo_SDL2</Filter>
     </ClCompile>
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_SDL2\Mojo_SDL2_Window.cc">

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "./Stream.h"
+
 inline namespace Mojo
 {
     struct Allocator;
@@ -33,61 +35,10 @@ inline namespace Mojo
         };
     };
 
-    enum struct SeekWhence
+    struct File : public Stream
     {
-        Set     = 0,
-        End     = 2,
-        Current = 1,
-    };
-   
-    struct Stream
-    {
-        int  (*seekFunc)(Stream*, int, SeekWhence);
-        int  (*tellFunc)(Stream*);
-        int  (*sizeFunc)(Stream*);
-        int  (*readFunc)(Stream*, void* buffer, int length);
-        int  (*writeFunc)(Stream*, const void* buffer, int length);
-
-        // Set the cursor position of stream
-        inline int Seek(int count, SeekWhence whence = SeekWhence::Current)
-        {
-            return seekFunc(this, count, whence);
-        }
-
-        // Tell the cursor position of stream
-        inline int Tell(void)
-        {
-            return tellFunc(this);
-        }
-
-        // Get size of stream
-        inline int Size(void)
-        {
-            return sizeFunc(this);
-        }
-
-        // Read content of file with _context
-        inline int Read(void* buffer, int length)
-        {
-            return readFunc(this, buffer, length);
-        }
-
-        // Read content of file with _context
-        inline int Write(const void* buffer, int length)
-        {
-            return writeFunc(this, buffer, length);
-        }
-    };
-
-    struct File : Stream
-    {
-        void (*closeFunc)(File*);
-
-        // Close file _context
-        inline void Close(void)
-        {
-            closeFunc(this);
-        }
+        // Close file
+        virtual void Close(void) = 0;
 
         // Read content of file at given path, with async progress
         //virtual FileAsyncOperation* ReadAsync(void* buffer, int length);
@@ -129,14 +80,26 @@ inline namespace Mojo
         bool Setup(void);
         void Shutdown(void);
 
+        // Add search path
+        // @note: performance sensitive
+        void AddSearchPath(const char* path);
+
+        // Remove search path
+        // @note: performance sensitive
+        void RemoveSearchPath(const char* path);
+
+        // Get exists path
+        // @return: exists path of file or directory, if no result return invalid path
+        const char* GetExistsPath(const char* expectPath);
+
+        // Is file or directory exists
+        bool Exists(const char* path, bool withSearchPath = true);
+
         // Make new directory at given path
         bool MakeDirectory(const char* path);
 
         // Remove the directory at given path
         bool RemoveDirectory(const char* path);
-
-        // Is file or directory exist at path
-        bool Exists(const char* path);
 
         // Open file _context at given path
         File* Open(const char* path, int flags);

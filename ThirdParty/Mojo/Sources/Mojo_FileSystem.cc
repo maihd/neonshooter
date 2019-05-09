@@ -1,3 +1,4 @@
+#include <Mojo/Array.h>
 #include <Mojo/Thread.h>
 #include <Mojo/FileSystem.h>
 
@@ -7,6 +8,10 @@
 #include <Shlwapi.h>
 #include <fcntl.h>
 #include <direct.h>
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
 
 #pragma comment(lib, "Shlwapi.lib")
 
@@ -62,70 +67,71 @@ inline namespace Mojo
         }
     };
 
-    inline namespace FileSystem_Variables
+    namespace
     {
         static AsyncFilePool<128> _asyncFilePool;
+        static Array<const char*> _searchPaths;
     }
 
     struct OsFile : File
     {
         HANDLE handle;
+
+        int Seek(int count, SeekWhence whence) override
+        {
+            return (int)::SetFilePointer(handle, count, NULL, (int)whence);
+        }
+
+        int Tell(void) override
+        {
+
+            return (int)::SetFilePointer(handle, 0, NULL, FILE_CURRENT);
+        }
+
+        int Size(void) override
+        {
+            return (int)::GetFileSize(handle, NULL);
+        }
+
+        int Read(void* buffer, int length) override
+        {
+            DWORD nbytes;
+            if (::ReadFile((HANDLE)handle, buffer, (DWORD)length, &nbytes, NULL))
+            {
+                return (int)nbytes;
+            }
+            else
+            {
+                DWORD error = ::GetLastError();
+                LPSTR messageBuffer = nullptr;
+                DWORD size = ::FormatMessageA(
+                    FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                    NULL, error, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&messageBuffer, 0, NULL);
+
+                ::LocalFree(messageBuffer);
+                return -1;
+            }
+        }
+
+        int Write(const void* buffer, int length) override
+        {
+            DWORD nbytes;
+            if ((int)::WriteFile((HANDLE)handle, buffer, (DWORD)length, &nbytes, NULL))
+            {
+                return (int)nbytes;
+            }
+            else
+            {
+                return -1;
+            }
+        }
+
+        void Close(void) override
+        {
+            ::CloseHandle((HANDLE)handle);
+            delete this;
+        }
     };
-
-    int OsFile_Seek(OsFile* file, int count, SeekWhence whence)
-    {
-        return (int)::SetFilePointer(file->handle, count, NULL, (int)whence);
-    }
-
-    int OsFile_Tell(OsFile* file)
-    {
-
-        return (int)::SetFilePointer(file->handle, 0, NULL, FILE_CURRENT);
-    }
-
-    int OsFile_Size(OsFile* file)
-    {
-        return (int)::GetFileSize(file->handle, NULL);
-    }
-
-    int OsFile_Read(OsFile* file, void* buffer, int length)
-    {
-        DWORD nbytes;
-        if (::ReadFile((HANDLE)file->handle, buffer, (DWORD)length, &nbytes, NULL))
-        {
-            return (int)nbytes;
-        }
-        else
-        {
-            DWORD error = ::GetLastError();
-            LPSTR messageBuffer = nullptr;
-            DWORD size = ::FormatMessageA(
-                FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                NULL, error, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&messageBuffer, 0, NULL);
-
-            ::LocalFree(messageBuffer);
-            return -1;
-        }
-    }
-
-    static int OsFile_Write(OsFile* file, const void* buffer, int length)
-    {
-        DWORD nbytes;
-        if ((int)::WriteFile((HANDLE)file->handle, buffer, (DWORD)length, &nbytes, NULL))
-        {
-            return (int)nbytes;
-        }
-        else
-        {
-            return -1;
-        }
-    }
-
-    static void OsFile_Close(OsFile* file)
-    {
-        ::CloseHandle((HANDLE)file->handle);
-        delete file;
-    }
 
     namespace FileSystem
     {
@@ -139,6 +145,23 @@ inline namespace Mojo
 
         }
 
+        void  AddSearchPath(const char* path)
+        {
+            _searchPaths.Push(path);
+        }
+
+        void  RemoveSearchPath(const char* path)
+        {
+            for (int i = 0, n = _searchPaths.count; i < n; i++)
+            {
+                if (_stricmp(_searchPaths[i], path) == 0)
+                {
+                    _searchPaths.Erase(i);
+                    break;
+                }
+            }
+        }
+
         bool MakeDirectory(const char* path)
         {
             return ::_mkdir(path) == 0;
@@ -149,13 +172,73 @@ inline namespace Mojo
             return ::_rmdir(path) == 0;
         }
 
-        bool Exists(const char* path)
+        bool Exists(const char* path, bool withSearchPath)
         {
-            return ::PathFileExistsA(path);
+            if (!::PathFileExistsA(path))
+            {
+                if (withSearchPath)
+                {
+                    char pathBuffer[2048];
+                    if (!FileSystem::Exists(path, false))
+                    {
+                        const char* originPath = path;
+                        for (int i = 0, n = _searchPaths.count; i < n; i++)
+                        {
+                            const char* searchPath = _searchPaths[i];
+
+                            ::sprintf(pathBuffer, "%s/%s", searchPath, originPath);
+                            if (FileSystem::Exists(pathBuffer, false))
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                }
+
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+        
+        const char* GetExistsPath(const char* path)
+        {
+            if (!::PathFileExistsA(path))
+            {
+                thread_local char pathBuffer[2048];
+                if (!FileSystem::Exists(path, false))
+                {
+                    const char* originPath = path;
+                    for (int i = 0, n = _searchPaths.count; i < n; i++)
+                    {
+                        const char* searchPath = _searchPaths[i];
+
+                        ::sprintf(pathBuffer, "%s/%s", searchPath, originPath);
+                        if (FileSystem::Exists(pathBuffer, false))
+                        {
+                            return pathBuffer;
+                        }
+                    }
+                }
+
+                return NULL;
+            }
+            else
+            {
+                return path;
+            }
         }
 
         File* Open(const char* path, int flags)
         {
+            path = GetExistsPath(path);
+            if (!path)
+            {
+                return NULL;
+            }
+
             DWORD access = 0;
             DWORD shared = 0;
             DWORD disposition = 0;
@@ -336,14 +419,8 @@ inline namespace Mojo
             }
             else
             {
-                OsFile* file    = new OsFile();
-                file->handle    = handle;
-                file->closeFunc = (decltype(file->closeFunc))OsFile_Close;
-                file->seekFunc  = (decltype(file->seekFunc ))OsFile_Seek;
-                file->sizeFunc  = (decltype(file->sizeFunc ))OsFile_Size;
-                file->tellFunc  = (decltype(file->tellFunc ))OsFile_Tell;
-                file->readFunc  = (decltype(file->readFunc ))OsFile_Read;
-                file->writeFunc = (decltype(file->writeFunc))OsFile_Write;
+                OsFile* file = new OsFile();
+                file->handle = handle;
 
                 return file;
             }

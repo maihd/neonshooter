@@ -11,25 +11,16 @@
 
 inline namespace Mojo
 {
-    static Array<const char*> _searchPaths;
-
     namespace Assets
     {
-        void  AddSearchPath(const char* path)
+        void AddSearchPath(const char* path)
         {
-            _searchPaths.Push(path);
+            FileSystem::AddSearchPath(path);
         }
 
-        void  RemoveSearchPath(const char* path)
+        void RemoveSearchPath(const char* path)
         {
-            for (int i = 0, n = _searchPaths.count; i < n; i++)
-            {
-                if (_stricmp(_searchPaths[i], path) == 0)
-                {
-                    _searchPaths.Erase(i);
-                    break;
-                }
-            }
+            FileSystem::RemoveSearchPath(path);
         }
 
         void* LoadWave(const char* path, int* size, int* freq, int* format)
@@ -56,23 +47,6 @@ inline namespace Mojo
 #pragma pack(pop, 1)
 
             File* file = FileSystem::Open(path, FileOpen::Read);
-            if (!file)
-            {
-                for (int i = 0, n = _searchPaths.count; i < n; i++)
-                {
-                    const char* searchPath = _searchPaths[i];
-
-                    char targetPath[1024];
-                    ::sprintf(targetPath, "%s/%s", searchPath, path); 
-
-                    file = FileSystem::Open(targetPath, FileOpen::Read);
-                    if (file)
-                    {
-                        break;
-                    }
-                }
-            }
-
             if (file)
             {
                 int fileSize = file->Size();
@@ -103,11 +77,17 @@ inline namespace Mojo
                     return NULL;
                 }
 
+                header.audioFormat = LE_TO_NATIVE_16(header.audioFormat);
+                header.channels = LE_TO_NATIVE_16(header.channels);
+                header.blockAlign = LE_TO_NATIVE_16(header.blockAlign);
+                header.bitsPerSample = LE_TO_NATIVE_16(header.bitsPerSample);
+                header.sampleRate = LE_TO_NATIVE_32(header.sampleRate);
+                header.byteRate = LE_TO_NATIVE_32(header.byteRate);
+
                 if (header.audioFormat == 1)
                 {
-                    uint16_t extraParams = 0;
-                    file->Read(&extraParams, sizeof(extraParams));
-                    file->Seek(extraParams, SeekWhence::Current);
+                    uint16_t extraParams = file->ReadUint16LE();
+                    file->Skip(extraParams);
                 }
 
                 char dataName[4];
@@ -117,8 +97,8 @@ inline namespace Mojo
                     return NULL;
                 }
                 
-                uint32_t dataChunkSize;
-                if (file->Read(&dataChunkSize, 4) != 4)
+                uint32_t dataChunkSize = file->ReadUint32LE();
+                if (!dataChunkSize)
                 {
                     file->Close();
                     return NULL;
@@ -166,46 +146,6 @@ inline namespace Mojo
             return NULL;
         }
 
-#if 0
-        void* LoadWave(const char* path, int* length, int* frequency, int* format)
-        {
-            Uint8* wave;
-            Uint32 readLength;
-            SDL_AudioSpec spec;
-            if (SDL_LoadWAV_RW(path, &spec, &wave, &readLength))
-            {
-                switch (spec.format)
-                {
-                case AUDIO_U8:
-                case AUDIO_S8:
-                    if (format) *format = spec.channels == 2 ? 2 : 0;
-                    break;
-                
-                case AUDIO_U16:
-                case AUDIO_S16:
-                    if (format) *format = spec.channels == 2 ? 3 : 1;
-                    break;
-                }
-
-                if (frequency)
-                {
-                    *frequency = spec.freq;
-                }
-
-                if (length)
-                {
-                    *length = (int)readLength;
-                }
-
-                return wave;
-            }
-            else
-            {
-                return NULL;
-            }
-        }
-#endif
-
         void  FreeWave(void* wave)
         {
             ::free(wave);
@@ -213,22 +153,12 @@ inline namespace Mojo
 
         void* LoadImage(const char* path, int* width, int* height, int* channel)
         {
-            if (FileSystem::Exists(path))
+            path = FileSystem::GetExistsPath(path);
+            if (path)
             {
                 return ::stbi_load(path, width, height, channel, 0);
             }
 
-            for (int i = 0, n = _searchPaths.count; i < n; i++)
-            {
-                const char* searchPath = _searchPaths[i];
-
-                char targetPath[1024];
-                ::sprintf(targetPath, "%s/%s", searchPath, path);
-                if (FileSystem::Exists(targetPath))
-                {
-                    return ::stbi_load(targetPath, width, height, channel, 0);
-                }
-            }
             return NULL;
         }
 
