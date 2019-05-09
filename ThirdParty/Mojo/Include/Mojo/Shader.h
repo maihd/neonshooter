@@ -2,9 +2,11 @@
 
 inline namespace Mojo
 {
+    struct ShaderHandle;
+
     struct Shader
     {
-        unsigned _handle = 0;
+        unsigned handle = 0;
 
         int FindAttribute(const char* name);
         int FindUniform(const char* name);
@@ -28,5 +30,10 @@ inline namespace Mojo
         static void   Destroy(Shader& shader);
         
         static Shader CreateEffect(const char* pixelsSource);
+
+        inline operator ShaderHandle*(void) const
+        {
+            return (ShaderHandle*)(long long)handle;
+        }
     };
 }

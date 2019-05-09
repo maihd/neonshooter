@@ -4,7 +4,7 @@ inline namespace Mojo
 {
     struct Coroutine
     {
-        void* _handle;
+        void* handle;
         void* _userdata;
         void(*_function)(void*);
 

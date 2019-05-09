@@ -33,7 +33,7 @@ inline namespace Mojo
     AudioSource AudioSource::Create(void)
     {
         AudioSource source;
-        alGenSources(1, &source._handle);
+        alGenSources(1, &source.handle);
         
         source.SetGain(1.0f);
         source.SetPitch(1.0f);
@@ -46,13 +46,13 @@ inline namespace Mojo
 
     void AudioSource::Destroy(AudioSource& source)
     {
-        alDeleteSources(1, &source._handle);
-        source._handle = 0;
+        alDeleteSources(1, &source.handle);
+        source.handle = 0;
     }
 
     void AudioSource::SetGain(float value)
     {
-        alSourcef(_handle, AL_GAIN, value);
+        alSourcef(handle, AL_GAIN, value);
 
         ALenum error = alGetError();
         if (error != AL_NO_ERROR)
@@ -63,7 +63,7 @@ inline namespace Mojo
 
     void AudioSource::SetPitch(float value)
     {
-        alSourcef(_handle, AL_PITCH, value);
+        alSourcef(handle, AL_PITCH, value);
 
         ALenum error = alGetError();
         if (error != AL_NO_ERROR)
@@ -74,7 +74,7 @@ inline namespace Mojo
 
     void AudioSource::SetLooping(bool value)
     {
-        alSourcei(_handle, AL_LOOPING, value);
+        alSourcei(handle, AL_LOOPING, value);
 
         ALenum error = alGetError();
         if (error != AL_NO_ERROR)
@@ -85,7 +85,7 @@ inline namespace Mojo
 
     void AudioSource::SetPosition(float x, float y, float z)
     {
-        alSource3f(_handle, AL_POSITION, x, y, z);
+        alSource3f(handle, AL_POSITION, x, y, z);
 
         ALenum error = alGetError();
         if (error != AL_NO_ERROR)
@@ -96,7 +96,7 @@ inline namespace Mojo
 
     void AudioSource::SetVelocity(float x, float y, float z)
     {
-        alSource3f(_handle, AL_VELOCITY, x, y, z);
+        alSource3f(handle, AL_VELOCITY, x, y, z);
 
         ALenum error = alGetError();
         if (error != AL_NO_ERROR)
@@ -107,7 +107,7 @@ inline namespace Mojo
 
     void AudioSource::SetBuffer(const AudioBuffer* buffer)
     {
-        alSourcei(_handle, AL_BUFFER, buffer ? buffer->_handle : 0);
+        alSourcei(handle, AL_BUFFER, buffer ? buffer->handle : 0);
 
         ALenum error = alGetError();
         if (error != AL_NO_ERROR)
@@ -118,40 +118,40 @@ inline namespace Mojo
 
     void AudioSource::Play(void)
     {
-        alSourcePlay(_handle);
+        alSourcePlay(handle);
     }
 
     void AudioSource::Stop(void)
     {
-        alSourceStop(_handle);
+        alSourceStop(handle);
     }
 
     void AudioSource::Pause(void)
     {
-        alSourcePause(_handle);
+        alSourcePause(handle);
     }
     
     void AudioSource::Resume(void)
     {
-        alSourcePlay(_handle);
+        alSourcePlay(handle);
     }
 
     AudioBuffer AudioBuffer::Create(void)
     {
         AudioBuffer buffer;
-        alGenBuffers(1, &buffer._handle);
+        alGenBuffers(1, &buffer.handle);
         return buffer;
     }
 
     void AudioBuffer::Destroy(AudioBuffer& buffer)
     {
-        alDeleteBuffers(1, &buffer._handle);
-        buffer._handle = 0;
+        alDeleteBuffers(1, &buffer.handle);
+        buffer.handle = 0;
     }
 
     void AudioBuffer::SetData(void* data, int size, int frequency, AudioFormat format)
     {
-        alBufferData(_handle, ConvertAudioFormat(format), data, size, frequency);
+        alBufferData(handle, ConvertAudioFormat(format), data, size, frequency);
 
         ALenum error = alGetError();
         if (error != AL_NO_ERROR)

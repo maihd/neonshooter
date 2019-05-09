@@ -39,6 +39,8 @@
 
 inline namespace Mojo
 {
+    struct StreamOperation;
+
     // Start point for stream's cursor move around 
     enum struct SeekWhence
     {
@@ -64,6 +66,12 @@ inline namespace Mojo
 
         // Write content to stream
         virtual int Write(const void* buffer, int length) = 0;
+
+        // Read content of file at given path, with async progress
+        //virtual StreamOperation* ReadAsync(void* buffer, int length) = 0;
+
+        // Write content to file at given path, with async progress
+        //virtual StreamOperation* WriteAsync(const void* buffer, int length) = 0;
 
         // Skip bytes
         inline int Skip(int count)
@@ -204,4 +212,31 @@ inline namespace Mojo
             return this->Read(&result, sizeof(result)) == sizeof(result) ? BE_TO_NATIVE_64(result) : 0;
         }
     };
+
+    // Previewing
+    //struct StreamOperation
+    //{
+    //    Stream* stream;
+    //
+    //    bool isDone;
+    //    bool isSuccess;
+    //
+    //    //int   const priority;
+    //    float progress;
+    //
+    //    int         length;
+    //    const void* buffer;
+    //
+    //    StreamOperation(void)
+    //        : stream(0)
+    //        , isDone(false)
+    //        , isSuccess(false)
+    //        , progress(0.0f)
+    //        , length(0)
+    //        , buffer(0)
+    //    {
+    //    }
+    //
+    //    void Wait(void);
+    //};
 }

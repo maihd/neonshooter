@@ -21,13 +21,13 @@ inline namespace Mojo
             coro->_function(coro->_userdata);
         }
 
-        coro->_handle = NULL;
+        coro->handle = NULL;
         coro->Yield();
     }
 
     bool Coroutine::Start(void(*entry)(void*), void* args)
     {
-        if (!_handle)
+        if (!handle)
         {
             if (!s_threadFiber)
             {
@@ -38,29 +38,29 @@ inline namespace Mojo
                 }
             }
 
-            _handle = ::CreateFiber(0, Coroutine_FiberProc, this);
+            handle = ::CreateFiber(0, Coroutine_FiberProc, this);
             _userdata = args;
             _function = entry;
         }
 
-        return _handle != NULL;
+        return handle != NULL;
     }
 
     void Coroutine::Release(void)
     {
-        if (_handle)
+        if (handle)
         {
-            ::DeleteFiber(_handle);
-            _handle = NULL;
+            ::DeleteFiber(handle);
+            handle = NULL;
         }
     }
 
     bool Coroutine::Resume(void)
     {
-        if (_handle)
+        if (handle)
         {
             s_currentCoroutine = this;
-            ::SwitchToFiber(_handle);
+            ::SwitchToFiber(handle);
             return true;
         }
         else
@@ -71,7 +71,7 @@ inline namespace Mojo
     
     bool Coroutine::Status(void)
     {
-        return _handle != NULL;
+        return handle != NULL;
     }
     
     void Coroutine::Yield(void)

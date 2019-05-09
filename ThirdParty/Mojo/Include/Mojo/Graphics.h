@@ -2,18 +2,11 @@
 
 inline namespace Mojo
 {
-    struct Shader;
-    struct Texture;
-
-    struct GraphicsSettings
-    {
-        int multisamples;
-
-        constexpr GraphicsSettings(void)
-            : multisamples(1)
-        {
-        }
-    };
+    struct ShaderHandle;
+    struct TextureHandle;
+    struct IndexBufferHandle;
+    struct VertexArrayHandle;
+    struct VertexBufferHandle;
 
     enum struct DrawType
     {
@@ -92,7 +85,7 @@ inline namespace Mojo
 
     struct IndexBuffer
     {
-        unsigned _handle   = 0;
+        unsigned handle   = 0;
         DataType _dataType = DataType::None;
 
         static IndexBuffer Create(void);
@@ -103,11 +96,16 @@ inline namespace Mojo
         void SetBlendOp(BlendOp op);
         void SetBlendFunc(BlendFunc func);
         void SetBlendFunc(BlendFactor src, BlendFactor dst);
+
+        inline operator IndexBufferHandle*(void) const
+        {
+            return (IndexBufferHandle*)(long long)handle;
+        }
     };
 
     struct VertexBuffer
     {
-        unsigned _handle = 0;
+        unsigned handle = 0;
 
         static VertexBuffer Create(void);
         static void         Destroy(VertexBuffer& buffer);
@@ -117,16 +115,26 @@ inline namespace Mojo
         void SetBlendOp(BlendOp op);
         void SetBlendFunc(BlendFunc func);
         void SetBlendFunc(BlendFactor src, BlendFactor dst);
+
+        inline operator VertexBufferHandle*(void) const
+        {
+            return (VertexBufferHandle*)(long long)handle;
+        }
     };
 
     struct VertexArray
     {
-        unsigned _handle = 0;
+        unsigned handle = 0;
 
         static VertexArray Create(void);
         static void        Destroy(VertexArray& buffer);
 
         void SetAttribute(const VertexBuffer& buffer, int location, int size, DataType dataType, bool normalized, int stride, int offset = 0);
+
+        inline operator VertexArrayHandle*(void) const
+        {
+            return (VertexArrayHandle*)(long long)handle;
+        }
     };
 
     struct RenderTarget
@@ -146,11 +154,13 @@ inline namespace Mojo
 
     namespace Graphics
     {
-        bool Setup(const GraphicsSettings& settings = GraphicsSettings());
+        bool Setup(void);
         void Shutdown(void);
 
         void ClearBuffer(void);
         void SwapBuffers(void);
+
+        void SetMultisample(int samples);
 
         void SetBlendOp(BlendOp op);
         void SetBlendFunc(BlendFunc func);
@@ -159,22 +169,22 @@ inline namespace Mojo
         void Scissor(float x, float y, float width, float height);
         void Viewport(float x, float y, float width, float height);
 
-        void BindShader(const Shader& shader);
-        void BindTexture(const Texture& texture, int index = 0);
-        void BindVertexArray(const VertexArray& array);
-        void BindIndexBuffer(const IndexBuffer& buffer);
-        void BindVertexBuffer(const VertexBuffer& buffer);
+        void BindShader(ShaderHandle* shader);
+        void BindTexture(TextureHandle* texture, int index = 0);
+        void BindVertexArray(VertexArrayHandle* array);
+        void BindIndexBuffer(IndexBufferHandle* buffer);
+        void BindVertexBuffer(VertexBufferHandle* buffer);
 
         void BindRenderTarget(RenderTarget* renderTarget);
-        void BlitRenderTarget(RenderTarget* src, RenderTarget* dst, const Shader& shader);
+        void BlitRenderTarget(RenderTarget* src, RenderTarget* dst, ShaderHandle* shader);
 
         void DrawArrays(DrawType type, int count, int offset = 0);
         void DrawIndices(DrawType type, DataType dataType, int count, int offset = 0);
 
-        void DrawArrays(DrawType type, const Shader& shader, const VertexArray& array, int count, int offset = 0);
-        void DrawIndices(DrawType type, const Shader& shader, const VertexArray& array, const IndexBuffer& indices, int count, int offset = 0);
+        void DrawArrays(DrawType type, ShaderHandle* shader, VertexArrayHandle* array, int count, int offset = 0);
+        void DrawIndices(DrawType type, ShaderHandle* shader, VertexArrayHandle* array, const IndexBuffer& indices, int count, int offset = 0);
 
-        void DrawArrays(DrawType type, const Shader& shader, const VertexArray& array, const Texture& texture, int count, int offset = 0);
-        void DrawIndices(DrawType type, const Shader& shader, const VertexArray& array, const Texture& texture, const IndexBuffer& indices, int count, int offset = 0);
+        void DrawArrays(DrawType type, ShaderHandle* shader, VertexArrayHandle* array, TextureHandle* texture, int count, int offset = 0);
+        void DrawIndices(DrawType type, ShaderHandle* shader, VertexArrayHandle* array, TextureHandle* texture, const IndexBuffer& indices, int count, int offset = 0);
     }
 }

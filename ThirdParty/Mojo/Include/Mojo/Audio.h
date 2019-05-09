@@ -12,7 +12,7 @@ inline namespace Mojo
 
     struct AudioBuffer
     {
-        unsigned _handle = 0;
+        unsigned handle = 0;
 
         static AudioBuffer Create(void);
         static void        Destroy(AudioBuffer& source);
@@ -22,7 +22,7 @@ inline namespace Mojo
 
     struct AudioSource
     {
-        unsigned _handle = 0;
+        unsigned handle = 0;
 
         static AudioSource Create(void);
         static void        Destroy(AudioSource& source);

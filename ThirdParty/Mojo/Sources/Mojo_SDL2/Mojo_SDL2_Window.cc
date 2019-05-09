@@ -532,17 +532,7 @@ inline namespace Mojo
         void ApplyDefaultSettings(void);
         void CreateDefaultObjects(void);
 
-        static bool IsSettingsValid(const GraphicsSettings& settings)
-        {
-            if (settings.multisamples < 1)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        bool Setup(const GraphicsSettings& settings)
+        bool Setup(void)
         {
             //int formatAttribs[] = {
             //    WGL_DOUBLE_BUFFER_ARB, GL_TRUE,
@@ -644,6 +634,11 @@ inline namespace Mojo
             GLbitfield flags = GL_COLOR_BUFFER_BIT;
             //GLbitfield flags = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT;
             glClear(flags);
+        }
+
+        void SetMultisample(int samples)
+        {
+            
         }
     }
 }

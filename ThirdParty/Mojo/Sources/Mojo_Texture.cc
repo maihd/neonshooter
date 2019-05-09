@@ -68,12 +68,12 @@ inline namespace Mojo
     Texture Texture::Create(void)
     {
         Texture texture;
-        glGenTextures(1, (GLuint*)&texture._handle);
+        glGenTextures(1, (GLuint*)&texture.handle);
 
         GLint bindingTexture;
         glGetIntegerv(GL_TEXTURE_BINDING_2D, &bindingTexture);
 
-        glBindTexture(GL_TEXTURE_2D, texture._handle);
+        glBindTexture(GL_TEXTURE_2D, texture.handle);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -85,9 +85,9 @@ inline namespace Mojo
 
     void Texture::Destroy(Texture& texture)
     {
-        ::glDeleteTextures(1, &texture._handle);
+        ::glDeleteTextures(1, &texture.handle);
 
-        texture._handle = 0;
+        texture.handle = 0;
     }
 
     void Texture::SetWrap(TextureWrap wrap)
@@ -100,13 +100,13 @@ inline namespace Mojo
         GLint bindingTexture;
         glGetIntegerv(GL_TEXTURE_BINDING_2D, &bindingTexture);
 
-        glBindTexture(GL_TEXTURE_2D, _handle);
+        glBindTexture(GL_TEXTURE_2D, handle);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, ConvertTextureWrap(wrapU));
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, ConvertTextureWrap(wrapV));
         glBindTexture(GL_TEXTURE_2D, (GLuint)bindingTexture);
 
-        //glTextureParameteri(_handle, GL_TEXTURE_WRAP_S, ConvertTextureWrap(wrapU));
-        //glTextureParameteri(_handle, GL_TEXTURE_WRAP_T, ConvertTextureWrap(wrapV));
+        //glTextureParameteri(handle, GL_TEXTURE_WRAP_S, ConvertTextureWrap(wrapU));
+        //glTextureParameteri(handle, GL_TEXTURE_WRAP_T, ConvertTextureWrap(wrapV));
 
         HandleError();
     }
@@ -116,12 +116,12 @@ inline namespace Mojo
         GLint bindingTexture;
         glGetIntegerv(GL_TEXTURE_BINDING_2D, &bindingTexture);
 
-        glBindTexture(GL_TEXTURE_2D, _handle);
+        glBindTexture(GL_TEXTURE_2D, handle);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, ConvertTextureWrap(wrapU));
         glBindTexture(GL_TEXTURE_2D, (GLuint)bindingTexture);
 
-        //glTextureParameteri(_handle, GL_TEXTURE_WRAP_S, ConvertTextureWrap(wrapU));
-        //glTextureParameteri(_handle, GL_TEXTURE_WRAP_T, ConvertTextureWrap(wrapV));
+        //glTextureParameteri(handle, GL_TEXTURE_WRAP_S, ConvertTextureWrap(wrapU));
+        //glTextureParameteri(handle, GL_TEXTURE_WRAP_T, ConvertTextureWrap(wrapV));
 
         HandleError();
     }
@@ -131,12 +131,12 @@ inline namespace Mojo
         GLint bindingTexture;
         glGetIntegerv(GL_TEXTURE_BINDING_2D, &bindingTexture);
 
-        glBindTexture(GL_TEXTURE_2D, _handle);
+        glBindTexture(GL_TEXTURE_2D, handle);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, ConvertTextureWrap(wrapV));
         glBindTexture(GL_TEXTURE_2D, (GLuint)bindingTexture);
 
-        //glTextureParameteri(_handle, GL_TEXTURE_WRAP_S, ConvertTextureWrap(wrapU));
-        //glTextureParameteri(_handle, GL_TEXTURE_WRAP_T, ConvertTextureWrap(wrapV));
+        //glTextureParameteri(handle, GL_TEXTURE_WRAP_S, ConvertTextureWrap(wrapU));
+        //glTextureParameteri(handle, GL_TEXTURE_WRAP_T, ConvertTextureWrap(wrapV));
 
         HandleError();
     }
@@ -148,20 +148,20 @@ inline namespace Mojo
 
     void Texture::SetFilter(TextureFilter minFilter, TextureFilter magFilter)
     {
-        glTextureParameteri(_handle, GL_TEXTURE_MIN_FILTER, ConvertTextureFilter(minFilter));
-        glTextureParameteri(_handle, GL_TEXTURE_MAG_FILTER, ConvertTextureFilter(magFilter));
+        glTextureParameteri(handle, GL_TEXTURE_MIN_FILTER, ConvertTextureFilter(minFilter));
+        glTextureParameteri(handle, GL_TEXTURE_MAG_FILTER, ConvertTextureFilter(magFilter));
 
         HandleError();
     }
 
     void Texture::SetMinFilter(TextureFilter minFilter)
     {
-        glTextureParameteri(_handle, GL_TEXTURE_MIN_FILTER, ConvertTextureFilter(minFilter));
+        glTextureParameteri(handle, GL_TEXTURE_MIN_FILTER, ConvertTextureFilter(minFilter));
     }
 
     void Texture::SetMagFilter(TextureFilter magFilter)
     {
-        glTextureParameteri(_handle, GL_TEXTURE_MAG_FILTER, ConvertTextureFilter(magFilter));
+        glTextureParameteri(handle, GL_TEXTURE_MAG_FILTER, ConvertTextureFilter(magFilter));
     }
 
     void Texture::SetPixels(int w, int h, PixelFormat format, const void* pixels, PixelFormat targetFormat)
@@ -174,7 +174,7 @@ inline namespace Mojo
         this->width = w;
         this->height = h;
 
-        glTextureImage2DEXT(_handle, GL_TEXTURE_2D, 0, ConvertPixelFormat(targetFormat), w, h, 0, ConvertPixelFormat(format), GL_UNSIGNED_BYTE, pixels);
+        glTextureImage2DEXT(handle, GL_TEXTURE_2D, 0, ConvertPixelFormat(targetFormat), w, h, 0, ConvertPixelFormat(format), GL_UNSIGNED_BYTE, pixels);
         HandleError();
     }
 }

@@ -91,7 +91,7 @@ inline namespace Mojo
         SemiColon   = ';',
         Comma       = ',',
         Period      = '.',
-        Slash       = '\/',
+        Slash       = '/',
         BackSlash   = '\\',
         Quote       = '\'',
         DoubleQuote = '\"',

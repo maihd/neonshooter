@@ -20,6 +20,7 @@
 #include <Mojo/JobSystem.h>
 #include <Mojo/JobCounter.h>
 #include <Mojo/FileSystem.h>
+#include <Mojo/SpriteBatch.h>
 
 #define PI 3.14f
 
@@ -1023,33 +1024,8 @@ namespace ParticleSystem
 
 namespace Renderer
 {
-    struct Vertex
-    {
-        float2 pos;
-        float2 uv;
-    };
+    SpriteBatch* _spriteBatch;
 
-    struct DrawCommand
-    {
-        Texture   texture;
-        int       drawCount;
-        float2    position;
-        float2    scale;
-        float     rotation;
-        float4    color;
-
-        BlendFunc blend;
-    };
-
-    Array<DrawCommand>    _drawCmds;
-    Array<Vertex>         _vertices;
-    Array<unsigned short> _indices;
-
-    VertexArray  _spriteVertexArray;
-    IndexBuffer  _spriteIndexBuffer;
-    VertexBuffer _spriteVertexBuffer;
-
-    Shader _spriteShader;
     Shader _glowShader;
     Shader _fxaaShader;
 
@@ -1082,32 +1058,15 @@ namespace Renderer
     {
         Graphics::SetBlendFunc(BlendFactor::SrcAlpha, BlendFactor::InvertSrcAlpha);
 
-        _drawCmds.Expand(50 * 1024);
-        _vertices.Expand(50 * 1024);
-        _indices.Expand(50 * 1024);
-
         float w = Window::GetWidth();
         float h = Window::GetHeight();
         proj_matrix = float4x4::ortho(-w, w, -h, h, -10.0f, 10.0f);
         Graphics::Viewport(0, 0, w, h);
 
-        _spriteVertexArray = VertexArray::Create();
-        _spriteVertexBuffer = VertexBuffer::Create();
-        _spriteIndexBuffer = IndexBuffer::Create();
-
-        _spriteShader = Shader::Create(vshader_src, fshader_src);
-
-        if (!_spriteShader._handle)
-        {
-            fprintf(stderr, "An error occured, press any key to exit...");
-            getchar();
-            exit(1);
-        }
-
-        _spriteVertexArray.SetAttribute(_spriteVertexBuffer, 0, 4, DataType::Float, false, sizeof(Vertex));
-
         _glowRenderTarget = RenderTarget::Create(w, h);
         _fxaaRenderTarget = RenderTarget::Create(w, h);
+
+        _spriteBatch = new SpriteBatch();
 
         // Create post processing _spriteShader
         printf("renderer::init(): Starting create framebuffer's shader...\n");
@@ -1212,50 +1171,12 @@ namespace Renderer
 
     void DrawTexture(const Texture& texture, float2 position, float rotation, float2 scale, float4 color, BlendFunc blend)
     {
-        DrawCommand cmd;
-        cmd.texture     = texture;
-        cmd.position    = position;
-        cmd.rotation    = rotation;
-        cmd.scale       = scale * float2(texture.width, texture.height);
-        cmd.blend       = blend;
-        cmd.color       = color;
-        cmd.drawCount   = 6;
-        if (!_drawCmds.Push(cmd))
-        {
-            assert(false && "Renderer: Out of memory when push draw call to queue.");
-        }
-
-        unsigned short i = (unsigned short)_indices.count;
-        _indices.Push((unsigned short)(i + 0U));
-        _indices.Push((unsigned short)(i + 1U));
-        _indices.Push((unsigned short)(i + 2U));
-        _indices.Push((unsigned short)(i + 0U));
-        _indices.Push((unsigned short)(i + 2U));
-        _indices.Push((unsigned short)(i + 3U));
-
-        Vertex v;
-        v.pos = float2(-0.5f, -0.5f);
-        v.uv = float2(0.0f, 1.0f);
-        _vertices.Push(v);
-
-        v.pos = float2(-0.5f, 0.5f);
-        v.uv = float2(0.0f, 0.0f);
-        _vertices.Push(v);
-
-        v.pos = float2(0.5f, 0.5f);
-        v.uv = float2(1.0f, 0.0f);
-        _vertices.Push(v);
-
-        v.pos = float2(0.5f, -0.5f);
-        v.uv = float2(1.0f, 1.0f);
-        _vertices.Push(v);
+        _spriteBatch->DrawTexture(texture, position, rotation, scale, color, blend);
     }
 
     void Prepair()
     {
-        _drawCmds.Clear();
-        _vertices.Clear();
-        _indices.Clear();
+        _spriteBatch->Clear();
     }
 
     void Present()
@@ -1263,30 +1184,7 @@ namespace Renderer
         Graphics::BindRenderTarget(&_fxaaRenderTarget);
         Graphics::ClearBuffer();
 
-        Graphics::BindShader(_spriteShader);
-        Graphics::BindVertexArray(_spriteVertexArray);
-        Graphics::BindIndexBuffer(_spriteIndexBuffer);
-        Graphics::BindVertexBuffer(_spriteVertexBuffer);
-
-        _spriteVertexBuffer.SetData(_vertices.elements, _vertices.count * sizeof(Vertex), BufferUsage::StreamDraw);
-        _spriteIndexBuffer.SetData(_indices.elements, _indices.count * sizeof(unsigned short), DataType::Ushort, BufferUsage::StreamDraw);
-
-        for (int i = 0, n = _drawCmds.count; i < n; i++)
-        {
-            const DrawCommand& cmd = _drawCmds[i];
-
-            Graphics::SetBlendFunc(cmd.blend);
-            //_spriteVertexBuffer.SetBlendFunc(cmd.blend);
-
-            float4x4 model_matrix = float4x4::translation(cmd.position) * float4x4::rotation_z(cmd.rotation) * float4x4::scalation(cmd.scale);
-            float4x4 MVP_matrix = proj_matrix * model_matrix;
-
-            _spriteShader.SetFloat4x4("MVP", (float*)&MVP_matrix);
-            _spriteShader.SetFloat4("color", cmd.color.x, cmd.color.y, cmd.color.z, cmd.color.w);
-
-            Graphics::BindTexture(cmd.texture);
-            Graphics::DrawIndices(DrawType::Triangles, _spriteIndexBuffer._dataType, cmd.drawCount, 0);
-        }
+        _spriteBatch->Present(proj_matrix);
 
         //Graphics::BlitRenderTarget(&_fxaaRenderTarget, &_glowRenderTarget, _fxaaShader);
         //Graphics::BlitRenderTarget(&_glowRenderTarget, &_fxaaRenderTarget, _fxaaShader);

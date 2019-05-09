@@ -152,6 +152,9 @@
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_SpinLock.cc">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_SpriteBatch.cc">
+      <Filter>Sources</Filter>
+    </ClCompile>
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_System.cc">
       <Filter>Sources</Filter>
     </ClCompile>

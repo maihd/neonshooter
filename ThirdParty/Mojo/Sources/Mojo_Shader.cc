@@ -100,7 +100,7 @@ inline namespace Mojo
             return shader;
         }
 
-        shader._handle = program;
+        shader.handle = program;
         return shader;
     }
 
@@ -111,18 +111,18 @@ inline namespace Mojo
 
     void Shader::Destroy(Shader& shader)
     {
-        glDeleteProgram(shader._handle);
-        shader._handle = 0;
+        glDeleteProgram(shader.handle);
+        shader.handle = 0;
     }
 
     int Shader::FindAttribute(const char* name)
     {
-        return glGetAttribLocation(_handle, name);
+        return glGetAttribLocation(handle, name);
     }
 
     int Shader::FindUniform(const char* name)
     {
-        return glGetUniformLocation(_handle, name);
+        return glGetUniformLocation(handle, name);
     }
 
     bool Shader::SetFloat(int location, float x)
@@ -133,7 +133,7 @@ inline namespace Mojo
         }
 
         glUniform1f(location, x);
-        //glProgramUniform1f(_handle, location, x);
+        //glProgramUniform1f(handle, location, x);
         return true;
     }
 
@@ -150,7 +150,7 @@ inline namespace Mojo
         }
 
         glUniform2f(location, x, y);
-        //glProgramUniform2f(_handle, location, x, y);
+        //glProgramUniform2f(handle, location, x, y);
         return true;
     }
 
@@ -167,7 +167,7 @@ inline namespace Mojo
         }
 
         glUniform3f(location, x, y, z);
-        //glProgramUniform3f(_handle, location, x, y, z);
+        //glProgramUniform3f(handle, location, x, y, z);
         return true;
     }
 
@@ -184,7 +184,7 @@ inline namespace Mojo
         }
 
         glUniform4f(location, x, y, z, w);
-        //glProgramUniform4f(_handle, location, x, y, z, w);
+        //glProgramUniform4f(handle, location, x, y, z, w);
         return true;
     }
 
@@ -201,7 +201,7 @@ inline namespace Mojo
         }
 
         glUniformMatrix4fv(location, 1, transpose, value);
-        //glProgramUniformMatrix4fv(_handle, location, 1, transpose, value);
+        //glProgramUniformMatrix4fv(handle, location, 1, transpose, value);
         return true;
     }
 
