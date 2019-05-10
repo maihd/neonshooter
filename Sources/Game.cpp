@@ -249,6 +249,7 @@ namespace World
     int wandererSpawnRate = 60;
     int blackHoleSpawnRate = 20;
 
+    bool oldFire = false;
     float fireTimer = 0.0f;
     float fireInterval = 0.1f;
 
@@ -834,11 +835,18 @@ namespace World
         // Fire bullet if requested
         if (!fire)
         {
+            oldFire = false;
             fireTimer = 0.0f;
             //GameAudio::StopShoot();
         }
         else
         {
+            if (oldFire != fire)
+            {
+                oldFire = fire;
+                fireTimer = fireInterval;
+            }
+
             fireTimer += dt;
             if (fireTimer >= fireInterval)
             {
@@ -1499,7 +1507,7 @@ namespace GameAudio
             audio.buffer = AudioBuffer::Create();
             audio.buffer.SetData(wav, len, freq, audioFormat);
             
-            audio.source.SetBuffer(&audio.buffer);
+            audio.source.SetBuffer(audio.buffer);
 
             //
             //alBufferData(audio.buffer, format, wav, len, spec.freq);

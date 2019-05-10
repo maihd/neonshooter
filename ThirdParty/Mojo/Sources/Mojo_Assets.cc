@@ -28,21 +28,21 @@ inline namespace Mojo
 #pragma pack(push, 1)
             struct WAVHeader
             {
-                uint8_t  riff[4];
-                uint32_t size;
+                uint8  riff[4];
+                uint32 size;
 
-                uint8_t  wave[4];   // "WAVE"
-                uint8_t  fmt[4];    // "fmt\0"
-                uint32_t fmtLength;
+                uint8  wave[4];   // "WAVE"
+                uint8  fmt[4];    // "fmt\0"
+                uint32 fmtLength;
 
-                uint16_t audioFormat;
-                uint16_t channels;
+                uint16 audioFormat;
+                uint16 channels;
 
-                uint32_t sampleRate;
-                uint32_t byteRate;
+                uint32 sampleRate;
+                uint32 byteRate;
 
-                uint16_t blockAlign;
-                uint16_t bitsPerSample;
+                uint16 blockAlign;
+                uint16 bitsPerSample;
             };
 #pragma pack(pop, 1)
 
@@ -86,7 +86,7 @@ inline namespace Mojo
 
                 if (header.audioFormat == 1)
                 {
-                    uint16_t extraParams = file->ReadUint16LE();
+                    uint16 extraParams = file->ReadUint16LE();
                     file->Skip(extraParams);
                 }
 
@@ -97,7 +97,7 @@ inline namespace Mojo
                     return NULL;
                 }
                 
-                uint32_t dataChunkSize = file->ReadUint32LE();
+                uint32 dataChunkSize = file->ReadUint32LE();
                 if (!dataChunkSize)
                 {
                     file->Close();

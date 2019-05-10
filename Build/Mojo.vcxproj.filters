@@ -42,6 +42,9 @@
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Audio.h">
       <Filter>Include\Mojo</Filter>
     </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Core.h">
+      <Filter>Include\Mojo</Filter>
+    </ClInclude>
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Coroutine.h">
       <Filter>Include\Mojo</Filter>
     </ClInclude>
@@ -138,6 +141,9 @@
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_SDL2\Mojo_SDL2_Input.cc">
+      <Filter>Sources\Mojo_SDL2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_SDL2\Mojo_SDL2_System.cc">
       <Filter>Sources\Mojo_SDL2</Filter>
     </ClCompile>
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_SDL2\Mojo_SDL2_Thread.cc">

@@ -90,7 +90,7 @@ inline namespace Mojo
         Graphics::BindVertexBuffer(_spriteVertexBuffer);
 
         _spriteVertexBuffer.SetData(_vertices.elements, _vertices.count * sizeof(Vertex), BufferUsage::StreamDraw);
-        _spriteIndexBuffer.SetData(_indices.elements, _indices.count * sizeof(unsigned short), DataType::Ushort, BufferUsage::StreamDraw);
+        _spriteIndexBuffer.SetData(_indices.elements, _indices.count * sizeof(unsigned short), BufferUsage::StreamDraw);
 
         for (int i = 0, n = _drawCmds.count; i < n; i++)
         {
@@ -106,7 +106,7 @@ inline namespace Mojo
             _spriteShader.SetFloat4("color", cmd.color.x, cmd.color.y, cmd.color.z, cmd.color.w);
 
             Graphics::BindTexture(cmd.texture);
-            Graphics::DrawIndices(DrawType::Triangles, _spriteIndexBuffer._dataType, cmd.drawCount, 0);
+            Graphics::DrawIndices(DrawType::Triangles, DataType::Uint16, cmd.drawCount, 0);
         }
     }
 }

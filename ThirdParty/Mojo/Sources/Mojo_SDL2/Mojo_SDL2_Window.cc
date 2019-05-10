@@ -9,6 +9,10 @@
 
 #include "Mojo_SDL2_Input.h"
 
+#pragma comment(lib, "winmm.lib")
+#pragma comment(lib, "imm32.lib")
+#pragma comment(lib, "version.lib")
+#pragma comment(lib, "setupapi.lib")
 #pragma comment(lib, "OpenGL32.lib")
 
 inline namespace Mojo

@@ -20,7 +20,7 @@ end
 function thirdpartydefines()
     defines {
         "GLEW_STATIC",
-        --"AL_LIBTYPE_STATIC",
+        "AL_LIBTYPE_STATIC",
     }
 end
 
@@ -33,8 +33,8 @@ function thirdpartylibdirs()
         }
 
         postbuildcommands {
-            "{COPY} ".. path.join(THIRDPARTY_DIR, "SDL2-2.0.9/lib/Win32/SDL2.dll") .. " %{cfg.targetdir}",
-            "{COPY} ".. path.join(THIRDPARTY_DIR, "OpenAL-Soft-1.19.1/libs/Win32/OpenAL32.dll") .. " %{cfg.targetdir}"
+            --"{COPY} ".. path.join(THIRDPARTY_DIR, "SDL2-2.0.9/lib/Win32/SDL2.dll") .. " %{cfg.targetdir}",
+            --"{COPY} ".. path.join(THIRDPARTY_DIR, "OpenAL-Soft-1.19.1/libs/Win32/OpenAL32.dll") .. " %{cfg.targetdir}"
         }
     end
 
@@ -46,8 +46,8 @@ function thirdpartylibdirs()
         }
 
         postbuildcommands {
-            "{COPY} ".. path.join(THIRDPARTY_DIR, "SDL2-2.0.9/lib/Win64/SDL2.dll") .. " %{cfg.targetdir}",
-            "{COPY} ".. path.join(THIRDPARTY_DIR, "OpenAL-Soft-1.19.1/libs/Win64/OpenAL32.dll") .. " %{cfg.targetdir}"
+            --"{COPY} ".. path.join(THIRDPARTY_DIR, "SDL2-2.0.9/lib/Win64/SDL2.dll") .. " %{cfg.targetdir}",
+            --"{COPY} ".. path.join(THIRDPARTY_DIR, "OpenAL-Soft-1.19.1/libs/Win64/OpenAL32.dll") .. " %{cfg.targetdir}"
         }
     end
 

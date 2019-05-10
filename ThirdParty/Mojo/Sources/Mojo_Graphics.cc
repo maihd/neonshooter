@@ -11,6 +11,11 @@ inline namespace Mojo
 {
     namespace
     {
+        inline GLuint ConvertHandle(void* handle)
+        {
+            return (GLuint)(GLintptr)handle;
+        }
+
         static void HandleError()
         {
             glGetError();
@@ -56,22 +61,22 @@ inline namespace Mojo
         {
             switch (type)
             {
-            case DataType::Byte:
+            case DataType::Uint8:
                 return GL_UNSIGNED_BYTE;
 
-            case DataType::SignedByte:
+            case DataType::Int8:
                 return GL_BYTE;
 
-            case DataType::Int:
+            case DataType::Int32:
                 return GL_INT;
 
-            case DataType::Uint:
+            case DataType::Uint32:
                 return GL_UNSIGNED_INT;
 
-            case DataType::Short:
+            case DataType::Int16:
                 return GL_SHORT;
 
-            case DataType::Ushort:
+            case DataType::Uint16:
                 return GL_UNSIGNED_SHORT;
 
             case DataType::Float:
@@ -88,22 +93,22 @@ inline namespace Mojo
         {
             switch (type)
             {
-            case DataType::Byte:
+            case DataType::Uint8:
                 return 1;
 
-            case DataType::SignedByte:
+            case DataType::Int8:
                 return 1;
 
-            case DataType::Int:
+            case DataType::Int32:
                 return 4;
 
-            case DataType::Uint:
+            case DataType::Uint32:
                 return 4;
 
-            case DataType::Short:
+            case DataType::Int16:
                 return 2;
 
-            case DataType::Ushort:
+            case DataType::Uint16:
                 return 2;
 
             case DataType::Float:
@@ -206,10 +211,8 @@ inline namespace Mojo
         buffer.handle = 0;
     }
 
-    void IndexBuffer::SetData(const void* data, int size, DataType type, BufferUsage usage)
+    void IndexBuffer::SetData(const void* data, int size, BufferUsage usage)
     {
-        _dataType = type;
-
         GLint boundHandle;
         glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &boundHandle);
         if (boundHandle == handle)
@@ -312,7 +315,7 @@ inline namespace Mojo
         glBindBuffer(GL_ARRAY_BUFFER, buffer.handle);
 
         glEnableVertexAttribArray(location);
-        glVertexAttribPointer(location, size, glDataType, normalized, stride, (const void*)(intptr_t)offset);
+        glVertexAttribPointer(location, size, glDataType, normalized, stride, (const void*)(GLintptr)offset);
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
@@ -451,28 +454,28 @@ inline namespace Mojo
 
         void BindShader(ShaderHandle* shader)
         {
-            glUseProgram((GLuint)(intptr_t)shader);
+            glUseProgram(ConvertHandle(shader));
         }
 
         void BindTexture(TextureHandle* texture, int index)
         {
             glActiveTexture(GL_TEXTURE0 + index);
-            glBindTexture(GL_TEXTURE_2D, (GLuint)(intptr_t)texture);
+            glBindTexture(GL_TEXTURE_2D, ConvertHandle(texture));
         }
 
         void BindVertexArray(VertexArrayHandle* array)
         {
-            glBindVertexArray((GLuint)(intptr_t)array);
+            glBindVertexArray(ConvertHandle(array));
         }
 
         void BindIndexBuffer(IndexBufferHandle* buffer)
         {
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, (GLuint)(intptr_t)buffer);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ConvertHandle(buffer));
         }
 
         void BindVertexBuffer(VertexBufferHandle* buffer)
         {
-            glBindBuffer(GL_ARRAY_BUFFER, (GLuint)(intptr_t)buffer);
+            glBindBuffer(GL_ARRAY_BUFFER, ConvertHandle(buffer));
         }
 
         void BindRenderTarget(RenderTarget* renderTarget)
@@ -492,7 +495,7 @@ inline namespace Mojo
                 // Clear dst buffer
                 Graphics::ClearBuffer();
 
-                glUseProgram((GLuint)(intptr_t)shader);
+                glUseProgram(ConvertHandle(shader));
                 glBindVertexArray(_renderTargetVertexArray.handle);
 
                 glActiveTexture(GL_TEXTURE0);
@@ -518,15 +521,15 @@ inline namespace Mojo
         void DrawIndices(DrawType type, DataType dataType, int count, int offset)
         {
             GLenum glDrawType = (GLenum)type;
-            glDrawElements(glDrawType, count, ConvertDataType(dataType), (const void*)(intptr_t)(offset * ConvertDataSize(dataType)));
+            glDrawElements(glDrawType, count, ConvertDataType(dataType), (const void*)(GLintptr)(offset * ConvertDataSize(dataType)));
         }
 
         void DrawArrays(DrawType type, ShaderHandle* shader, VertexArrayHandle* array, int count, int offset)
         {
             GLenum glDrawType = (GLenum)type;
 
-            glUseProgram((GLuint)(intptr_t)shader);
-            glBindVertexArray((GLuint)(intptr_t)array);
+            glUseProgram(ConvertHandle(shader));
+            glBindVertexArray(ConvertHandle(array));
             glDrawArrays(glDrawType, offset, count);
             glBindVertexArray(0);
             glUseProgram(0);
@@ -536,12 +539,12 @@ inline namespace Mojo
         {
             GLenum glDrawType = (GLenum)type;
 
-            glUseProgram((GLuint)(intptr_t)shader);
+            glUseProgram(ConvertHandle(shader));
 
-            glBindVertexArray((GLuint)(intptr_t)array);
+            glBindVertexArray(ConvertHandle(array));
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indices.handle);
             
-            glDrawElements(glDrawType, count, ConvertDataType(indices._dataType), (const void*)(offset * ConvertDataSize(indices._dataType)));
+            //glDrawElements(glDrawType, count, ConvertDataType(indices._dataType), (const void*)(offset * ConvertDataSize(indices._dataType)));
             
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
             glBindVertexArray(0);
@@ -553,11 +556,11 @@ inline namespace Mojo
         {
             GLenum glDrawType = (GLenum)type;
 
-            glUseProgram((GLuint)(intptr_t)shader);
+            glUseProgram(ConvertHandle(shader));
             glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, (GLuint)(intptr_t)texture);
+            glBindTexture(GL_TEXTURE_2D, ConvertHandle(texture));
             
-            glBindVertexArray((GLuint)(intptr_t)array);
+            glBindVertexArray(ConvertHandle(array));
             
             glDrawArrays(glDrawType, offset, count);
             
@@ -571,15 +574,15 @@ inline namespace Mojo
         {
             GLenum glDrawType = (GLenum)type;
 
-            glUseProgram((GLuint)(intptr_t)shader);
+            glUseProgram(ConvertHandle(shader));
             glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, (GLuint)(intptr_t)texture);
+            glBindTexture(GL_TEXTURE_2D, ConvertHandle(texture));
             
-            glBindVertexArray((GLuint)(intptr_t)array);
+            glBindVertexArray(ConvertHandle(array));
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indices.handle);
             
-            const void* memoryOffset = (const void*)(intptr_t)(offset * ConvertDataSize(indices._dataType));
-            glDrawElements(glDrawType, count, ConvertDataType(indices._dataType), memoryOffset);
+            //const void* memoryOffset = (const void*)(GLintptr)(offset * ConvertDataSize(indices._dataType));
+            //glDrawElements(glDrawType, count, ConvertDataType(indices._dataType), memoryOffset);
             
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
             glBindVertexArray(0);

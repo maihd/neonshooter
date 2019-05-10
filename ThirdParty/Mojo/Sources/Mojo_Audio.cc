@@ -1,3 +1,4 @@
+#include <Mojo/Core.h>
 #include <Mojo/Audio.h>
 
 #include <stdio.h>
@@ -11,7 +12,12 @@ inline namespace Mojo
         ALCdevice*  _device;
         ALCcontext* _context;
 
-        ALenum ConvertAudioFormat(AudioFormat format)
+        inline ALuint ConvertHandle(void* handle)
+        {
+            return (ALuint)(intptr)handle;
+        }
+
+        inline ALenum ConvertAudioFormat(AudioFormat format)
         {
             switch (format)
             {
@@ -27,6 +33,8 @@ inline namespace Mojo
             case AudioFormat::Stereo16:
                 return AL_FORMAT_STEREO16;
             }
+
+            return 0;
         }
     }
 
@@ -105,9 +113,9 @@ inline namespace Mojo
         }
     }
 
-    void AudioSource::SetBuffer(const AudioBuffer* buffer)
+    void AudioSource::SetBuffer(AudioBufferHandle* buffer)
     {
-        alSourcei(handle, AL_BUFFER, buffer ? buffer->handle : 0);
+        alSourcei(handle, AL_BUFFER, (ALint)ConvertHandle(buffer));
 
         ALenum error = alGetError();
         if (error != AL_NO_ERROR)
@@ -158,6 +166,28 @@ inline namespace Mojo
         {
             printf("AudioBuffer::SetData: %s\n", alGetString(error));
         }
+    }
+
+    void AudioListener::SetPosition(float x, float y, float z)
+    {
+        alListener3f(AL_POSITION, x, y, z);
+    }
+
+    void AudioListener::SetVelocity(float x, float y, float z)
+    {
+        alListener3f(AL_VELOCITY, x, y, z);
+    }
+
+    void AudioListener::SetOrientation(float x0, float y0, float x1, float y1)
+    {
+        ALfloat listenerOri[] = { x0, y0, 0.0f, x1, y1, 0.0f };
+        alListenerfv(AL_ORIENTATION, listenerOri);
+    }
+
+    void AudioListener::SetOrientation(float x0, float y0, float z0, float x1, float y1, float z1)
+    {
+        ALfloat listenerOri[] = { x0, y0, z1, x1, y1, z1 };
+        alListenerfv(AL_ORIENTATION, listenerOri);
     }
 
     namespace Audio
