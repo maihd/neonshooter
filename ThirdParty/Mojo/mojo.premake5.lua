@@ -26,23 +26,37 @@ do
         path.join(MOJO_DIR, "Include"),
     }
 
+    local function filedirs(dirs)
+        if type(dirs) == "string" then
+            files {
+                path.join(MOJO_DIR, dirs, "*.h"),
+                path.join(MOJO_DIR, dirs, "*.c"),
+                path.join(MOJO_DIR, dirs, "*.cc"),
+                path.join(MOJO_DIR, dirs, "*.cpp"),
+            }
+        elseif type(dirs) == "table" then
+            for _, dir in ipairs(dirs) do
+                filedirs(dir)
+            end
+        end
+    end
+
+
     files {
         path.join(MOJO_DIR, "Include/Mojo/*.h"),
         path.join(MOJO_DIR, "Include/Mojo/**/*.h"),
+    }
 
-        path.join(MOJO_DIR, "Sources/*.h"),
-        path.join(MOJO_DIR, "Sources/*.c"),
-        path.join(MOJO_DIR, "Sources/*.cc"),
-        path.join(MOJO_DIR, "Sources/*.cpp"),
+    filedirs {
+        "Sources",
+        "Sources/Core",
         
-        path.join(MOJO_DIR, "Sources/Mojo_SDL2/*.h"),
-        path.join(MOJO_DIR, "Sources/Mojo_SDL2/*.c"),
-        path.join(MOJO_DIR, "Sources/Mojo_SDL2/*.cc"),
-        path.join(MOJO_DIR, "Sources/Mojo_SDL2/*.cpp"),
+        "Sources/Graphics",
+        "Sources/Graphics_OpenGL",
 
-        --path.join(MOJO_DIR, "Sources/**/*.h"),
-        --path.join(MOJO_DIR, "Sources/**/*.c"),
-        --path.join(MOJO_DIR, "Sources/**/*.cc"),
-        --path.join(MOJO_DIR, "Sources/**/*.cpp"),
+        "Sources/Audio_OpenAL",
+
+        "Sources/Native",
+        "Sources/Native_SDL2",
     }
 end

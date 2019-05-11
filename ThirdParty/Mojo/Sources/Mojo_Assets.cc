@@ -1,6 +1,6 @@
-#include <Mojo/Array.h>
 #include <Mojo/Assets.h>
 #include <Mojo/FileSystem.h>
+#include <Mojo/Core/Array.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "./Atomic.h"
-#include "./Thread.h"
+#include <Mojo/Core/Atomic.h>
+#include <Mojo/Core/Thread.h>
 
 inline namespace Mojo
 {

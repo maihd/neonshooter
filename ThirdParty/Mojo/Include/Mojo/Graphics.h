@@ -151,7 +151,6 @@ inline namespace Mojo
         
         unsigned frameBuffer            = 0;
         unsigned renderBuffer           = 0;
-        //unsigned depthStencilTexture    = 0;
 
         //static RenderTarget Create(void);
         static RenderTarget Create(int width, int height);

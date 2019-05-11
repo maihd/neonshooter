@@ -1,6 +1,6 @@
-#include <Mojo/Array.h>
-#include <Mojo/Thread.h>
 #include <Mojo/FileSystem.h>
+#include <Mojo/Core/Array.h>
+#include <Mojo/Core/Thread.h>
 
 #define VC_EXTRALEAN
 #define WIN32_LEAN_AND_MEAN
@@ -93,10 +93,10 @@ inline namespace Mojo
             return (int)::GetFileSize(handle, NULL);
         }
 
-        int Read(void* buffer, int length) override
+        int Read(void* buffer, int GetLength) override
         {
             DWORD nbytes;
-            if (::ReadFile((HANDLE)handle, buffer, (DWORD)length, &nbytes, NULL))
+            if (::ReadFile((HANDLE)handle, buffer, (DWORD)GetLength, &nbytes, NULL))
             {
                 return (int)nbytes;
             }
@@ -113,10 +113,10 @@ inline namespace Mojo
             }
         }
 
-        int Write(const void* buffer, int length) override
+        int Write(const void* buffer, int GetLength) override
         {
             DWORD nbytes;
-            if ((int)::WriteFile((HANDLE)handle, buffer, (DWORD)length, &nbytes, NULL))
+            if ((int)::WriteFile((HANDLE)handle, buffer, (DWORD)GetLength, &nbytes, NULL))
             {
                 return (int)nbytes;
             }
@@ -351,7 +351,7 @@ inline namespace Mojo
                  *
                  * In order for direct writes and direct appends to succeed, we therefore
                  * exclude FILE_APPEND_DATA if FILE_WRITE_DATA is specified, and otherwise
-                 * fail if the user's sole permission is a direct append, since this
+                 * fail if the user's sole permission is a direct Append, since this
                  * particular combination is invalid.
                  */
                 if (access & FILE_APPEND_DATA)
@@ -426,12 +426,12 @@ inline namespace Mojo
             }
         }
 
-        int ReadFile(const char* path, void* buffer, int length)
+        int ReadFile(const char* path, void* buffer, int GetLength)
         {
             File* file = Open(path, FileOpen::Read | FileOpen::Direct);
             if (file)
             {
-                int ret = file->Read(buffer, length); file->Close();
+                int ret = file->Read(buffer, GetLength); file->Close();
                 return (int)ret;
             }
             else
@@ -440,12 +440,12 @@ inline namespace Mojo
             }
         }
 
-        int WriteFile(const char* path, const void* buffer, int length)
+        int WriteFile(const char* path, const void* buffer, int GetLength)
         {
             File* file = Open(path, FileOpen::Read | FileOpen::Direct);
             if (file)
             {
-                int ret = file->Write(buffer, length); file->Close();
+                int ret = file->Write(buffer, GetLength); file->Close();
                 return (int)ret;
             }
             else
@@ -461,7 +461,7 @@ inline namespace Mojo
             FileAsyncOperation* asyncFile = (FileAsyncOperation*)args;
 
             int nbytes = 0;
-            for (int i = 0, n = asyncFile->length; i < n;)
+            for (int i = 0, n = asyncFile->GetLength; i < n;)
             {
                 nbytes = asyncFile->file->Read((char*)asyncFile->buffer + i, ChunkSize);
                 if (nbytes < 0)
@@ -476,7 +476,7 @@ inline namespace Mojo
             *((bool*)&asyncFile->isSuccess) = nbytes != -1;
             if (!asyncFile->isSuccess)
             {
-                *((int*)&asyncFile->length) = 0;
+                *((int*)&asyncFile->GetLength) = 0;
             }
             else
             {
@@ -499,7 +499,7 @@ inline namespace Mojo
             FileAsyncOperation* asyncFile = (FileAsyncOperation*)args;
 
             int nbytes = 0;
-            for (int i = 0, n = asyncFile->length; i < n;)
+            for (int i = 0, n = asyncFile->GetLength; i < n;)
             {
                 nbytes = asyncFile->file->Write((char*)asyncFile->buffer + i, ChunkSize);
                 if (nbytes < 0)
@@ -514,7 +514,7 @@ inline namespace Mojo
             *((bool*)&asyncFile->isSuccess) = nbytes != -1;
             if (!asyncFile->isSuccess)
             {
-                *((int*)&asyncFile->length) = 0;
+                *((int*)&asyncFile->GetLength) = 0;
             }
             else
             {
@@ -530,7 +530,7 @@ inline namespace Mojo
             return 0;
         }
 
-        FileAsyncOperation* ReadFileAsync(const char* path, void* buffer, int length)
+        FileAsyncOperation* ReadFileAsync(const char* path, void* buffer, int GetLength)
         {
             if (!buffer)
             {
@@ -544,7 +544,7 @@ inline namespace Mojo
             }
             
             int fileSize = file->Size();
-            if (length < fileSize)
+            if (GetLength < fileSize)
             {
                 file->Close();
                 return NULL;
@@ -564,14 +564,14 @@ inline namespace Mojo
             *((void**)&asyncFile->path) = (void*)path;
 
             *((void**)&asyncFile->buffer) = (void*)buffer;
-            *((int*  )&asyncFile->length) = fileSize;
+            *((int*  )&asyncFile->GetLength) = fileSize;
 
             Thread::Run(ReadFileAsync_ThreadEntry, asyncFile);
 
             return asyncFile;
         }
 
-        FileAsyncOperation* WriteFileAsync(const char* path, const void* buffer, int length)
+        FileAsyncOperation* WriteFileAsync(const char* path, const void* buffer, int GetLength)
         {
             if (!buffer)
             {
@@ -585,7 +585,7 @@ inline namespace Mojo
             }
             
             int fileSize = file->Size();
-            if (length < fileSize)
+            if (GetLength < fileSize)
             {
                 file->Close();
                 return NULL;
@@ -605,7 +605,7 @@ inline namespace Mojo
             *((void**)&asyncFile->path) = (void*)path;
 
             *((void**)&asyncFile->buffer) = (void*)buffer;
-            *((int*  )&asyncFile->length) = fileSize;
+            *((int*  )&asyncFile->GetLength) = fileSize;
 
             Thread::Run(WriteFileAsync_ThreadEntry, asyncFile);
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "./Stream.h"
+#include <Mojo/Core/Stream.h>
 
 inline namespace Mojo
 {
@@ -41,10 +41,10 @@ inline namespace Mojo
         virtual void Close(void) = 0;
 
         // Read content of file at given path, with async progress
-        //virtual FileAsyncOperation* ReadAsync(void* buffer, int length);
+        //virtual FileAsyncOperation* ReadAsync(void* buffer, int GetLength);
 
         // Write content to file at given path, with async progress
-        //virtual FileAsyncOperation* WriteAsync(const void* buffer, int length);
+        //virtual FileAsyncOperation* WriteAsync(const void* buffer, int GetLength);
     };
 
     struct FileAsyncOperation
@@ -59,7 +59,7 @@ inline namespace Mojo
         float const progress;
 
         const void* const buffer;
-              int   const length;
+              int   const GetLength;
 
         FileAsyncOperation(void)
             : file(0)
@@ -68,7 +68,7 @@ inline namespace Mojo
             , isSuccess(false)
             , progress(0.0f)
             , buffer(0)
-            , length(0)
+            , GetLength(0)
         {
         }
 
@@ -105,15 +105,15 @@ inline namespace Mojo
         File* Open(const char* path, int flags);
 
         // Read content of file at given path
-        int   ReadFile(const char* path, void* buffer, int length);
+        int   ReadFile(const char* path, void* buffer, int GetLength);
 
         // Write content to file at given path
-        int   WriteFile(const char* path, const void* buffer, int length);
+        int   WriteFile(const char* path, const void* buffer, int GetLength);
 
         // Read content of file at given path, with async progress
-        FileAsyncOperation* ReadFileAsync(const char* path, void* buffer, int length);
+        FileAsyncOperation* ReadFileAsync(const char* path, void* buffer, int GetLength);
 
         // Write content to file at given path, with async progress
-        FileAsyncOperation* WriteFileAsync(const char* path, const void* buffer, int length);
+        FileAsyncOperation* WriteFileAsync(const char* path, const void* buffer, int GetLength);
     }
 }

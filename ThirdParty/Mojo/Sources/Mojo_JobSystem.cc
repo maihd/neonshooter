@@ -1,10 +1,11 @@
-#include <Mojo/Array.h>
-#include <Mojo/Atomic.h>
-#include <Mojo/System.h>
-#include <Mojo/Thread.h>
-#include <Mojo/Coroutine.h>
+#include <Mojo/Core/Array.h>
+#include <Mojo/Core/Atomic.h>
+#include <Mojo/Core/Thread.h>
+#include <Mojo/Core/Coroutine.h>
+
 #include <Mojo/JobSystem.h>
 #include <Mojo/JobCounter.h>
+#include <Mojo/Native/System.h>
 
 #define VC_EXTRALEAN
 #define WIN32_LEAN_AND_MEAN
@@ -113,7 +114,7 @@ inline namespace Mojo
         static AtomicI32         _currentCounter;
         static AtomicI32         _finishedCounter;
 
-        static Allocator*           _allocator;
+        static Allocator*           allocator;
     }
 
     static void JobSystem_CoroutineEntry(void* args)
@@ -206,14 +207,14 @@ inline namespace Mojo
             _flags |= Flags::Init;
             _flags |= Flags::Running;
 
-            _allocator = allocator;
+            allocator = allocator;
 
             _maxJobsPerThread  = maxJobsPerThread;
             _workerThreadCount = cpuCores;
 
-            _jobQueues      = (JobQueue*)_allocator->Acquire(sizeof(JobQueue) * cpuCores + cpuCores * maxJobsPerThread * sizeof(Job), alignof(Job));
+            _jobQueues      = (JobQueue*)allocator->Acquire(sizeof(JobQueue) * cpuCores + cpuCores * maxJobsPerThread * sizeof(Job), alignof(Job));
             _jobQueueIndex  = 0;
-            //_coroutinePools = (Coroutine*)_allocator->Acquire(cpuCores * maxJobsPerThread * sizeof(Coroutine), alignof(Coroutine));
+            //_coroutinePools = (Coroutine*)allocator->Acquire(cpuCores * maxJobsPerThread * sizeof(Coroutine), alignof(Coroutine));
 
             _currentCounter.value  = 0;
             _finishedCounter.value = 0;
@@ -295,8 +296,8 @@ inline namespace Mojo
                 _wakeSignal.Signal();
             }
 
-            //_allocator->Release(_coroutinePools);
-            _allocator->Release(_jobQueues);
+            //allocator->Release(_coroutinePools);
+            allocator->Release(_jobQueues);
 
             _flags = ~Flags::None;
 
@@ -310,7 +311,7 @@ inline namespace Mojo
             _currentCounter.value  = 0;
             _finishedCounter.value = 0;
 
-            _allocator = 0;
+            allocator = 0;
         }
     }
 }

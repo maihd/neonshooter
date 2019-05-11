@@ -8,19 +8,22 @@
 
 #include <Mojo/Math.h>
 #include <Mojo/Audio.h>
-#include <Mojo/Input.h>
 #include <Mojo/Assets.h>
-#include <Mojo/Window.h>
-#include <Mojo/Graphics.h>
 
-#include <Mojo/Array.h>
-#include <Mojo/Shader.h>
-#include <Mojo/Texture.h>
-#include <Mojo/HashTable.h>
+#include <Mojo/Native/Input.h>
+#include <Mojo/Native/Window.h>
+
 #include <Mojo/JobSystem.h>
 #include <Mojo/JobCounter.h>
 #include <Mojo/FileSystem.h>
-#include <Mojo/SpriteBatch.h>
+
+#include <Mojo/Core/Array.h>
+#include <Mojo/Core/HashTable.h>
+
+#include <Mojo/Graphics.h>
+#include <Mojo/Graphics/Shader.h>
+#include <Mojo/Graphics/Texture.h>
+#include <Mojo/Graphics/SpriteBatch.h>
 
 #define PI 3.14f
 
@@ -198,6 +201,7 @@ namespace Color
 
 namespace Game
 {
+    static int   _currentFrame = 0;
     static float totalTime;
 }
 
@@ -774,7 +778,7 @@ namespace World
                 float4 color1 = float4(0.3f, 0.8f, 0.4f, 1.0f);
                 float4 color2 = float4(0.5f, 1.0f, 0.7f, 1.0f);
 
-                if (fmodf(Game::totalTime, 0.1f) <= 0.01f)
+                if (Game::_currentFrame % 3 == 0)
                 {
                     float speed = 16.0f * s->radius * (0.8f + (rand() % 101 / 100.0f) * 0.2f);
                     float angle = rand() % 101 / 100.0f * Game::totalTime;
@@ -782,8 +786,29 @@ namespace World
                     float2 pos = s->position + 0.4f * float2(vel.y, -vel.x) + (4.0f + rand() % 101 / 100.0f * 4.0f);
 
                     float4 color = color1 + (color2 - color1) * ((rand() % 101) / 100.0f);
-                    //ParticleSystem::SpawnParticle(glow_tex, pos, color, 4.0f, float2(0.3f, 1.0f), 0.0f, float2(-vel.y, vel.x));
+                    ParticleSystem::SpawnParticle(glow_tex, pos, color, 4.0f, float2(0.3f, 0.2f), 0.0f, vel);
                     ParticleSystem::SpawnParticle(line_tex, pos, color, 4.0f, float2(1.0f, 1.0f), 0.0f, vel);
+                }
+
+                if (Game::_currentFrame % 60 == 0)
+                {
+                    Texture texture = LoadTexture("Art/Laser.png");
+
+                    float hue1 = rand() % 101 / 100.0f * 6.0f;
+                    float hue2 = fmodf(hue1 + (rand() % 101 / 100.0f * 2.0f), 6.0f);
+                    float4 color1 = Color::HSV(hue1, 0.5f, 1);
+                    float4 color2 = Color::HSV(hue2, 0.5f, 1);
+
+                    for (int i = 0; i < 120.0f; i++)
+                    {
+                        float speed = 180.0f;
+                        float angle = rand() % 101 / 100.0f * 2 * PI;
+                        float2 vel = float2(cosf(angle) * speed, sinf(angle) * speed);
+                        float2 pos = s->position + vel;
+
+                        float4 color = color1 + (color2 - color1) * ((rand() % 101) / 100.0f);
+                        ParticleSystem::SpawnParticle(texture, pos, color, 2.0f, float2(1.0f), 0.0f, float2(0.0f));
+                    }
                 }
 
                 if (s->color.w < 1.0f)
@@ -1325,6 +1350,8 @@ namespace Game
 
     void Update(float dt)
     {
+        _currentFrame++;
+
         Input();
 
         totalTime += dt;
@@ -1400,103 +1427,6 @@ namespace GameAudio
                 break;
             }
 
-            // Lock audio _context
-            //alcSuspendContext(_context);
-            //
-
-
-            //alGenSources(1, &audio.source);
-            //error = alGetError();
-            //if (error != AL_NO_ERROR)
-            //{
-            //    SDL_FreeWAV(wav);
-            //    alDeleteSources(1, &audio.source);
-            //    alDeleteBuffers(1, &audio.buffer);
-            //    printf("audio::Play(): alGenSources: %s\n", alGetString(error));
-            //    return false;
-            //}
-            //
-            //alGenBuffers(1, &audio.buffer);
-            //error = alGetError();
-            //if (error != AL_NO_ERROR)
-            //{
-            //    SDL_FreeWAV(wav);
-            //    alDeleteSources(1, &audio.source);
-            //    alDeleteBuffers(1, &audio.buffer);
-            //    printf("audio::Play(): alGenBuffers: %s\n", alGetString(error));
-            //    return false;
-            //}
-            //
-            //alSourcef(audio.source, AL_GAIN, 0.3f);
-            //error = alGetError();
-            //if (error != AL_NO_ERROR)
-            //{
-            //    SDL_FreeWAV(wav);
-            //    alDeleteSources(1, &audio.source);
-            //    alDeleteBuffers(1, &audio.buffer);
-            //    printf("audio::Play(): set source gain failed: %s\n", alGetString(error));
-            //    return false;
-            //}
-
-            //
-            //alSourcef(audio.source, AL_PITCH, 1);
-            //error = alGetError();
-            //if (error != AL_NO_ERROR)
-            //{
-            //    SDL_FreeWAV(wav);
-            //    alDeleteSources(1, &audio.source);
-            //    alDeleteBuffers(1, &audio.buffer);
-            //    printf("audio::Play(): set source pitch failed: %s\n", alGetString(error));
-            //    return false;
-            //}
-            //
-            //alSource3f(audio.source, AL_POSITION, 0, 0, 0);
-            //error = alGetError();
-            //if (error != AL_NO_ERROR)
-            //{
-            //    SDL_FreeWAV(wav);
-            //    alDeleteSources(1, &audio.source);
-            //    alDeleteBuffers(1, &audio.buffer);
-            //    printf("audio::Play(): set source position failed: %s\n", alGetString(error));
-            //    return false;
-            //}
-            //
-            //alSource3f(audio.source, AL_VELOCITY, 0, 0, 0);
-            //error = alGetError();
-            //if (error != AL_NO_ERROR)
-            //{
-            //    SDL_FreeWAV(wav);
-            //    alDeleteSources(1, &audio.source);
-            //    alDeleteBuffers(1, &audio.buffer);
-            //    printf("audio::Play(): set source velocity failed: %s\n", alGetString(error));
-            //    return false;
-            //}
-            //
-            //alSourcei(audio.source, AL_LOOPING, AL_FALSE);
-            //error = alGetError();
-            //if (error != AL_NO_ERROR)
-            //{
-            //    SDL_FreeWAV(wav);
-            //    alDeleteSources(1, &audio.source);
-            //    alDeleteBuffers(1, &audio.buffer);
-            //    printf("audio::Play(): set source loop failed: %s\n", alGetString(error));
-            //    return false;
-            //}
-            //
-            //switch (spec.format)
-            //{
-            //case AUDIO_U8:
-            //case AUDIO_S8:
-            //    format = spec.channels == 2 ? AL_FORMAT_STEREO8 : AL_FORMAT_MONO8;
-            //    break;
-            //
-            //case AUDIO_U16:
-            //case AUDIO_S16:
-            //    format = spec.channels == 2 ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16;
-            //    break;
-            //}
-
-
             audio.source = AudioSource::Create();
             audio.source.SetGain(0.3f);
             audio.source.SetPitch(1.0f);
@@ -1508,33 +1438,6 @@ namespace GameAudio
             audio.buffer.SetData(wav, len, freq, audioFormat);
             
             audio.source.SetBuffer(audio.buffer);
-
-            //
-            //alBufferData(audio.buffer, format, wav, len, spec.freq);
-            //error = alGetError();
-            //if (error != AL_NO_ERROR)
-            //{
-            //    SDL_FreeWAV(wav);
-            //    alDeleteSources(1, &audio.source);
-            //    alDeleteBuffers(1, &audio.buffer);
-            //    printf("audio::Play(): set buffer data failed: %s\n", alGetString(error));
-            //    return false;
-            //}
-            //
-            //alSourcei(audio.source, AL_BUFFER, audio.buffer);
-            //error = alGetError();
-            //if (error != AL_NO_ERROR)
-            //{
-            //    free(wav);
-            //    alDeleteSources(1, &audio.source);
-            //    alDeleteBuffers(1, &audio.buffer);
-            //    printf("audio::Play(): set buffer failed: %s\n", alGetString(error));
-            //    return false;
-            //}
-            //
-            //// Unlock audio _context
-            //alcProcessContext(_context);
-            //
 
             if (outAudio)
             {
