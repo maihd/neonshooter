@@ -4,7 +4,7 @@
 
 #include <Mojo/Graphics/Shader.h>
 
-inline namespace Mojo
+namespace Mojo
 {
     namespace
     {

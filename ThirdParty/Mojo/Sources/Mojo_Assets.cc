@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-inline namespace Mojo
+namespace Mojo
 {
     namespace Assets
     {

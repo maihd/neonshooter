@@ -2,7 +2,7 @@
 
 #include <stdlib.h>
 
-inline namespace Mojo
+namespace Mojo
 {
     static Allocator DefaultAllocator;
     Allocator* const Allocator::Default = &DefaultAllocator;

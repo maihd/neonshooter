@@ -2,7 +2,7 @@
 
 #include <Mojo/Native/Input.h>
 
-inline namespace Mojo
+namespace Mojo
 {
     namespace Input
     {

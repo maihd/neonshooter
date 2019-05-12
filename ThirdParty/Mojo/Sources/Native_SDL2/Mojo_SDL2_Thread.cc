@@ -2,7 +2,7 @@
 
 #include <SDL2/SDL.h>
 
-inline namespace Mojo
+namespace Mojo
 {
     bool Thread::Run(ThreadEntry entry, void* args, Thread* outThread)
     {

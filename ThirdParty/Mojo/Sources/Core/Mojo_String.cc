@@ -8,7 +8,7 @@
 #define va_copy(dest, src) (dest = src)
 #endif
 
-inline namespace Mojo
+namespace Mojo
 {
     // Static IsEmpty buffer we can point to for IsEmpty strings
     // Pointing to a literal increases the like-hood of getting a crash if someone attempts to write in the IsEmpty string buffer. 

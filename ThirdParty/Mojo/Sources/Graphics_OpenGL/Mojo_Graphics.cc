@@ -7,7 +7,7 @@
 #include <Mojo/Graphics/Texture.h>
 #include <Mojo/Graphics.h>
 
-inline namespace Mojo
+namespace Mojo
 {
     namespace
     {
@@ -393,6 +393,13 @@ inline namespace Mojo
             glEnable(GL_BLEND);
             //glEnable(GL_DEPTH_TEST);
             //glEnable(GL_STENCIL_TEST);
+
+            glEnable(GL_MULTISAMPLE);
+            glEnable(GL_LINE_SMOOTH);
+            glEnable(GL_POLYGON_SMOOTH);
+
+            glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+            glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
 
             // Default blend
             Graphics::SetBlendOp(BlendOp::Add);

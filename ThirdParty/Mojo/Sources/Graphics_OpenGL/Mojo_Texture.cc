@@ -4,7 +4,7 @@
 
 #include <Mojo/Graphics/Texture.h>
 
-inline namespace Mojo
+namespace Mojo
 {
     namespace
     {

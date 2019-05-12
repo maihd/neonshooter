@@ -8,7 +8,7 @@
 
 #undef Yield
 
-inline namespace Mojo
+namespace Mojo
 {
     thread_local void*      s_threadFiber;
     thread_local Coroutine* s_currentCoroutine;

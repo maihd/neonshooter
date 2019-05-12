@@ -59,7 +59,7 @@ inline namespace Mojo
         float const progress;
 
         const void* const buffer;
-              int   const GetLength;
+              int   const length;
 
         FileAsyncOperation(void)
             : file(0)
@@ -68,7 +68,7 @@ inline namespace Mojo
             , isSuccess(false)
             , progress(0.0f)
             , buffer(0)
-            , GetLength(0)
+            , length(0)
         {
         }
 

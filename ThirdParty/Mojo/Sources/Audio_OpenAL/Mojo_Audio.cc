@@ -5,7 +5,7 @@
 #include <AL/al.h>
 #include <AL/alc.h>
 
-inline namespace Mojo
+namespace Mojo
 {
     namespace
     {

@@ -8,7 +8,7 @@
 #   include <unistd.h>
 #endif
 
-inline namespace Mojo
+namespace Mojo
 {
     namespace System
     {

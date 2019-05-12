@@ -1,6 +1,6 @@
 #include <Mojo/Graphics/Material.h>
 
-inline namespace Mojo
+namespace Mojo
 {
     /*
     struct Material

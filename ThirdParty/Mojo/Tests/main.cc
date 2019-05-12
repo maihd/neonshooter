@@ -1,156 +1,90 @@
 #include <Mojo/Math.h>
-#include <Mojo/System.h>
-#include <Mojo/Coroutine.h>
+#include <Mojo/Native/System.h>
+#include <Mojo/Core/Coroutine.h>
 #include <Mojo/JobSystem.h>
 #include <Mojo/JobCounter.h>
 #include <Mojo/FileSystem.h>
 
-#include <Mojo/GL.h>
-#include <Mojo/Window.h>
-#include <Mojo/HashTable.h>
+#include <Mojo/Mojo.h>
+#include <Mojo/Graphics.h>
+#include <Mojo/Graphics/Shader.h>
+#include <Mojo/Graphics/Texture.h>
+
+#include <Mojo/Native/Window.h>
+
+#include <Mojo/Core/ConfigVar.h>
+#include <Mojo/Core/HashTable.h>
 
 #include <stdio.h>
 #include <stdint.h>
-#include <Windows.h>
 
-#undef Yield
+static ConfigVar _windowTitle("Window::Title", "Title of window", 0, "Mojo Tests");
+static ConfigVar _windowWidth("Window::Width", "Title of window", 0, 960);
+static ConfigVar _windowHeight("Window::Height", "Title of window", 0, 540);
 
-AtomicI32 printTime;
+static ConfigVar _graphicsMultisamples("Window::Multisamples", "", 0, 16);
 
-void JobPrint(void* args)
-{
-    int min = (int)(intptr_t)args;
-    int max = (int)(intptr_t)args + 10000000;
+struct GameEngine : Engine
+{   
+    Shader      shader;
+    VertexArray vertexArray;
 
-    while (min < max)
+    bool Setup(void) override
     {
-        min++;
-        printTime++;
-        //printf("Hello world %d\n", min);
+        const char* vertexShader =
+            "#version 330 core\n"
+            "layout (location = 0) in vec2 vertex;"
+            "void main() {"
+            "gl_Position = vec4(vertex, 0, 1.0);"
+            "}";
+
+        const char* pixelsShader =
+            "#version 330 core\n"
+            "out vec4 pixelColor;"
+            "void main() {"
+            "pixelColor = vec4(1.0);"
+            "}";
+
+        shader = Shader::Create(vertexShader, pixelsShader);
+
+        float2 vertices[] = {
+            float2(-0.5f, -0.5f),
+            float2(0.0f,  0.5f),
+            float2(0.5f, -0.5f),
+        };
+
+        vertexArray = VertexArray::Create();
+
+        VertexBuffer vertexBuffer = VertexBuffer::Create();
+        vertexBuffer.SetData(vertices, sizeof(vertices), BufferUsage::StaticDraw);
+
+        vertexArray.SetAttribute(vertexBuffer, shader.FindAttribute("vertex"), 2, DataType::Float, false, sizeof(float) * 2);
+
+        return true;
     }
-}
+
+    void Shutdown(void) override
+    {
+        
+    }
+
+    void Update(void) override
+    {
+
+    }
+
+    void Render(void) override
+    {
+        Graphics::BindShader(shader);
+        Graphics::BindVertexArray(vertexArray);
+        Graphics::DrawArrays(DrawType::Triangles, 3, 0);
+        Graphics::BindVertexArray(0);
+        Graphics::BindShader(0);
+    }
+};
 
 int main(void)
 {
-    //JobSystem::Init(1000000 >> 2);
-    //
-    //constexpr int JobCount = 100;
-    //Job* jobs = new Job[JobCount];
-    //
-    //DWORD startTime = GetTickCount();
-    ////for (int i = 0; i < JobCount; i++)
-    ////{
-    ////    jobs[i] = Job(JobPrint, (void*)(intptr_t)i);
-    ////}
-    //
-    ////JobCounter counter(JobCount);
-    ////JobSystem::Execute(jobs, JobCount, &counter);
-    ////
-    ////JobSystem::WaitCounter(&counter);
-    //for (int i = 0; i < JobCount; i++)
-    //{
-    //    JobPrint((void*)(intptr_t)i);
-    //}
-    //printf("Jobs done! Time: %ums - Total print: %d\n", GetTickCount() - startTime, printTime.value);
-    //
-    //JobSystem::Shutdown();
-
-    HashTable<int> hashTable;
-    hashTable.SetValue(0, 100);
-
-    int value;
-    if (hashTable.TryGetValue(0, &value) && value == 100) 
-    {
-        printf("Test hashTable success.");
-    }
-
-    static char buffer[1024 * 1024];
-    FileAsyncOperation* fileOp = FileSystem::ReadFileAsync("D:/a.out.js", buffer, sizeof(buffer));
-    if (fileOp)
-    {
-        fileOp->Wait();
-
-        buffer[fileOp->length] = 0;
-        printf("Read Content: %s\n", buffer);
-    }
-    else
-    {
-        printf("Read file failed!\n");
-    }
-
-    if (!Window::Setup("Mojo", 1280, 720)) 
-    {
-        return 1;
-    }
-
-    GraphicsSettings settings;
-    settings.multisamples = 1;
-    if (!GL::Setup(settings))
-    {
-        return 1;
-    }
-
-    const char* vertexShader =
-        "#version 330 core\n"
-        "layout (location = 0) in vec2 vertex;"
-        "void main() {"
-        "gl_Position = vec4(vertex, 0, 1.0);"
-        "}";
-
-    const char* pixelsShader =
-        "#version 330 core\n"
-        "out vec4 pixelColor;"
-        "void main() {"
-        "pixelColor = vec4(1.0);"
-        "}";
-
-    float4x4 mvp = float4x4::ortho(-1, 1, -1, 1, -1.0f, 1.0f);
-
-    Shader shader = Shader::Create(vertexShader, pixelsShader);
-
-    float2 vertices[] = {
-        float2(-0.5f, -0.5f),
-        float2( 0.0f,  0.5f),
-        float2( 0.5f, -0.5f),
-    };
-
-    VertexArray vertexArray = VertexArray::Create();
-
-    VertexBuffer vertexBuffer = VertexBuffer::Create();
-    vertexBuffer.SetData(vertices, sizeof(vertices), BufferUsage::StaticDraw);
-
-    vertexArray.SetAttribute(vertexBuffer, shader.FindAttribute("vertex"), 2, DataType::Float, false, sizeof(float) * 2);
-
-    long long ticks = System::PerformanceCounter();
-    long long frequency = System::PerformanceFrequency();
-    long long limitTicks = frequency / 60;
-
-    while (true)
-    {
-        long long delta = System::PerformanceCounter() - ticks;
-        if (delta < limitTicks)
-        {
-            double sleepSeconds = (double)(limitTicks - delta) / frequency;
-            long long sleepMicroSeconds = (long long)(sleepSeconds * 1000 * 1000);
-            System::MicroSleep(sleepMicroSeconds);
-
-            delta = limitTicks;
-        }
-        ticks += delta;
-
-        if (!Window::PollEvents())
-        {
-            // Handle quit event
-            break;
-        }
-
-        GL::ClearBuffer(ClearFlag::Color);
-
-        GL::DrawArrays(DrawType::Triangles, shader, vertexArray, 3, 0);
-
-        GL::SwapBuffers();
-    }
-
-    Window::Shutdown();
-    return 0;
+    GameEngine engine;
+    return Mojo::RunEngine(&engine);
 }

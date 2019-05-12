@@ -23,7 +23,7 @@ inline void operator delete (void*, const decltype(nullptr)&, void*)
 {
 }
 
-inline namespace Mojo
+namespace Mojo
 {
     bool JobCounter_IsDone(JobCounter* counter)
     {

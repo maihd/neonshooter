@@ -17,7 +17,7 @@
 
 #undef RemoveDirectory
 
-inline namespace Mojo
+namespace Mojo
 {
     void FileAsyncOperation::Wait(void)
     {
@@ -461,7 +461,7 @@ inline namespace Mojo
             FileAsyncOperation* asyncFile = (FileAsyncOperation*)args;
 
             int nbytes = 0;
-            for (int i = 0, n = asyncFile->GetLength; i < n;)
+            for (int i = 0, n = asyncFile->length; i < n;)
             {
                 nbytes = asyncFile->file->Read((char*)asyncFile->buffer + i, ChunkSize);
                 if (nbytes < 0)
@@ -476,7 +476,7 @@ inline namespace Mojo
             *((bool*)&asyncFile->isSuccess) = nbytes != -1;
             if (!asyncFile->isSuccess)
             {
-                *((int*)&asyncFile->GetLength) = 0;
+                *((int*)&asyncFile->length) = 0;
             }
             else
             {
@@ -499,7 +499,7 @@ inline namespace Mojo
             FileAsyncOperation* asyncFile = (FileAsyncOperation*)args;
 
             int nbytes = 0;
-            for (int i = 0, n = asyncFile->GetLength; i < n;)
+            for (int i = 0, n = asyncFile->length; i < n;)
             {
                 nbytes = asyncFile->file->Write((char*)asyncFile->buffer + i, ChunkSize);
                 if (nbytes < 0)
@@ -514,7 +514,7 @@ inline namespace Mojo
             *((bool*)&asyncFile->isSuccess) = nbytes != -1;
             if (!asyncFile->isSuccess)
             {
-                *((int*)&asyncFile->GetLength) = 0;
+                *((int*)&asyncFile->length) = 0;
             }
             else
             {
@@ -564,7 +564,7 @@ inline namespace Mojo
             *((void**)&asyncFile->path) = (void*)path;
 
             *((void**)&asyncFile->buffer) = (void*)buffer;
-            *((int*  )&asyncFile->GetLength) = fileSize;
+            *((int*  )&asyncFile->length) = fileSize;
 
             Thread::Run(ReadFileAsync_ThreadEntry, asyncFile);
 
@@ -605,7 +605,7 @@ inline namespace Mojo
             *((void**)&asyncFile->path) = (void*)path;
 
             *((void**)&asyncFile->buffer) = (void*)buffer;
-            *((int*  )&asyncFile->GetLength) = fileSize;
+            *((int*  )&asyncFile->length) = fileSize;
 
             Thread::Run(WriteFileAsync_ThreadEntry, asyncFile);
 

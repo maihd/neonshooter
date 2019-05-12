@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <Windows.h>
 
-inline namespace Mojo
+namespace Mojo
 {
     ThreadMutex::ThreadMutex(void)
     {

@@ -12,7 +12,7 @@
 #define WIN10_SDK 0
 #endif
 
-inline namespace Mojo
+namespace Mojo
 {
     AtomicI32& AtomicI32::operator=(int value)
     {

@@ -2,7 +2,7 @@
 
 #include <assert.h>
 
-inline namespace Mojo
+namespace Mojo
 {
     constexpr const char* vshader_src =
         "#version 330 core\n"

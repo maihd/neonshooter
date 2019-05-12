@@ -9,28 +9,12 @@
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Debug Native|Win32">
-      <Configuration>Debug Native</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Debug Native|x64">
-      <Configuration>Debug Native</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release|x64">
       <Configuration>Release</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release Native|Win32">
-      <Configuration>Release Native</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release Native|x64">
-      <Configuration>Release Native</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
@@ -53,12 +37,6 @@
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Native|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v141</PlatformToolset>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
@@ -66,12 +44,6 @@
     <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v141</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Native|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
@@ -86,16 +58,10 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug Native|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release Native|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
@@ -111,12 +77,6 @@
     <TargetName>Mojo</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Native|Win32'">
-    <OutDir>bin\Native\Debug\</OutDir>
-    <IntDir>obj\Native\Debug\Mojo\</IntDir>
-    <TargetName>Mojo</TargetName>
-    <TargetExt>.lib</TargetExt>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>bin\x32\Release\</OutDir>
     <IntDir>obj\x32\Release\Mojo\</IntDir>
@@ -129,18 +89,12 @@
     <TargetName>Mojo</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Native|Win32'">
-    <OutDir>bin\Native\Release\</OutDir>
-    <IntDir>obj\Native\Release\Mojo\</IntDir>
-    <TargetName>Mojo</TargetName>
-    <TargetExt>.lib</TargetExt>
-  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>GLEW_STATIC;_HAS_EXCEPTIONS=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Include;..\ThirdParty\stb;..\ThirdParty\glew-2.1.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>GLEW_STATIC;AL_LIBTYPE_STATIC;_HAS_EXCEPTIONS=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\ThirdParty\include;..\ThirdParty\.Sources\stb;..\ThirdParty\.Sources\glew-2.1.0\include;..\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>false</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
@@ -148,13 +102,17 @@
     <Link>
       <SubSystem>Windows</SubSystem>
     </Link>
+    <Lib>
+      <AdditionalDependencies>SDL2.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\ThirdParty\libs\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>GLEW_STATIC;_HAS_EXCEPTIONS=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Include;..\ThirdParty\stb;..\ThirdParty\glew-2.1.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>GLEW_STATIC;AL_LIBTYPE_STATIC;_HAS_EXCEPTIONS=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\ThirdParty\include;..\ThirdParty\.Sources\stb;..\ThirdParty\.Sources\glew-2.1.0\include;..\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>false</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
@@ -162,27 +120,17 @@
     <Link>
       <SubSystem>Windows</SubSystem>
     </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug Native|Win32'">
-    <ClCompile>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>GLEW_STATIC;_HAS_EXCEPTIONS=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Include;..\ThirdParty\stb;..\ThirdParty\glew-2.1.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <Optimization>Disabled</Optimization>
-      <ExceptionHandling>false</ExceptionHandling>
-      <RuntimeTypeInfo>false</RuntimeTypeInfo>
-    </ClCompile>
-    <Link>
-      <SubSystem>Windows</SubSystem>
-    </Link>
+    <Lib>
+      <AdditionalDependencies>SDL2.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\ThirdParty\libs\Win64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>GLEW_STATIC;_HAS_EXCEPTIONS=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Include;..\ThirdParty\stb;..\ThirdParty\glew-2.1.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>GLEW_STATIC;AL_LIBTYPE_STATIC;_HAS_EXCEPTIONS=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\ThirdParty\include;..\ThirdParty\.Sources\stb;..\ThirdParty\.Sources\glew-2.1.0\include;..\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>false</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
@@ -190,13 +138,17 @@
     <Link>
       <SubSystem>Windows</SubSystem>
     </Link>
+    <Lib>
+      <AdditionalDependencies>SDL2.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\ThirdParty\libs\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>GLEW_STATIC;_HAS_EXCEPTIONS=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Include;..\ThirdParty\stb;..\ThirdParty\glew-2.1.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>GLEW_STATIC;AL_LIBTYPE_STATIC;_HAS_EXCEPTIONS=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\ThirdParty\include;..\ThirdParty\.Sources\stb;..\ThirdParty\.Sources\glew-2.1.0\include;..\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>false</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
@@ -204,58 +156,73 @@
     <Link>
       <SubSystem>Windows</SubSystem>
     </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release Native|Win32'">
-    <ClCompile>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>GLEW_STATIC;_HAS_EXCEPTIONS=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Include;..\ThirdParty\stb;..\ThirdParty\glew-2.1.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <Optimization>Disabled</Optimization>
-      <ExceptionHandling>false</ExceptionHandling>
-      <RuntimeTypeInfo>false</RuntimeTypeInfo>
-    </ClCompile>
-    <Link>
-      <SubSystem>Windows</SubSystem>
-    </Link>
+    <Lib>
+      <AdditionalDependencies>SDL2.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\ThirdParty\libs\Win64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\Include\Mojo\Allocator.h" />
-    <ClInclude Include="..\Include\Mojo\Array.h" />
     <ClInclude Include="..\Include\Mojo\Assets.h" />
-    <ClInclude Include="..\Include\Mojo\AsyncOperation.h" />
-    <ClInclude Include="..\Include\Mojo\Atomic.h" />
     <ClInclude Include="..\Include\Mojo\Audio.h" />
-    <ClInclude Include="..\Include\Mojo\Coroutine.h" />
-    <ClInclude Include="..\Include\Mojo\Delegate.h" />
-    <ClInclude Include="..\Include\Mojo\DrawCanvas.h" />
+    <ClInclude Include="..\Include\Mojo\Core\Allocator.h" />
+    <ClInclude Include="..\Include\Mojo\Core\Array.h" />
+    <ClInclude Include="..\Include\Mojo\Core\AsyncOperation.h" />
+    <ClInclude Include="..\Include\Mojo\Core\Atomic.h" />
+    <ClInclude Include="..\Include\Mojo\Core\Base.h" />
+    <ClInclude Include="..\Include\Mojo\Core\ConfigVar.h" />
+    <ClInclude Include="..\Include\Mojo\Core\Coroutine.h" />
+    <ClInclude Include="..\Include\Mojo\Core\Delegate.h" />
+    <ClInclude Include="..\Include\Mojo\Core\HashTable.h" />
+    <ClInclude Include="..\Include\Mojo\Core\SpinLock.h" />
+    <ClInclude Include="..\Include\Mojo\Core\Stream.h" />
+    <ClInclude Include="..\Include\Mojo\Core\String.h" />
+    <ClInclude Include="..\Include\Mojo\Core\Thread.h" />
     <ClInclude Include="..\Include\Mojo\FileSystem.h" />
-    <ClInclude Include="..\Include\Mojo\GL.h" />
-    <ClInclude Include="..\Include\Mojo\HashTable.h" />
-    <ClInclude Include="..\Include\Mojo\Input.h" />
+    <ClInclude Include="..\Include\Mojo\Graphics.h" />
+    <ClInclude Include="..\Include\Mojo\Graphics\Api.h" />
+    <ClInclude Include="..\Include\Mojo\Graphics\Font.h" />
+    <ClInclude Include="..\Include\Mojo\Graphics\Material.h" />
+    <ClInclude Include="..\Include\Mojo\Graphics\Mesh.h" />
+    <ClInclude Include="..\Include\Mojo\Graphics\Shader.h" />
+    <ClInclude Include="..\Include\Mojo\Graphics\SpriteBatch.h" />
+    <ClInclude Include="..\Include\Mojo\Graphics\SpriteMesh.h" />
+    <ClInclude Include="..\Include\Mojo\Graphics\StaticMesh.h" />
+    <ClInclude Include="..\Include\Mojo\Graphics\Texture.h" />
     <ClInclude Include="..\Include\Mojo\JobCounter.h" />
     <ClInclude Include="..\Include\Mojo\JobSystem.h" />
     <ClInclude Include="..\Include\Mojo\Math.h" />
-    <ClInclude Include="..\Include\Mojo\SpinLock.h" />
-    <ClInclude Include="..\Include\Mojo\System.h" />
-    <ClInclude Include="..\Include\Mojo\Thread.h" />
-    <ClInclude Include="..\Include\Mojo\Window.h" />
-    <ClInclude Include="..\Sources\Mojo_Input.h" />
+    <ClInclude Include="..\Include\Mojo\Mojo.h" />
+    <ClInclude Include="..\Include\Mojo\Native\Dialog.h" />
+    <ClInclude Include="..\Include\Mojo\Native\Input.h" />
+    <ClInclude Include="..\Include\Mojo\Native\System.h" />
+    <ClInclude Include="..\Include\Mojo\Native\Window.h" />
+    <ClInclude Include="..\Sources\Native_SDL2\Mojo_SDL2_Input.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Sources\Mojo_Allocator.cc" />
+    <ClCompile Include="..\Sources\Audio_OpenAL\Mojo_Audio.cc" />
+    <ClCompile Include="..\Sources\Core\Mojo_Allocator.cc" />
+    <ClCompile Include="..\Sources\Core\Mojo_ConfigVar.cc" />
+    <ClCompile Include="..\Sources\Core\Mojo_Coroutine.cc" />
+    <ClCompile Include="..\Sources\Core\Mojo_SpinLock.cc" />
+    <ClCompile Include="..\Sources\Core\Mojo_String.cc" />
+    <ClCompile Include="..\Sources\Core\Mojo_Thread.cc" />
+    <ClCompile Include="..\Sources\Graphics\Mojo_Font.cc" />
+    <ClCompile Include="..\Sources\Graphics\Mojo_Material.cc" />
+    <ClCompile Include="..\Sources\Graphics\Mojo_SpriteBatch.cc" />
+    <ClCompile Include="..\Sources\Graphics_OpenGL\Mojo_Graphics.cc" />
+    <ClCompile Include="..\Sources\Graphics_OpenGL\Mojo_Shader.cc" />
+    <ClCompile Include="..\Sources\Graphics_OpenGL\Mojo_Texture.cc" />
+    <ClCompile Include="..\Sources\Mojo.cc" />
     <ClCompile Include="..\Sources\Mojo_Assets.cc" />
-    <ClCompile Include="..\Sources\Mojo_Atomic.cc" />
-    <ClCompile Include="..\Sources\Mojo_Coroutine.cc" />
     <ClCompile Include="..\Sources\Mojo_FileSystem.cc" />
-    <ClCompile Include="..\Sources\Mojo_GL.cc" />
-    <ClCompile Include="..\Sources\Mojo_Input.cc" />
     <ClCompile Include="..\Sources\Mojo_JobSystem.cc" />
-    <ClCompile Include="..\Sources\Mojo_SpinLock.cc" />
-    <ClCompile Include="..\Sources\Mojo_System.cc" />
-    <ClCompile Include="..\Sources\Mojo_Thread.cc" />
-    <ClCompile Include="..\Sources\Mojo_Window.cc" />
-    <ClCompile Include="..\ThirdParty\glew-2.1.0\src\glew.c" />
+    <ClCompile Include="..\Sources\Native\Mojo_System.cc" />
+    <ClCompile Include="..\Sources\Native_SDL2\Mojo_SDL2_Atomic.cc" />
+    <ClCompile Include="..\Sources\Native_SDL2\Mojo_SDL2_Input.cc" />
+    <ClCompile Include="..\Sources\Native_SDL2\Mojo_SDL2_System.cc" />
+    <ClCompile Include="..\Sources\Native_SDL2\Mojo_SDL2_Thread.cc" />
+    <ClCompile Include="..\Sources\Native_SDL2\Mojo_SDL2_Window.cc" />
+    <ClCompile Include="..\ThirdParty\.Sources\glew-2.1.0\src\glew.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -7,7 +7,7 @@
 
 #define COUNTOF(array) (sizeof(array) / sizeof((array)[0]))
 
-inline namespace Mojo
+namespace Mojo
 {
     namespace
     {

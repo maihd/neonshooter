@@ -2,10 +2,8 @@
 
 inline namespace Mojo
 {
-    struct SceneBehaviour;
-
-    struct Scene
+    namespace Graphics
     {
         
-    };
+    }
 }

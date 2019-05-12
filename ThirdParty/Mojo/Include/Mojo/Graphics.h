@@ -157,9 +157,14 @@ inline namespace Mojo
         static void         Destroy(RenderTarget& renderTarget);
     };
 
+    struct GraphicsSettings
+    {
+        int multisamples = 1;
+    };
+
     namespace Graphics
     {
-        bool Setup(void);
+        bool Setup(const GraphicsSettings& settings = GraphicsSettings());
         void Shutdown(void);
 
         void ClearBuffer(void);

@@ -1,5 +1,6 @@
-#include <Mojo/Native/Window.h>
 #include <Mojo/Graphics.h>
+#include <Mojo/Native/Window.h>
+#include <Mojo/Core/ConfigVar.h>
 
 #include <stdio.h>
 #include <limits.h>
@@ -15,7 +16,7 @@
 #pragma comment(lib, "setupapi.lib")
 #pragma comment(lib, "OpenGL32.lib")
 
-inline namespace Mojo
+namespace Mojo
 {
     namespace
     {
@@ -70,9 +71,6 @@ inline namespace Mojo
                 s_keyCodeMap[SDL_SCANCODE_KP_7] = KeyCode::Numpad7;
                 s_keyCodeMap[SDL_SCANCODE_KP_8] = KeyCode::Numpad8;
                 s_keyCodeMap[SDL_SCANCODE_KP_9] = KeyCode::Numpad9;
-                
-                //s_keyCodeMap[SDL_SCANCODE_] = KeyCode::Plus;
-                //s_keyCodeMap[VK_OEM_MINUS] = KeyCode::Minus;
 
                 s_keyCodeMap[SDL_SCANCODE_0] = KeyCode::Keypad0;
                 s_keyCodeMap[SDL_SCANCODE_1] = KeyCode::Keypad1;
@@ -109,30 +107,6 @@ inline namespace Mojo
                 s_keyCodeMap[SDL_SCANCODE_Y] = KeyCode::Y;
                 s_keyCodeMap[SDL_SCANCODE_Z] = KeyCode::Z;
 
-                //s_keyCodeMap[SDL_SCANCODE_a] = KeyCode::A;
-                //s_keyCodeMap[SDL_SCANCODE_b] = KeyCode::B;
-                //s_keyCodeMap[SDL_SCANCODE_c] = KeyCode::C;
-                //s_keyCodeMap[SDL_SCANCODE_d] = KeyCode::D;
-                //s_keyCodeMap[SDL_SCANCODE_e] = KeyCode::E;
-                //s_keyCodeMap[SDL_SCANCODE_g] = KeyCode::G;
-                //s_keyCodeMap[SDL_SCANCODE_h] = KeyCode::H;
-                //s_keyCodeMap[SDL_SCANCODE_i] = KeyCode::I;
-                //s_keyCodeMap[SDL_SCANCODE_j] = KeyCode::J;
-                //s_keyCodeMap[SDL_SCANCODE_k] = KeyCode::K;
-                //s_keyCodeMap[SDL_SCANCODE_l] = KeyCode::L;
-                //s_keyCodeMap[SDL_SCANCODE_m] = KeyCode::M;
-                //s_keyCodeMap[SDL_SCANCODE_o] = KeyCode::O;
-                //s_keyCodeMap[SDL_SCANCODE_p] = KeyCode::P;
-                //s_keyCodeMap[SDL_SCANCODE_r] = KeyCode::R;
-                //s_keyCodeMap[SDL_SCANCODE_s] = KeyCode::S;
-                //s_keyCodeMap[SDL_SCANCODE_t] = KeyCode::T;
-                //s_keyCodeMap[SDL_SCANCODE_u] = KeyCode::U;
-                //s_keyCodeMap[SDL_SCANCODE_v] = KeyCode::V;
-                //s_keyCodeMap[SDL_SCANCODE_w] = KeyCode::W;
-                //s_keyCodeMap[SDL_SCANCODE_x] = KeyCode::X;
-                //s_keyCodeMap[SDL_SCANCODE_y] = KeyCode::Y;
-                //s_keyCodeMap[SDL_SCANCODE_z] = KeyCode::Z;
-
                 s_keyCodeMap[SDL_SCANCODE_F1 ] = KeyCode::F1 ;
                 s_keyCodeMap[SDL_SCANCODE_F2 ] = KeyCode::F2 ;
                 s_keyCodeMap[SDL_SCANCODE_F3 ] = KeyCode::F3 ;
@@ -160,35 +134,14 @@ inline namespace Mojo
                 
                 s_keyCodeMap[SDL_SCANCODE_PERIOD] = KeyCode::Period;
                 s_keyCodeMap[SDL_SCANCODE_COMMA] = KeyCode::Comma;
-                //s_keyCodeMap[SDL_SCANCODE_COLON] = KeyCode::Colon;
                 s_keyCodeMap[SDL_SCANCODE_SEMICOLON] = KeyCode::SemiColon;
                 s_keyCodeMap[SDL_SCANCODE_APOSTROPHE] = KeyCode::Quote;
                 s_keyCodeMap[SDL_SCANCODE_GRAVE] = KeyCode::BackQuote;
-                //s_keyCodeMap['*'] = KeyCode::Aterisk;
-                //s_keyCodeMap['&'] = KeyCode::Ampersand;
-                //s_keyCodeMap[SDL_SCANCODE_BACKQUOTE] = KeyCode::BackQuote;
-                //s_keyCodeMap['~'] = KeyCode::Tilde;
-                //s_keyCodeMap['%'] = KeyCode::Percent;
-                //s_keyCodeMap['$'] = KeyCode::Dolla;
-                //s_keyCodeMap['#'] = KeyCode::Hash;
-                //s_keyCodeMap['@'] = KeyCode::At;
-                //s_keyCodeMap['!'] = KeyCode::Exclaim;
-                //s_keyCodeMap['?'] = KeyCode::Question;
-                //s_keyCodeMap['^'] = KeyCode::Caret;
-                //s_keyCodeMap['<'] = KeyCode::Less;
                 s_keyCodeMap[SDL_SCANCODE_MINUS]  = KeyCode::Minus;
                 s_keyCodeMap[SDL_SCANCODE_EQUALS] = KeyCode::Equal;
-                //s_keyCodeMap['>'] = KeyCode::Greater;
 
-                //s_keyCodeMap['('] = KeyCode::LeftParen;
-                //s_keyCodeMap[')'] = KeyCode::RightParen;
                 s_keyCodeMap[SDL_SCANCODE_LEFTBRACKET] = KeyCode::LeftBracket;
                 s_keyCodeMap[SDL_SCANCODE_RIGHTBRACKET] = KeyCode::RightBracket;
-                //s_keyCodeMap['{'] = KeyCode::LeftCurlyBracket;
-                //s_keyCodeMap['}'] = KeyCode::RightCurlyBracket;
-
-                //s_keyCodeMap[SDL_SCANCODE_Q] = KeyCode::Quote;
-                //s_keyCodeMap['\"'] = KeyCode::DoubleQuote;
 
                 s_keyCodeMap[SDL_SCANCODE_SLASH] = KeyCode::Slash;
                 s_keyCodeMap[SDL_SCANCODE_BACKSLASH] = KeyCode::BackSlash;
@@ -199,7 +152,6 @@ inline namespace Mojo
 
                 s_keyCodeMap[SDL_SCANCODE_PAUSE] = KeyCode::Pause;
                 s_keyCodeMap[SDL_SCANCODE_PRINTSCREEN] = KeyCode::PrintScreen;
-                //s_keyCodeMap[SDL_SCANCODE_FUNCTION] = KeyCode::Function;
                 s_keyCodeMap[SDL_SCANCODE_MENU] = KeyCode::Menu;
                 s_keyCodeMap[SDL_SCANCODE_APPLICATION] = KeyCode::Application;
 
@@ -306,6 +258,10 @@ inline namespace Mojo
             default:
                 break;
             }
+
+            ConfigVar* multisamples = ConfigVar::Find("Window::Multisamples");
+            SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, multisamples ? 1 : 0);
+            SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, multisamples ? multisamples->asInt : 0);
 
             SDL_Window* window = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, sdlFlags);
             if (!window)
@@ -538,7 +494,7 @@ inline namespace Mojo
         void ApplyDefaultSettings(void);
         void CreateDefaultObjects(void);
 
-        bool Setup(void)
+        bool Setup(const GraphicsSettings& settings)
         {
             if (Window::_mainContext)
             {
@@ -595,6 +551,7 @@ inline namespace Mojo
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+
             SDL_GLContext context = SDL_GL_CreateContext(Window::_mainWindow);
             if (!context)
             {
@@ -649,7 +606,7 @@ inline namespace Mojo
 
         void SetMultisample(int samples)
         {
-            
+            glEnable(GL_MULTISAMPLE);
         }
     }
 }
