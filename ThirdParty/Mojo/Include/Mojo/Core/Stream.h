@@ -4,8 +4,7 @@
 
 inline namespace Mojo
 {
-
-    struct StreamOperation;
+    //struct StreamOperation;
 
     // Start point for stream's cursor move around 
     enum struct SeekWhence
@@ -16,7 +15,7 @@ inline namespace Mojo
     };
     
     // Everything is a stream of data
-    struct NOVTABLE Stream
+    struct Stream
     {
         // Set the cursor position of stream
         virtual int Seek(int count, SeekWhence whence = SeekWhence::Current) = 0;
@@ -28,10 +27,10 @@ inline namespace Mojo
         virtual int Size(void) = 0;
 
         // Read content of stream
-        virtual int Read(void* buffer, int GetLength) = 0;
+        virtual int Read(void* buffer, int length) = 0;
 
         // Write content to stream
-        virtual int Write(const void* buffer, int GetLength) = 0;
+        virtual int Write(const void* buffer, int length) = 0;
 
         // Read content of file at given path, with async progress
         //virtual StreamOperation* ReadAsync(void* buffer, int GetLength) = 0;

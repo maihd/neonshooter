@@ -99,8 +99,8 @@ namespace Mojo
             Graphics::SetBlendFunc(cmd.blend);
             //_spriteVertexBuffer.SetBlendFunc(cmd.blend);
 
-            float4x4 model_matrix = float4x4::translation(cmd.position) * float4x4::rotation_z(cmd.rotation) * float4x4::scalation(cmd.scale);
-            float4x4 MVP_matrix = projection * model_matrix;
+            float4x4 model_matrix = Math::Transform(cmd.position, cmd.rotation, cmd.scale);
+            float4x4 MVP_matrix = mul(projection, model_matrix);
 
             _spriteShader.SetFloat4x4("MVP", (float*)&MVP_matrix);
             _spriteShader.SetFloat4("color", cmd.color.x, cmd.color.y, cmd.color.z, cmd.color.w);

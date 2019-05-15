@@ -84,6 +84,9 @@
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Core\HashTable.h">
       <Filter>Include\Mojo\Core</Filter>
     </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Core\Socket.h">
+      <Filter>Include\Mojo\Core</Filter>
+    </ClInclude>
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Core\SpinLock.h">
       <Filter>Include\Mojo\Core</Filter>
     </ClInclude>
@@ -102,16 +105,31 @@
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Graphics.h">
       <Filter>Include\Mojo</Filter>
     </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Graphics\Api.h">
+      <Filter>Include\Mojo\Graphics</Filter>
+    </ClInclude>
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Graphics\Font.h">
       <Filter>Include\Mojo\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Graphics\Material.h">
       <Filter>Include\Mojo\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Graphics\Mesh.h">
+      <Filter>Include\Mojo\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Graphics\Screen.h">
+      <Filter>Include\Mojo\Graphics</Filter>
+    </ClInclude>
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Graphics\Shader.h">
       <Filter>Include\Mojo\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Graphics\SpriteBatch.h">
+      <Filter>Include\Mojo\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Graphics\SpriteMesh.h">
+      <Filter>Include\Mojo\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Graphics\StaticMesh.h">
       <Filter>Include\Mojo\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Graphics\Texture.h">
@@ -124,6 +142,9 @@
       <Filter>Include\Mojo</Filter>
     </ClInclude>
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Math.h">
+      <Filter>Include\Mojo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Mojo.h">
       <Filter>Include\Mojo</Filter>
     </ClInclude>
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Native\Dialog.h">
@@ -155,6 +176,9 @@
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Core\Mojo_Coroutine.cc">
       <Filter>Sources\Core</Filter>
     </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Core\Mojo_Socket.cc">
+      <Filter>Sources\Core</Filter>
+    </ClCompile>
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Core\Mojo_SpinLock.cc">
       <Filter>Sources\Core</Filter>
     </ClCompile>
@@ -181,6 +205,9 @@
     </ClCompile>
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Graphics_OpenGL\Mojo_Texture.cc">
       <Filter>Sources\Graphics_OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo.cc">
+      <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Assets.cc">
       <Filter>Sources</Filter>

@@ -1093,7 +1093,7 @@ namespace Renderer
 
         float w = Window::GetWidth();
         float h = Window::GetHeight();
-        proj_matrix = float4x4::ortho(-w, w, -h, h, -10.0f, 10.0f);
+        proj_matrix = Math::Ortho(-w, w, -h, h, -10.0f, 10.0f);
         Graphics::Viewport(0, 0, w, h);
 
         _glowRenderTarget = RenderTarget::Create(w, h);

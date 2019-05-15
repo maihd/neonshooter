@@ -1,6 +1,7 @@
 #pragma once
 
 #include <math.h>
+#include <Mojo/Core/Base.h>
 
 inline namespace Mojo
 {
@@ -10,973 +11,36 @@ inline namespace Mojo
     struct float4;
     struct float4x4;
 
-    struct float2
+    namespace Math
     {
-        float x, y;
+        float4x4 Transform(const float2& position, float rotation, const float2& scale);
+        float4x4 Transform(const float3& position, const quat& rotation, const float3& scale);
 
-        constexpr float2(void)
-            : x(0)
-            , y(0)
-        {
-        }
+        float4x4 Scalation(float s);
+        float4x4 Scalation(const float2& v);
+        float4x4 Scalation(const float3& v);
+        float4x4 Scalation(float x, float y, float z = 1.0f);
 
-        inline float2(float x, float y)
-            : x(x)
-            , y(y)
-        {
-        }
+        float4x4 Translation(const float2& v);
+        float4x4 Translation(const float3& v);
+        float4x4 Translation(float x, float y, float z = 0.0f);
 
-        explicit float2(float s);
-        explicit float2(const float3& v);
-        explicit float2(const float4& v);
-        explicit float2(const quat& q);
-    };
+        float4x4 Rotation(const quat& quaternion);
+        float4x4 Rotation(const float3& axis, float angle);
+        float4x4 Rotation(float x, float y, float z, float angle);
 
-    struct float3
-    {
-        float x, y, z;
-
-        constexpr float3(void)
-            : x(0)
-            , y(0)
-            , z(0)
-        {
-        }
-
-        inline float3(float x, float y, float z = 0.0f)
-            : x(x)
-            , y(y)
-            , z(z)
-        {
-        }
-
-        explicit float3(float s);
-        explicit float3(const float4& v);
-        explicit float3(const quat& v);
-        explicit float3(const float2& v, float z = 0.0f);
-    };
-
-    struct float4
-    {
-        float x, y, z, w;
-
-        constexpr float4(void)
-            : x(0)
-            , y(0)
-            , z(0)
-            , w(0)
-        {
-        }
-
-        inline float4(float x, float y, float z, float w)
-            : x(x)
-            , y(y)
-            , z(z)
-            , w(w)
-        {
-        }
-
-        explicit float4(float s);
-        explicit float4(const quat& v);
-        explicit float4(const float3& v, float w);
-        explicit float4(const float2& v, float z, float w);
-
-        float& operator[](int index)
-        {
-            return ((float*)this)[index];
-        }
-
-        float  operator[](int index) const
-        {
-            return ((float*)this)[index];
-        }
-    };
-
-    struct quat
-    {
-        float x, y, z, w; 
-
-        constexpr quat(void)
-            : x(0)
-            , y(0)
-            , z(0)
-            , w(0)
-        {
-        }
-
-        inline quat(float x, float y, float z, float w)
-            : x(x)
-            , y(y)
-            , z(z)
-            , w(w)
-        {
-        }
-
-        explicit quat(float s);
-        explicit quat(const float4& v);
-        explicit quat(const float3& v, float z);
-        explicit quat(const float2& v, float z, float w);
-
-        static quat euler(float x, float y, float z);
-
-        static float4 toaxis(const quat& q);
-        static quat axisangle(const float3& axis, float angle);
-    };
-
-    struct float4x4
-    {
-        float4 rows[4];
-
-        constexpr float4x4(void) {}
-
-        inline float4x4(float s)
-        {
-            rows[0] = float4(s, 0, 0, 0);
-            rows[1] = float4(0, s, 0, 0);
-            rows[2] = float4(0, 0, s, 0);
-            rows[3] = float4(0, 0, 0, s);
-        }
-
-        inline float4x4(const float4& m0, const float4& m1, const float4& m2, const float4& m3)
-        {
-            rows[0] = m0;
-            rows[1] = m1;
-            rows[2] = m2;
-            rows[3] = m3;
-        }
-
-        inline float4x4(float m00, float m01, float m02, float m03,
-            float m10, float m11, float m12, float m13,
-            float m20, float m21, float m22, float m23,
-            float m30, float m31, float m32, float m33)
-        {
-            rows[0] = float4(m00, m01, m02, m03);
-            rows[1] = float4(m10, m11, m12, m13);
-            rows[2] = float4(m20, m21, m22, m23);
-            rows[3] = float4(m30, m31, m32, m33);
-        }
-
-        float4& operator[](int index)
-        {
-            return rows[index];
-        }
-
-        const float4& operator[](int index) const
-        {
-            return rows[index];
-        }
-
-        static float4x4 scalation(float s);
-        static float4x4 scalation(const float2& v);
-        static float4x4 scalation(const float3& v);
-        static float4x4 scalation(float x, float y, float z = 1.0f);
-
-        static float4x4 translation(const float2& v);
-        static float4x4 translation(const float3& v);
-        static float4x4 translation(float x, float y, float z = 0.0f);
-
-        static float4x4 rotation(const quat& quaternion);
-        static float4x4 rotation(const float3& axis, float angle);
-        static float4x4 rotation(float x, float y, float z, float angle);
-
-        static float4x4 rotation_x(float angle);
-        static float4x4 rotation_y(float angle);
-        static float4x4 rotation_z(float angle);
-
-        static float4x4 lookat(const float3& eye, const float3& target, const float3& up);
-
-        static float4x4 ortho(float l, float r, float b, float t, float n, float f);
-        static float4x4 frustum(float l, float r, float b, float t, float n, float f);
-        static float4x4 perspective(float fov, float aspect, float znear, float zfar);
-
-        static void decompose(const float4x4& m, float3* scalation, quat* quaternion, float3* translation);
-        static void decompose(const float4x4& m, float3* scalation, float3* axis, float* angle, float3* translation);
-    };
-
-    inline float2::float2(float s)
-        : x(s)
-        , y(s)
-    {
-    }
-
-    inline float2::float2(const float3& v)
-        : x(v.x)
-        , y(v.y)
-    {
-    }
-
-    inline float2::float2(const float4& v)
-        : x(v.x)
-        , y(v.y)
-    {
-    }
-
-    inline float2::float2(const quat& q)
-        : x(q.x)
-        , y(q.y)
-    {
-    }
-
-    inline float3::float3(float s)
-        : x(s)
-        , y(s)
-        , z(s)
-    {
-    }
-
-    inline float3::float3(const float2& v, float z)
-        : x(v.x)
-        , y(v.y)
-        , z(z)
-    {
-    }
-
-    inline float3::float3(const float4& v)
-        : x(v.x)
-        , y(v.y)
-        , z(v.z)
-    {
-    }
-
-    inline float3::float3(const quat& q)
-        : x(q.x)
-        , y(q.y)
-        , z(q.z)
-    {
-    }
-
-    inline float4::float4(float s)
-        : x(s)
-        , y(s)
-        , z(s)
-        , w(s)
-    {
-    }
-
-    inline float4::float4(const quat& q)
-        : x(q.x)
-        , y(q.y)
-        , z(q.z)
-        , w(q.w)
-    {
-    }
-
-    inline float4::float4(const float3& v, float w)
-        : x(v.x)
-        , y(v.y)
-        , z(v.z)
-        , w(w)
-    {
-    }
-
-    inline float4::float4(const float2& v, float z, float w)
-        : x(v.x)
-        , y(v.y)
-        , z(z)
-        , w(w)
-    {
-    }
-
-    inline quat::quat(float s)
-        : x(s)
-        , y(s)
-        , z(s)
-        , w(s)
-    {
-    }
-
-    inline quat::quat(const float4& v)
-        : x(v.x)
-        , y(v.y)
-        , z(v.z)
-        , w(v.w)
-    {
-    }
-
-    inline quat::quat(const float3& v, float w)
-        : x(v.x)
-        , y(v.y)
-        , z(v.z)
-        , w(w)
-    {
-    }
-
-    inline quat::quat(const float2& v, float z, float w)
-        : x(v.x)
-        , y(v.y)
-        , z(z)
-        , w(w)
-    {
-    }
-
-    inline float2 operator-(const float2& v)
-    {
-        return float2(-v.x, -v.y);
-    }
-
-    inline const float2& operator+(const float2& v)
-    {
-        return v;
-    }
-
-    inline float2& operator--(float2& v)
-    {
-        --v.x;
-        --v.y;
-        return v;
-    }
-
-    inline float2& operator++(float2& v)
-    {
-        ++v.x;
-        ++v.y;
-        return v;
-    }
-
-    inline float2 operator--(float2& v, int)
-    {
-        const float2 result = v;
-
-        v.x--;
-        v.y--;
-
-        return result;
-    }
-
-    inline float2 operator++(float2& v, int)
-    {
-        const float2 result = v;
-
-        v.x++;
-        v.y++;
-
-        return result;
-    }
-
-    inline float2 operator+(const float2& a, const float2& b)
-    {
-#if MATH_ENABLE_NEON   
-        return float2(vadd_f32(a, b));
-#else
-        return float2(a.x + b.x, a.y + b.y);
-#endif
-    }
-
-    inline float2 operator-(const float2& a, const float2& b)
-    {
-#if MATH_ENABLE_NEON   
-        return float2(vsub_f32(a, b));
-#else
-        return float2(a.x - b.x, a.y - b.y);
-#endif
-    }
-
-    inline float2 operator*(const float2& a, const float2& b)
-    {
-#if MATH_ENABLE_NEON   
-        return float2(vmul_f32(a, b));
-#else
-        return float2(a.x * b.x, a.y * b.y);
-#endif
-    }
-
-    inline float2 operator/(const float2& a, const float2& b)
-    {
-#if MATH_ENABLE_NEON && 0 // experimental
-        float2 res;
-        __asm volatile(
-            "vcvt.f32.u32  q0, q0     \n\t"
-            "vrecpe.f32    q0, q0     \n\t"
-            "vmul.f32      q0, q0, q1 \n\t"
-            "vcvt.u32.f32  q0, q0     \n\t"
-            :
-            : "r"(dst), "r"()
-            :
-            );
-#else
-        return float2(a.x / b.x, a.y / b.y);
-#endif
-    }
-
-    inline float2 operator+(const float2& a, float b)
-    {
-        return a + float2(b);
-    }
-
-    inline float2 operator-(const float2& a, float b)
-    {
-        return a - float2(b);
-    }
-
-    inline float2 operator*(const float2& a, float b)
-    {
-        return a * float2(b);
-    }
-
-    inline float2 operator/(const float2& a, float b)
-    {
-        return a / float2(b);
-    }
-
-    inline float2 operator+(float a, const float2& b)
-    {
-        return float2(a) + b;
-    }
-
-    inline float2 operator-(float a, const float2& b)
-    {
-        return float2(a) - b;
-    }
-
-    inline float2 operator*(float a, const float2& b)
-    {
-        return float2(a) * b;
-    }
-
-    inline float2 operator/(float a, const float2& b)
-    {
-        return float2(a) / b;
-    }
-
-    inline float2& operator+=(float2& a, const float2& b)
-    {
-        return (a = a + b);
-    }
-
-    inline float2& operator+=(float2& a, float b)
-    {
-        return (a = a + b);
-    }
-
-    inline float2& operator-=(float2& a, const float2& b)
-    {
-        return (a = a - b);
-    }
-
-    inline float2& operator-=(float2& a, float b)
-    {
-        return (a = a - b);
-    }
-
-    inline float2& operator*=(float2& a, const float2& b)
-    {
-        return (a = a * b);
-    }
-
-    inline float2& operator*=(float2& a, float b)
-    {
-        return (a = a * b);
-    }
-
-    inline float2& operator/=(float2& a, const float2& b)
-    {
-        return (a = a / b);
-    }
-
-    inline float2& operator/=(float2& a, float b)
-    {
-        return (a = a + b);
-    }
-
-    inline bool operator==(const float2& a, const float2& b)
-    {
-        return a.x == b.x && a.y == b.y;
-    }
-
-    inline bool operator!=(const float2& a, const float2& b)
-    {
-        return a.x != b.x || a.y != b.y;
-    }
-
-    inline float3 operator-(const float3& v)
-    {
-        return float3(-v.x, -v.y, -v.z);
-    }
-
-    inline const float3& operator+(const float3& v)
-    {
-        return v;
-    }
-
-    inline float3& operator--(float3& v)
-    {
-        --v.x;
-        --v.y;
-        --v.z;
-        return v;
-    }
-
-    inline float3& operator++(float3& v)
-    {
-        ++v.x;
-        ++v.y;
-        ++v.z;
-        return v;
-    }
-
-    inline float3 operator--(float3& v, int)
-    {
-        const float3 result = v;
-
-        v.x--;
-        v.y--;
-        v.z--;
-
-        return result;
-    }
-
-    inline float3 operator++(float3& v, int)
-    {
-        const float3 result = v;
-
-        v.x++;
-        v.y++;
-        v.z++;
-
-        return result;
-    }
-
-    inline float3 operator+(const float3& a, const float3& b)
-    {
-        return float3(a.x + b.x, a.y + b.y, a.z + b.z);
-    }
-
-    inline float3 operator-(const float3& a, const float3& b)
-    {
-        return float3(a.x - b.x, a.y - b.y, a.z - b.z);
-    }
-
-    inline float3 operator*(const float3& a, const float3& b)
-    {
-        return float3(a.x * b.x, a.y * b.y, a.z * b.z);
-    }
-
-    inline float3 operator/(const float3& a, const float3& b)
-    {
-        return float3(a.x / b.x, a.y / b.y, a.z / b.z);
-    }
-
-    inline float3 operator+(const float3& a, float b)
-    {
-        return float3(a.x + b, a.y + b, a.z + b);
-    }
-
-    inline float3 operator-(const float3& a, float b)
-    {
-        return float3(a.x - b, a.y - b, a.z - b);
-    }
-
-    inline float3 operator*(const float3& a, float b)
-    {
-        return float3(a.x * b, a.y * b, a.z * b);
-    }
-
-    inline float3 operator/(const float3& a, float b)
-    {
-        return float3(a.x / b, a.y / b, a.z / b);
-    }
-
-    inline float3 operator+(float a, const float3& b)
-    {
-        return float3(a + b.x, a + b.y, a + b.z);
-    }
-
-    inline float3 operator-(float a, const float3& b)
-    {
-        return float3(a - b.x, a - b.y, a - b.z);
-    }
-
-    inline float3 operator*(float a, const float3& b)
-    {
-        return float3(a * b.x, a * b.y, a * b.z);
-    }
-
-    inline float3 operator/(float a, const float3& b)
-    {
-        return float3(a / b.x, a / b.y, a / b.z);
-    }
-
-    inline float3& operator+=(float3& a, const float3& b)
-    {
-        return (a = a + b);
-    }
-
-    inline float3& operator+=(float3& a, float b)
-    {
-        return (a = a + b);
-    }
-
-    inline float3& operator-=(float3& a, const float3& b)
-    {
-        return (a = a - b);
-    }
-
-    inline float3& operator-=(float3& a, float b)
-    {
-        return (a = a - b);
-    }
-
-    inline float3& operator*=(float3& a, const float3& b)
-    {
-        return (a = a * b);
-    }
-
-    inline float3& operator*=(float3& a, float b)
-    {
-        return (a = a * b);
-    }
-
-    inline float3& operator/=(float3& a, const float3& b)
-    {
-        return (a = a / b);
-    }
-
-    inline float3& operator/=(float3& a, float b)
-    {
-        return (a = a + b);
-    }
-
-    inline bool operator==(const float3& a, const float3& b)
-    {
-        return a.x == b.x && a.y == b.y && a.z == b.z;
-    }
-
-    inline bool operator!=(const float3& a, const float3& b)
-    {
-        return a.x != b.x || a.y != b.y || a.z != b.z;
-    }
-
-    inline float4 operator-(const float4& v)
-    {
-        return float4(-v.x, -v.y, -v.z, -v.w);
-    }
-
-    inline const float4& operator+(const float4& v)
-    {
-        return v;
-    }
-
-    inline float4& operator--(float4& v)
-    {
-        --v.x;
-        --v.y;
-        --v.z;
-        --v.w;
-        return v;
-    }
-
-    inline float4& operator++(float4& v)
-    {
-        ++v.x;
-        ++v.y;
-        ++v.z;
-        ++v.w;
-        return v;
-    }
-
-    inline float4 operator--(float4& v, int)
-    {
-        const float4 result = v;
-
-        v.x--;
-        v.y--;
-        v.z--;
-        v.w--;
-
-        return result;
-    }
-
-    inline float4 operator++(float4& v, int)
-    {
-        const float4 result = v;
-
-        v.x++;
-        v.y++;
-        v.z++;
-        v.w++;
-
-        return result;
-    }
-
-    inline float4 operator+(const float4& a, const float4& b)
-    {
-        return float4(a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w);
-    }
-
-    inline float4 operator-(const float4& a, const float4& b)
-    {
-        return float4(a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w);
-    }
-
-    inline float4 operator*(const float4& a, const float4& b)
-    {
-        return float4(a.x * b.x, a.y * b.y, a.z * b.z, a.w * b.w);
-    }
-
-    inline float4 operator/(const float4& a, const float4& b)
-    {
-        return float4(a.x / b.x, a.y / b.y, a.z / b.z, a.w / b.w);
-    }
-
-    inline float4 operator+(const float4& a, float b)
-    {
-        return float4(a.x + b, a.y + b, a.z + b, a.w + b);
-    }
-
-    inline float4 operator-(const float4& a, float b)
-    {
-        return float4(a.x - b, a.y - b, a.z - b, a.w - b);
-    }
-
-    inline float4 operator*(const float4& a, float b)
-    {
-        return float4(a.x * b, a.y * b, a.z * b, a.w * b);
-    }
-
-    inline float4 operator/(const float4& a, float b)
-    {
-        return float4(a.x / b, a.y / b, a.z / b, a.w / b);
-    }
-
-    inline float4 operator+(float a, const float4& b)
-    {
-        return float4(a + b.x, a + b.y, a + b.z, a + b.w);
-    }
-
-    inline float4 operator-(float a, const float4& b)
-    {
-        return float4(a - b.x, a - b.y, a - b.z, a - b.w);
-    }
-
-    inline float4 operator*(float a, const float4& b)
-    {
-        return float4(a * b.x, a * b.y, a * b.z, a * b.w);
-    }
-
-    inline float4 operator/(float a, const float4& b)
-    {
-        return float4(a / b.x, a / b.y, a / b.z, a / b.w);
-    }
-
-    inline float4& operator+=(float4& a, const float4& b)
-    {
-        return (a = a + b);
-    }
-
-    inline float4& operator+=(float4& a, float b)
-    {
-        return (a = a + b);
-    }
-
-    inline float4& operator-=(float4& a, const float4& b)
-    {
-        return (a = a - b);
-    }
-
-    inline float4& operator-=(float4& a, float b)
-    {
-        return (a = a - b);
-    }
-
-    inline float4& operator*=(float4& a, const float4& b)
-    {
-        return (a = a * b);
-    }
-
-    inline float4& operator*=(float4& a, float b)
-    {
-        return (a = a * b);
-    }
-
-    inline float4& operator/=(float4& a, const float4& b)
-    {
-        return (a = a / b);
-    }
-
-    inline float4& operator/=(float4& a, float b)
-    {
-        return (a = a + b);
-    }
-
-    inline bool operator==(const float4& a, const float4& b)
-    {
-        return a.x == b.x && a.y == b.y && a.z == b.z && a.w == b.w;
-    }
-
-    inline bool operator!=(const float4& a, const float4& b)
-    {
-        return a.x != b.x || a.y != b.y || a.z != b.z || a.w != b.w;
-    }
-    inline quat operator-(const quat& v)
-    {
-        return quat(-v.x, -v.y, -v.z, -v.w);
-    }
-
-    inline const quat& operator+(const quat& v)
-    {
-        return v;
-    }
-
-    inline quat& operator--(quat& v)
-    {
-        --v.x;
-        --v.y;
-        --v.z;
-        --v.w;
-        return v;
-    }
-
-    inline quat& operator++(quat& v)
-    {
-        ++v.x;
-        ++v.y;
-        ++v.z;
-        ++v.w;
-        return v;
-    }
-
-    inline quat operator--(quat& v, int)
-    {
-        const quat result = v;
-
-        v.x--;
-        v.y--;
-        v.z--;
-        v.w--;
-
-        return result;
-    }
-
-    inline quat operator++(quat& v, int)
-    {
-        const quat result = v;
-
-        v.x++;
-        v.y++;
-        v.z++;
-        v.w++;
-
-        return result;
-    }
-
-    inline quat operator+(const quat& a, const quat& b)
-    {
-        return quat(a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w);
-    }
-
-    inline quat operator-(const quat& a, const quat& b)
-    {
-        return quat(a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w);
-    }
-
-    inline quat operator*(const quat& a, const quat& b)
-    {
-        return quat(a.x * b.x, a.y * b.y, a.z * b.z, a.w * b.w);
-    }
+        float4x4 RotationX(float angle);
+        float4x4 RotationY(float angle);
+        float4x4 RotationZ(float angle);
 
-    inline quat operator/(const quat& a, const quat& b)
-    {
-        return quat(a.x / b.x, a.y / b.y, a.z / b.z, a.w / b.w);
-    }
-
-    inline quat operator+(const quat& a, float b)
-    {
-        return quat(a.x + b, a.y + b, a.z + b, a.w + b);
-    }
-
-    inline quat operator-(const quat& a, float b)
-    {
-        return quat(a.x - b, a.y - b, a.z - b, a.w - b);
-    }
-
-    inline quat operator*(const quat& a, float b)
-    {
-        return quat(a.x * b, a.y * b, a.z * b, a.w * b);
-    }
-
-    inline quat operator/(const quat& a, float b)
-    {
-        return quat(a.x / b, a.y / b, a.z / b, a.w / b);
-    }
-
-    inline quat operator+(float a, const quat& b)
-    {
-        return quat(a + b.x, a + b.y, a + b.z, a + b.w);
-    }
-
-    inline quat operator-(float a, const quat& b)
-    {
-        return quat(a - b.x, a - b.y, a - b.z, a - b.w);
-    }
-
-    inline quat operator*(float a, const quat& b)
-    {
-        return quat(a * b.x, a * b.y, a * b.z, a * b.w);
-    }
-
-    inline quat operator/(float a, const quat& b)
-    {
-        return quat(a / b.x, a / b.y, a / b.z, a / b.w);
-    }
-
-    inline quat& operator+=(quat& a, const quat& b)
-    {
-        return (a = a + b);
-    }
+        float4x4 Lookat(const float3& eye, const float3& target, const float3& up);
 
-    inline quat& operator+=(quat& a, float b)
-    {
-        return (a = a + b);
-    }
-
-    inline quat& operator-=(quat& a, const quat& b)
-    {
-        return (a = a - b);
-    }
-
-    inline quat& operator-=(quat& a, float b)
-    {
-        return (a = a - b);
-    }
-
-    inline quat& operator*=(quat& a, const quat& b)
-    {
-        return (a = a * b);
-    }
-
-    inline quat& operator*=(quat& a, float b)
-    {
-        return (a = a * b);
-    }
-
-    inline quat& operator/=(quat& a, const quat& b)
-    {
-        return (a = a / b);
-    }
-
-    inline quat& operator/=(quat& a, float b)
-    {
-        return (a = a + b);
-    }
-
-    inline bool operator==(const quat& a, const quat& b)
-    {
-        return a.x == b.x && a.y == b.y && a.z == b.z && a.w == b.w;
-    }
+        float4x4 Ortho(float l, float r, float b, float t, float n, float f);
+        float4x4 Frustum(float l, float r, float b, float t, float n, float f);
+        float4x4 Perspective(float fov, float aspect, float znear, float zfar);
 
-    inline bool operator!=(const quat& a, const quat& b)
-    {
-        return a.x != b.x || a.y != b.y || a.z != b.z || a.w != b.w;
-    }
-
-    inline bool operator==(const float4x4& a, const float4x4& b)
-    {
-        return a[0] == b[0] && a[1] == b[1] && a[2] == b[2] && a[3] == b[3];
-    }
-
-    inline bool operator!=(const float4x4& a, const float4x4& b)
-    {
-        return a[0] == b[0] || a[1] == b[1] || a[2] == b[2] || a[3] == b[3];
+        void Decompose(const float4x4& m, float3* scalation, quat* quaternion, float3* translation);
+        void Decompose(const float4x4& m, float3* scalation, float3* axis, float* angle, float3* translation);
     }
 
     // Computes sign of 'x'
@@ -2532,438 +1596,7 @@ inline namespace Mojo
         );
     }
 
-    inline float4x4 float4x4::ortho(float l, float r, float b, float t, float n, float f)
-    {
-        const float x = 1.0f / (r - l);
-        const float y = 1.0f / (t - b);
-        const float z = 1.0f / (f - n);
-
-        float4x4 result;
-        result[0] = float4(2.0f * x, 0, 0, 0);
-        result[1] = float4(0, 2.0f * y, 0, 0);
-        result[2] = float4(0, 0, 2.0f * z, 0);
-        result[3] = float4(-x * (l + r), -y * (b + t), -z * (n + f), 1.0f);
-        return result;
-    }
-
-    inline float4x4 float4x4::frustum(float l, float r, float b, float t, float n, float f)
-    {
-        const float x = 1.0f / (r - l);
-        const float y = 1.0f / (t - b);
-        const float z = 1.0f / (f - n);
-
-        float4x4 result;
-        result[0] = float4(2.0f * x, 0, 0, 0);
-        result[1] = float4(0, 2.0f * y, 0, 0);
-        result[2] = float4(x * (l + r), y * (b + t), z * (n + f), 1.0f);
-        result[3] = float4(0, 0, 2.0f * z, 0);
-        return result;
-    }
-
-    inline float4x4 float4x4::perspective(float fov, float aspect, float znear, float zfar)
-    {
-        const float a = 1.0f / tan(fov * 0.5f);
-        const float b = zfar / (znear - zfar);
-
-        float4x4 result;
-        result[0] = float4(a / aspect, 0, 0, 0);
-        result[1] = float4(0, a, 0, 0);
-        result[2] = float4(0, 0, b, -1);
-        result[3] = float4(0, 0, znear * b, 0);
-        return result;
-    }
-
-    inline float4x4 float4x4::lookat(const float3& eye, const float3& target, const float3& up)
-    {
-        const float3 z = normalize(eye - target);
-        const float3 x = normalize(cross(up, z));
-        const float3 y = normalize(cross(z, x));
-
-        float4x4 result;
-        result[0] = float4(x.x, y.x, z.x, 0);
-        result[1] = float4(x.y, y.y, z.y, 0);
-        result[2] = float4(x.z, y.z, z.z, 0);
-        result[3] = float4(-dot(x, eye), -dot(y, eye), -dot(z, eye), 1.0f);
-        return result;
-    }
-
-    inline float4x4 float4x4::scalation(float s)
-    {
-        return float4x4::scalation(s, s, s);
-    }
-
-    inline float4x4 float4x4::scalation(const float2& v)
-    {
-        return float4x4::scalation(v.x, v.y);
-    }
-
-    inline float4x4 float4x4::scalation(const float3& v)
-    {
-        return float4x4::scalation(v.x, v.y, v.z);
-    }
-
-    inline float4x4 float4x4::scalation(float x, float y, float z)
-    {
-        return float4x4(
-            x, 0, 0, 0,
-            0, y, 0, 0,
-            0, 0, z, 0,
-            0, 0, 0, 1
-        );
-    }
-
-    inline float4x4 float4x4::translation(const float2& v)
-    {
-        return float4x4::translation(v.x, v.y);
-    }
-
-    inline float4x4 float4x4::translation(const float3& v)
-    {
-        return float4x4::translation(v.x, v.y, v.z);
-    }
-
-    inline float4x4 float4x4::translation(float x, float y, float z)
-    {
-        return float4x4(
-            1, 0, 0, 0,
-            0, 1, 0, 0,
-            0, 0, 1, 0,
-            x, y, z, 1
-        );
-    }
-
-    inline float4x4 float4x4::rotation(const float3& axis, float angle)
-    {
-        return float4x4::rotation(axis.x, axis.y, axis.z, angle);
-    }
-
-    inline float4x4 float4x4::rotation(float x, float y, float z, float angle)
-    {
-        const float c = cos(-angle);
-        const float s = sin(-angle);
-        const float t = 1.0f - c;
-
-        float4x4 result;
-        /* Row 1 */
-        result[0] = float4(t * x * x + c,
-            t * x * y - s * z,
-            t * x * z + s * y,
-            0.0f);
-
-        /* Row 2 */
-        result[1] = float4(t * x * y + s * z,
-            t * y * y + c,
-            t * y * z - s * x,
-            0.0f);
-
-        /* Row 3 */
-        result[2] = float4(t * x * z - s * y,
-            t * y * z + s * x,
-            t * z * z + c,
-            0.0f);
-
-        /* Row 4 */
-        result[3] = float4(0, 0, 0, 1.0f);
-        return result;
-    }
-
-    inline float4x4 float4x4::rotation_x(float angle)
-    {
-        const float s = sin(angle);
-        const float c = cos(angle);
-
-        return float4x4(
-            1, 0, 0, 0,
-            0, c, s, 0,
-            0, -s, c, 0,
-            0, 0, 0, 1
-        );
-    }
-
-    inline float4x4 float4x4::rotation_y(float angle)
-    {
-        const float s = sin(angle);
-        const float c = cos(angle);
-
-        return float4x4(
-            c, 0, s, 0,
-            0, 1, 0, 0,
-            -s, 0, c, 0,
-            0, 0, 0, 1
-        );
-    }
-
-    inline float4x4 float4x4::rotation_z(float angle)
-    {
-        const float s = sin(angle);
-        const float c = cos(angle);
-
-        return float4x4(
-            c, s, 0, 0,
-            -s, c, 0, 0,
-            0, 0, 1, 0,
-            0, 0, 0, 1
-        );
-    }
-
-    inline float4x4 float4x4::rotation(const quat& quaternion)
-    {
-        float4 axisangle = quat::toaxis(quaternion);
-        return float4x4::rotation(axisangle.x, axisangle.y, axisangle.z, axisangle.w);
-    }
-
-    inline void float4x4::decompose(const float4x4& m, float3* scalation, quat* quaternion, float3* translation)
-    {
-        if (translation)
-        {
-            *translation = float3(m[3][0], m[3][1], m[3][2]);
-        }
-
-        if (!scalation && !quaternion)
-        {
-            return;
-        }
-
-        float3 xaxis(m[0][0], m[0][1], m[0][2]);
-        float3 yaxis(m[1][0], m[1][1], m[1][2]);
-        float3 zaxis(m[2][0], m[2][1], m[2][2]);
-
-        float scale_x = length(xaxis);
-        float scale_y = length(yaxis);
-        float scale_z = length(zaxis);
-
-        const float n11 = m[0][0], n12 = m[1][0], n13 = m[2][0], n14 = m[3][0];
-        const float n21 = m[0][1], n22 = m[1][1], n23 = m[2][1], n24 = m[3][1];
-        const float n31 = m[0][2], n32 = m[1][2], n33 = m[2][2], n34 = m[3][2];
-        const float n41 = m[0][3], n42 = m[1][3], n43 = m[2][3], n44 = m[3][3];
-
-        const float t11 = n23 * n34 * n42 - n24 * n33 * n42 + n24 * n32 * n43 - n22 * n34 * n43 - n23 * n32 * n44 + n22 * n33 * n44;
-        const float t12 = n14 * n33 * n42 - n13 * n34 * n42 - n14 * n32 * n43 + n12 * n34 * n43 + n13 * n32 * n44 - n12 * n33 * n44;
-        const float t13 = n13 * n24 * n42 - n14 * n23 * n42 + n14 * n22 * n43 - n12 * n24 * n43 - n13 * n22 * n44 + n12 * n23 * n44;
-        const float t14 = n14 * n23 * n32 - n13 * n24 * n32 - n14 * n22 * n33 + n12 * n24 * n33 + n13 * n22 * n34 - n12 * n23 * n34;
-
-        const float det = n11 * t11 + n21 * t12 + n31 * t13 + n41 * t14;
-        if (det < 0) scale_z = -scale_z;
-
-        if (scalation)
-        {
-            *scalation = float3(scale_x, scale_y, scale_z);
-        }
-
-        if (!quaternion)
-        {
-            return;
-        }
-
-        float rn;
-
-        // Factor the scale out of the matrix axes.
-        rn = 1.0f / scale_x;
-        xaxis.x *= rn;
-        xaxis.y *= rn;
-        xaxis.z *= rn;
-
-        rn = 1.0f / scale_y;
-        yaxis.x *= rn;
-        yaxis.y *= rn;
-        yaxis.z *= rn;
-
-        rn = 1.0f / scale_z;
-        zaxis.x *= rn;
-        zaxis.y *= rn;
-        zaxis.z *= rn;
-
-        // Now calculate the rotation from the resulting matrix (axes).
-        float trace = xaxis.x + yaxis.y + zaxis.z + 1.0f;
-
-        if (trace > 0.0001f)
-        {
-            float s = 0.5f / sqrt(trace);
-            quaternion->w = 0.25f / s;
-            quaternion->x = (yaxis.z - zaxis.y) * s;
-            quaternion->y = (zaxis.x - xaxis.z) * s;
-            quaternion->z = (xaxis.y - yaxis.x) * s;
-        }
-        else
-        {
-            // Note: since xaxis, yaxis, and zaxis are normalized, 
-            // we will never divide by zero in the code below.
-            if (xaxis.x > yaxis.y && xaxis.x > zaxis.z)
-            {
-                float s = 0.5f / sqrt(1.0f + xaxis.x - yaxis.y - zaxis.z);
-                quaternion->w = (yaxis.z - zaxis.y) * s;
-                quaternion->x = 0.25f / s;
-                quaternion->y = (yaxis.x + xaxis.y) * s;
-                quaternion->z = (zaxis.x + xaxis.z) * s;
-            }
-            else if (yaxis.y > zaxis.z)
-            {
-                float s = 0.5f / sqrt(1.0f + yaxis.y - xaxis.x - zaxis.z);
-                quaternion->w = (zaxis.x - xaxis.z) * s;
-                quaternion->x = (yaxis.x + xaxis.y) * s;
-                quaternion->y = 0.25f / s;
-                quaternion->z = (zaxis.y + yaxis.z) * s;
-            }
-            else
-            {
-                float s = 0.5f / sqrt(1.0f + zaxis.z - xaxis.x - yaxis.y);
-                quaternion->w = (xaxis.y - yaxis.x) * s;
-                quaternion->x = (zaxis.x + xaxis.z) * s;
-                quaternion->y = (zaxis.y + yaxis.z) * s;
-                quaternion->z = 0.25f / s;
-            }
-        }
-    }
-
-    inline void float4x4::decompose(const float4x4& m, float3* scalation, float3* axis, float* angle, float3* translation)
-    {
-        if (axis || angle)
-        {
-            quat quat;
-            float4x4::decompose(m, scalation, &quat, translation);
-
-            float4 axisangle = quat::toaxis(quat);
-            *axis = float3(axisangle);
-            *angle = axisangle.w;
-        }
-        else
-        {
-            float4x4::decompose(m, scalation, (quat*)0, translation);
-        }
-    }
-
-    inline float4x4 operator-(const float4x4& m)
-    {
-        float4x4 result;
-        result[0] = -m[0];
-        result[1] = -m[1];
-        result[2] = -m[2];
-        result[3] = -m[3];
-        return result;
-    }
-
-    inline const float4x4& operator+(const float4x4& m)
-    {
-        return m;
-    }
-
-    inline float4x4& operator--(float4x4& m)
-    {
-        --m[0];
-        --m[1];
-        --m[2];
-        --m[3];
-        return m;
-    }
-
-    inline float4x4& operator++(float4x4& m)
-    {
-        ++m[0];
-        ++m[1];
-        ++m[2];
-        ++m[3];
-        return m;
-    }
-
-    inline const float4x4& operator--(float4x4& m, int)
-    {
-        m[0]--;
-        m[1]--;
-        m[2]--;
-        m[3]--;
-        return m;
-    }
-
-    inline const float4x4& operator++(float4x4& m, int)
-    {
-        m[0]++;
-        m[1]++;
-        m[2]++;
-        m[3]++;
-        return m;
-    }
-
-    inline float4x4 operator+(const float4x4& a, const float4x4& b)
-    {
-        float4x4 result;
-        result[0] = a[0] + b[0];
-        result[1] = a[1] + b[1];
-        result[2] = a[2] + b[2];
-        result[3] = a[3] + b[3];
-        return result;
-    }
-
-    inline float4x4 operator+(const float4x4& a, float b)
-    {
-        float4x4 result;
-        result[0] = a[0] + b;
-        result[1] = a[1] + b;
-        result[2] = a[2] + b;
-        result[3] = a[3] + b;
-        return result;
-    }
-
-    inline float4x4 operator+(float a, const float4x4& b)
-    {
-        float4x4 result;
-        result[0] = a + b[0];
-        result[1] = a + b[1];
-        result[2] = a + b[2];
-        result[3] = a + b[3];
-        return result;
-    }
-
-    inline float4x4 operator-(const float4x4& a, const float4x4& b)
-    {
-        float4x4 result;
-        result[0] = a[0] - b[0];
-        result[1] = a[1] - b[1];
-        result[2] = a[2] - b[2];
-        result[3] = a[3] - b[3];
-        return result;
-    }
-
-    inline float4x4 operator-(const float4x4& a, float b)
-    {
-        float4x4 result;
-        result[0] = a[0] - b;
-        result[1] = a[1] - b;
-        result[2] = a[2] - b;
-        result[3] = a[3] - b;
-        return result;
-    }
-
-    inline float4x4 operator-(float a, const float4x4& b)
-    {
-        float4x4 result;
-        result[0] = a - b[0];
-        result[1] = a - b[1];
-        result[2] = a - b[2];
-        result[3] = a - b[3];
-        return result;
-    }
-
-    inline float4x4 operator*(const float4x4& a, float b)
-    {
-        float4x4 result;
-        result[0] = a[0] * b;
-        result[1] = a[1] * b;
-        result[2] = a[2] * b;
-        result[3] = a[3] * b;
-        return result;
-    }
-
-    inline float4x4 operator*(float a, const float4x4& b)
-    {
-        float4x4 result;
-        result[0] = a * b[0];
-        result[1] = a * b[1];
-        result[2] = a * b[2];
-        result[3] = a * b[3];
-        return result;
-    }
-
-    inline float4 operator*(const float4x4& a, const float4& b)
+    inline float4 mul(const float4x4& a, const float4& b)
     {
         const float4 c0 = float4(a[0][0], a[1][0], a[2][0], a[3][0]);
         const float4 c1 = float4(a[0][1], a[1][1], a[2][1], a[3][1]);
@@ -2978,7 +1611,7 @@ inline namespace Mojo
         );
     }
 
-    inline float4 operator*(const float4& a, const float4x4& b)
+    inline float4 mul(const float4& a, const float4x4& b)
     {
         return float4(
             dot(a, b[0]),
@@ -2991,7 +1624,7 @@ inline namespace Mojo
     inline float3 mul(const float4x4& a, const float3& b)
     {
         const float4 b0 = float4(b.x, b.y, b.z, 1.0f);
-        const float4 b1 = a * b0;
+        const float4 b1 = mul(a, b0);
 
         const float iw = 1.0f / b1.w;
         return float3(b1.x * iw, b1.y * iw, b1.z * iw);
@@ -3000,89 +1633,332 @@ inline namespace Mojo
     inline float3 mul(const float3& a, const float4x4& b)
     {
         const float4 a0 = float4(a.x, a.y, a.z, 1.0f);
-        const float4 a1 = a0 * b;
+        const float4 a1 = mul(a0, b);
 
         const float iw = 1.0f / a1.w;
         return float3(a1.x * iw, a1.y * iw, a1.z * iw);
     }
 
-    inline float4x4 operator*(const float4x4& a, const float4x4& b)
+    inline float4x4 mul(const float4x4& a, const float4x4& b)
     {
         float4x4 result;
-        result[0] = a * b[0];
-        result[1] = a * b[1];
-        result[2] = a * b[2];
-        result[3] = a * b[3];
+        result[0] = mul(a, b[0]);
+        result[1] = mul(a, b[1]);
+        result[2] = mul(a, b[2]);
+        result[3] = mul(a, b[3]);
         return result;
     }
 
-    inline float4x4 operator/(const float4x4& a, const float4x4& b)
+    namespace Math
     {
-        float4x4 result;
-        result[0] = a[0] / b[0];
-        result[1] = a[1] / b[1];
-        result[2] = a[2] / b[2];
-        result[3] = a[3] / b[3];
-        return result;
-    }
+        inline float4x4 Transform(const float2& position, float rotation, const float2& scale)
+        {
+            return mul(mul(Math::Translation(position), Math::RotationZ(rotation)), Math::Scalation(scale));
+        }
 
-    inline float4x4 operator/(const float4x4& a, float b)
-    {
-        float4x4 result;
-        result[0] = a[0] / b;
-        result[1] = a[1] / b;
-        result[2] = a[2] / b;
-        result[3] = a[3] / b;
-        return result;
-    }
+        inline float4x4 Transform(const float3& position, const quat& rotation, const float3& scale)
+        {
+            return mul(mul(Math::Translation(position), Math::Rotation(rotation)), Math::Scalation(scale));
+        }
 
-    inline float4x4 operator/(float a, const float4x4& b)
-    {
-        float4x4 result;
-        result[0] = a / b[0];
-        result[1] = a / b[1];
-        result[2] = a / b[2];
-        result[3] = a / b[3];
-        return result;
-    }
+        inline float4x4 Ortho(float l, float r, float b, float t, float n, float f)
+        {
+            const float x = 1.0f / (r - l);
+            const float y = 1.0f / (t - b);
+            const float z = 1.0f / (f - n);
 
-    inline float4x4& operator+=(float4x4& a, const float4x4& b)
-    {
-        return (a = a + b);
-    }
+            float4x4 result;
+            result[0] = float4(2.0f * x, 0, 0, 0);
+            result[1] = float4(0, 2.0f * y, 0, 0);
+            result[2] = float4(0, 0, 2.0f * z, 0);
+            result[3] = float4(-x * (l + r), -y * (b + t), -z * (n + f), 1.0f);
+            return result;
+        }
 
-    inline float4x4& operator+=(float4x4& a, float b)
-    {
-        return (a = a + b);
-    }
+        inline float4x4 Frustum(float l, float r, float b, float t, float n, float f)
+        {
+            const float x = 1.0f / (r - l);
+            const float y = 1.0f / (t - b);
+            const float z = 1.0f / (f - n);
 
-    inline float4x4& operator-=(float4x4& a, const float4x4& b)
-    {
-        return (a = a - b);
-    }
+            float4x4 result;
+            result[0] = float4(2.0f * x, 0, 0, 0);
+            result[1] = float4(0, 2.0f * y, 0, 0);
+            result[2] = float4(x * (l + r), y * (b + t), z * (n + f), 1.0f);
+            result[3] = float4(0, 0, 2.0f * z, 0);
+            return result;
+        }
 
-    inline float4x4& operator-=(float4x4& a, float b)
-    {
-        return (a = a - b);
-    }
+        inline float4x4 Perspective(float fov, float aspect, float znear, float zfar)
+        {
+            const float a = 1.0f / tan(fov * 0.5f);
+            const float b = zfar / (znear - zfar);
 
-    inline float4x4& operator*=(float4x4& a, const float4x4& b)
-    {
-        return (a = a * b);
-    }
+            float4x4 result;
+            result[0] = float4(a / aspect, 0, 0, 0);
+            result[1] = float4(0, a, 0, 0);
+            result[2] = float4(0, 0, b, -1);
+            result[3] = float4(0, 0, znear * b, 0);
+            return result;
+        }
 
-    inline float4x4& operator*=(float4x4& a, float b)
-    {
-        return (a = a * b);
-    }
+        inline float4x4 Lookat(const float3& eye, const float3& target, const float3& up)
+        {
+            const float3 z = normalize(eye - target);
+            const float3 x = normalize(cross(up, z));
+            const float3 y = normalize(cross(z, x));
 
-    inline float4x4& operator/=(float4x4& a, const float4x4& b)
-    {
-        return (a = a / b);
-    }
+            float4x4 result;
+            result[0] = float4(x.x, y.x, z.x, 0);
+            result[1] = float4(x.y, y.y, z.y, 0);
+            result[2] = float4(x.z, y.z, z.z, 0);
+            result[3] = float4(-dot(x, eye), -dot(y, eye), -dot(z, eye), 1.0f);
+            return result;
+        }
 
-    inline float4x4& operator/=(float4x4& a, float b)
-    {
-        return (a = a + b);
+        inline float4x4 Scalation(float s)
+        {
+            return Scalation(s, s, s);
+        }
+
+        inline float4x4 Scalation(const float2& v)
+        {
+            return Scalation(v.x, v.y);
+        }
+
+        inline float4x4 Scalation(const float3& v)
+        {
+            return Scalation(v.x, v.y, v.z);
+        }
+
+        inline float4x4 Scalation(float x, float y, float z)
+        {
+            return float4x4(
+                x, 0, 0, 0,
+                0, y, 0, 0,
+                0, 0, z, 0,
+                0, 0, 0, 1
+            );
+        }
+
+        inline float4x4 Translation(const float2& v)
+        {
+            return Translation(v.x, v.y);
+        }
+
+        inline float4x4 Translation(const float3& v)
+        {
+            return Translation(v.x, v.y, v.z);
+        }
+
+        inline float4x4 Translation(float x, float y, float z)
+        {
+            return float4x4(
+                1, 0, 0, 0,
+                0, 1, 0, 0,
+                0, 0, 1, 0,
+                x, y, z, 1
+            );
+        }
+
+        inline float4x4 Rotation(const float3& axis, float angle)
+        {
+            return Rotation(axis.x, axis.y, axis.z, angle);
+        }
+
+        inline float4x4 Rotation(float x, float y, float z, float angle)
+        {
+            const float c = cos(-angle);
+            const float s = sin(-angle);
+            const float t = 1.0f - c;
+
+            float4x4 result;
+            /* Row 1 */
+            result[0] = float4(t * x * x + c,
+                t * x * y - s * z,
+                t * x * z + s * y,
+                0.0f);
+
+            /* Row 2 */
+            result[1] = float4(t * x * y + s * z,
+                t * y * y + c,
+                t * y * z - s * x,
+                0.0f);
+
+            /* Row 3 */
+            result[2] = float4(t * x * z - s * y,
+                t * y * z + s * x,
+                t * z * z + c,
+                0.0f);
+
+            /* Row 4 */
+            result[3] = float4(0, 0, 0, 1.0f);
+            return result;
+        }
+
+        inline float4x4 RotationX(float angle)
+        {
+            const float s = sinf(angle);
+            const float c = cosf(angle);
+
+            return float4x4(
+                1, 0, 0, 0,
+                0, c, s, 0,
+                0, -s, c, 0,
+                0, 0, 0, 1
+            );
+        }
+
+        inline float4x4 RotationY(float angle)
+        {
+            const float s = sinf(angle);
+            const float c = cosf(angle);
+
+            return float4x4(
+                c, 0, s, 0,
+                0, 1, 0, 0,
+                -s, 0, c, 0,
+                0, 0, 0, 1
+            );
+        }
+
+        inline float4x4 RotationZ(float angle)
+        {
+            const float s = sinf(angle);
+            const float c = cosf(angle);
+
+            return float4x4(
+                c, s, 0, 0,
+                -s, c, 0, 0,
+                0, 0, 1, 0,
+                0, 0, 0, 1
+            );
+        }
+
+        inline float4x4 Rotation(const quat& quaternion)
+        {
+            float4 axisangle = quat::toaxis(quaternion);
+            return Rotation(axisangle.x, axisangle.y, axisangle.z, axisangle.w);
+        }
+
+        inline void Decompose(const float4x4& m, float3* scalation, quat* quaternion, float3* translation)
+        {
+            if (translation)
+            {
+                *translation = float3(m[3][0], m[3][1], m[3][2]);
+            }
+
+            if (!scalation && !quaternion)
+            {
+                return;
+            }
+
+            float3 xaxis(m[0][0], m[0][1], m[0][2]);
+            float3 yaxis(m[1][0], m[1][1], m[1][2]);
+            float3 zaxis(m[2][0], m[2][1], m[2][2]);
+
+            float scale_x = length(xaxis);
+            float scale_y = length(yaxis);
+            float scale_z = length(zaxis);
+
+            const float n11 = m[0][0], n12 = m[1][0], n13 = m[2][0], n14 = m[3][0];
+            const float n21 = m[0][1], n22 = m[1][1], n23 = m[2][1], n24 = m[3][1];
+            const float n31 = m[0][2], n32 = m[1][2], n33 = m[2][2], n34 = m[3][2];
+            const float n41 = m[0][3], n42 = m[1][3], n43 = m[2][3], n44 = m[3][3];
+
+            const float t11 = n23 * n34 * n42 - n24 * n33 * n42 + n24 * n32 * n43 - n22 * n34 * n43 - n23 * n32 * n44 + n22 * n33 * n44;
+            const float t12 = n14 * n33 * n42 - n13 * n34 * n42 - n14 * n32 * n43 + n12 * n34 * n43 + n13 * n32 * n44 - n12 * n33 * n44;
+            const float t13 = n13 * n24 * n42 - n14 * n23 * n42 + n14 * n22 * n43 - n12 * n24 * n43 - n13 * n22 * n44 + n12 * n23 * n44;
+            const float t14 = n14 * n23 * n32 - n13 * n24 * n32 - n14 * n22 * n33 + n12 * n24 * n33 + n13 * n22 * n34 - n12 * n23 * n34;
+
+            const float det = n11 * t11 + n21 * t12 + n31 * t13 + n41 * t14;
+            if (det < 0) scale_z = -scale_z;
+
+            if (scalation)
+            {
+                *scalation = float3(scale_x, scale_y, scale_z);
+            }
+
+            if (!quaternion)
+            {
+                return;
+            }
+
+            float rn;
+
+            // Factor the scale out of the matrix axes.
+            rn = 1.0f / scale_x;
+            xaxis.x *= rn;
+            xaxis.y *= rn;
+            xaxis.z *= rn;
+
+            rn = 1.0f / scale_y;
+            yaxis.x *= rn;
+            yaxis.y *= rn;
+            yaxis.z *= rn;
+
+            rn = 1.0f / scale_z;
+            zaxis.x *= rn;
+            zaxis.y *= rn;
+            zaxis.z *= rn;
+
+            // Now calculate the rotation from the resulting matrix (axes).
+            float trace = xaxis.x + yaxis.y + zaxis.z + 1.0f;
+
+            if (trace > 0.0001f)
+            {
+                float s = 0.5f / sqrt(trace);
+                quaternion->w = 0.25f / s;
+                quaternion->x = (yaxis.z - zaxis.y) * s;
+                quaternion->y = (zaxis.x - xaxis.z) * s;
+                quaternion->z = (xaxis.y - yaxis.x) * s;
+            }
+            else
+            {
+                // Note: since xaxis, yaxis, and zaxis are normalized, 
+                // we will never divide by zero in the code below.
+                if (xaxis.x > yaxis.y && xaxis.x > zaxis.z)
+                {
+                    float s = 0.5f / sqrt(1.0f + xaxis.x - yaxis.y - zaxis.z);
+                    quaternion->w = (yaxis.z - zaxis.y) * s;
+                    quaternion->x = 0.25f / s;
+                    quaternion->y = (yaxis.x + xaxis.y) * s;
+                    quaternion->z = (zaxis.x + xaxis.z) * s;
+                }
+                else if (yaxis.y > zaxis.z)
+                {
+                    float s = 0.5f / sqrt(1.0f + yaxis.y - xaxis.x - zaxis.z);
+                    quaternion->w = (zaxis.x - xaxis.z) * s;
+                    quaternion->x = (yaxis.x + xaxis.y) * s;
+                    quaternion->y = 0.25f / s;
+                    quaternion->z = (zaxis.y + yaxis.z) * s;
+                }
+                else
+                {
+                    float s = 0.5f / sqrt(1.0f + zaxis.z - xaxis.x - yaxis.y);
+                    quaternion->w = (xaxis.y - yaxis.x) * s;
+                    quaternion->x = (zaxis.x + xaxis.z) * s;
+                    quaternion->y = (zaxis.y + yaxis.z) * s;
+                    quaternion->z = 0.25f / s;
+                }
+            }
+        }
+
+        inline void Decompose(const float4x4& m, float3* scalation, float3* axis, float* angle, float3* translation)
+        {
+            if (axis || angle)
+            {
+                quat quat;
+                Decompose(m, scalation, &quat, translation);
+
+                float4 axisangle = quat::toaxis(quat);
+                *axis = float3(axisangle);
+                *angle = axisangle.w;
+            }
+            else
+            {
+                Decompose(m, scalation, (quat*)0, translation);
+            }
+        }
     }
 }
