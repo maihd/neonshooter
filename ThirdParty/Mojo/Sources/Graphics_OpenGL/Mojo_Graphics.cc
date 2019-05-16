@@ -485,19 +485,19 @@ namespace Mojo
             glBindBuffer(GL_ARRAY_BUFFER, ConvertHandle(buffer));
         }
 
-        void BindRenderTarget(RenderTarget* renderTarget)
+        void BindRenderTarget(RenderTargetHandle* renderTarget)
         {
-            glBindFramebuffer(GL_FRAMEBUFFER, renderTarget ? renderTarget->frameBuffer : 0);
+            glBindFramebuffer(GL_FRAMEBUFFER, ConvertHandle(renderTarget));
         }
 
-        void BlitRenderTarget(RenderTarget* src, RenderTarget* dst, ShaderHandle* shader)
+        void BlitRenderTarget(TextureHandle* src, RenderTargetHandle* dst, ShaderHandle* shader)
         {
             if (src)
             {
                 GLint bindingFramebuffer;
                 glGetIntegerv(GL_FRAMEBUFFER_BINDING, &bindingFramebuffer);
 
-                glBindFramebuffer(GL_FRAMEBUFFER, dst ? dst->frameBuffer : 0);
+                glBindFramebuffer(GL_FRAMEBUFFER, ConvertHandle(dst));
 
                 // Clear dst buffer
                 Graphics::ClearBuffer();
@@ -506,7 +506,7 @@ namespace Mojo
                 glBindVertexArray(_renderTargetVertexArray.handle);
 
                 glActiveTexture(GL_TEXTURE0);
-                glBindTexture(GL_TEXTURE_2D, src->texture);
+                glBindTexture(GL_TEXTURE_2D, ConvertHandle(src));
 
                 glDrawArrays(GL_TRIANGLES, 0, 6);
 

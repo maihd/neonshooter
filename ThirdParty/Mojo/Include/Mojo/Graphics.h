@@ -7,6 +7,7 @@ inline namespace Mojo
     struct IndexBufferHandle;
     struct VertexArrayHandle;
     struct VertexBufferHandle;
+    struct RenderTargetHandle;
 
     enum struct DrawType
     {
@@ -155,6 +156,16 @@ inline namespace Mojo
         //static RenderTarget Create(void);
         static RenderTarget Create(int width, int height);
         static void         Destroy(RenderTarget& renderTarget);
+
+        inline operator RenderTargetHandle*(void) const
+        {
+            return (RenderTargetHandle*)frameBuffer;
+        }
+
+        inline operator TextureHandle*(void) const
+        {
+            return (TextureHandle*)texture;
+        }
     };
 
     struct GraphicsSettings
@@ -185,8 +196,8 @@ inline namespace Mojo
         void BindIndexBuffer(IndexBufferHandle* buffer);
         void BindVertexBuffer(VertexBufferHandle* buffer);
 
-        void BindRenderTarget(RenderTarget* renderTarget);
-        void BlitRenderTarget(RenderTarget* src, RenderTarget* dst, ShaderHandle* shader);
+        void BindRenderTarget(RenderTargetHandle* renderTarget);
+        void BlitRenderTarget(TextureHandle* src, RenderTargetHandle* dst, ShaderHandle* shader);
 
         void DrawArrays(DrawType type, int count, int offset = 0);
         void DrawIndices(DrawType type, DataType dataType, int count, int offset = 0);
