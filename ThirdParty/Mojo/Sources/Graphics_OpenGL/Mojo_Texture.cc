@@ -171,8 +171,8 @@ namespace Mojo
             return;
         }
 
-        this->width = w;
-        this->height = h;
+        this->width  = (float)w;
+        this->height = (float)h;
 
         glTextureImage2DEXT(handle, GL_TEXTURE_2D, 0, ConvertPixelFormat(targetFormat), w, h, 0, ConvertPixelFormat(format), GL_UNSIGNED_BYTE, pixels);
         HandleError();

@@ -29,8 +29,8 @@ inline namespace Mojo
     struct Texture final
     {
         unsigned handle = 0;
-        int      width  = 0;
-        int      height = 0;
+        float    width  = 0;
+        float    height = 0;
         
         static Texture   Create(void);
         static void      Destroy(Texture& texture);

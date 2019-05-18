@@ -1,6 +1,7 @@
 #pragma once
 
-#include <Mojo/Core/Base.h>
+#include <Mojo/Core/Types.h>
+#include <Mojo/Core/Endian.h>
 
 inline namespace Mojo
 {
@@ -231,6 +232,178 @@ inline namespace Mojo
         {
             double result;
             return this->Read(&result, sizeof(result)) == sizeof(result) ? BE_TO_NATIVE_DOUBLE(result) : 0.0;
+        }
+
+        // Read 8bit signed integer
+        inline bool WriteInt8(int8 x)
+        {
+            return this->Write(&x, sizeof(x)) == sizeof(x);
+        }
+
+        // Read 8bit unsigned integer
+        inline bool WriteUint8(uint8 x)
+        {
+            return this->Write(&x, sizeof(x)) == sizeof(x);
+        }
+
+        // Read 16bit signed integer, and dont care about endian
+        inline bool WriteInt16(int16 x)
+        {
+            return this->Write(&x, sizeof(x)) == sizeof(x);
+        }
+
+        // Read 16bit unsigned integer, and dont care about endian
+        inline bool WriteUint16(uint16 x)
+        {
+            return this->Write(&x, sizeof(x)) == sizeof(x);
+        }
+
+        // Read 32bit signed integer, and dont care about endian
+        inline bool WriteInt32(int32 x)
+        {
+            return this->Write(&x, sizeof(x)) == sizeof(x);
+        }
+
+        // Read 32bit unsigned integer, and dont care about endian
+        inline bool WriteUint32(uint32 x)
+        {
+            return this->Write(&x, sizeof(x)) == sizeof(x);
+        }
+
+        // Read 64bit signed integer, and dont care about endian
+        inline bool WriteInt64(int64 x)
+        {
+            return this->Write(&x, sizeof(x)) == sizeof(x);
+        }
+
+        // Read 64bit unsigned integer, and dont care about endian
+        inline bool WriteUint64(uint64 x)
+        {
+            return this->Write(&x, sizeof(x)) == sizeof(x);
+        }
+
+        // Read little endian 16bit signed integer
+        inline bool WriteInt16LE(int16 x)
+        {
+            int16 result = NATIVE_TO_LE_16(x);
+            return this->Write(&result, sizeof(result)) == sizeof(result);
+        }
+
+        // Read big endian 16bit signed integer
+        inline bool WriteInt16BE(int16 x)
+        {
+            int16 result = NATIVE_TO_BE_16(x);
+            return this->Write(&result, sizeof(result)) == sizeof(result);
+        }
+
+        // Read little endian 16bit unsigned integer
+        inline bool WriteUint16LE(uint16 x)
+        {
+            uint16 result = NATIVE_TO_LE_16(x);
+            return this->Write(&result, sizeof(result)) == sizeof(result);
+        }
+
+        // Read big endian 16bit unsigned integer
+        inline bool WriteUint16BE(uint16 x)
+        {
+            uint16 result = NATIVE_TO_BE_16(x);
+            return this->Write(&result, sizeof(result)) == sizeof(result);
+        }
+
+        // Read little endian 32bit signed integer
+        inline bool WriteInt32LE(int32 x)
+        {
+            int32 result = NATIVE_TO_LE_32(x);
+            return this->Write(&result, sizeof(result)) == sizeof(result);
+        }
+
+        // Read big endian 32bit signed integer
+        inline bool WriteInt32BE(int32 x)
+        {
+            int32 result = NATIVE_TO_BE_32(x);
+            return this->Write(&result, sizeof(result)) == sizeof(result);
+        }
+
+        // Read little endian 32bit unsigned integer
+        inline bool WriteUint32LE(uint32 x)
+        {
+            uint32 result = NATIVE_TO_LE_32(x);
+            return this->Write(&result, sizeof(result)) == sizeof(result);
+        }
+
+        // Read big endian 32bit unsigned integer
+        inline bool WriteUint32BE(uint32 x)
+        {
+            uint32 result = NATIVE_TO_BE_32(x);
+            return this->Write(&result, sizeof(result)) == sizeof(result);
+        }
+
+        // Read little endian 64bit signed integer
+        inline bool WriteInt64LE(int64 x)
+        {
+            int64 result = NATIVE_TO_LE_64(x);
+            return this->Write(&result, sizeof(result)) == sizeof(result);
+        }
+
+        // Read big endian 64bit signed integer
+        inline bool WriteInt64BE(int64 x)
+        {
+            int64 result = NATIVE_TO_BE_64(x);
+            return this->Write(&result, sizeof(result)) == sizeof(result);
+        }
+
+        // Read little endian 64bit unsigned integer
+        inline bool WriteUint64LE(uint64 x)
+        {
+            uint64 result = NATIVE_TO_LE_64(x);
+            return this->Write(&result, sizeof(result)) == sizeof(result);
+        }
+
+        // Read big endian 64bit unsigned integer
+        inline bool WriteUint64BE(uint64 x)
+        {
+            uint64 result = NATIVE_TO_BE_64(x);
+            return this->Write(&result, sizeof(result)) == sizeof(result);
+        }
+
+        // Read single-precision floating point number, dont care endianess
+        inline bool WriteFloat(float x)
+        {
+            return this->Write(&x, sizeof(x)) == sizeof(x);
+        }
+
+        // Read double-precision floating point number, dont care endianess
+        inline bool WriteDouble(double x)
+        {
+            return this->Write(&x, sizeof(x)) == sizeof(x);
+        }
+
+        // Read little endian single-precision floating point number
+        inline bool WriteFloatLE(float x)
+        {
+            float result = NATIVE_TO_LE_FLOAT(x);
+            return this->Write(&result, sizeof(result)) == sizeof(result);
+        }
+
+        // Read little endian double-precision floating point number
+        inline bool WriteDoubleLE(double x)
+        {
+            double result = NATIVE_TO_LE_DOUBLE(x);
+            return this->Write(&result, sizeof(result)) == sizeof(result);
+        }
+
+        // Read big endian single-precision floating point number
+        inline bool WriteFloatBE(float x)
+        {
+            float result = NATIVE_TO_BE_FLOAT(x);
+            return this->Write(&result, sizeof(result)) == sizeof(result);
+        }
+
+        // Read big endian double-precision floating point number
+        inline bool WriteDoubleBE(double x)
+        {
+            double result = NATIVE_TO_BE_DOUBLE(x);
+            return this->Write(&result, sizeof(result)) == sizeof(result);
         }
     };
 

@@ -40,7 +40,7 @@ namespace Mojo
         cmd.texture = texture;
         cmd.position = position;
         cmd.rotation = rotation;
-        cmd.scale = scale * float2(texture.width, texture.height);
+        cmd.scale = scale * float2((float)texture.width, (float)texture.height);
         cmd.blend = blend;
         cmd.color = color;
         cmd.drawCount = 6;

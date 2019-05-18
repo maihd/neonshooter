@@ -154,17 +154,17 @@ inline namespace Mojo
         unsigned renderBuffer           = 0;
 
         //static RenderTarget Create(void);
-        static RenderTarget Create(int width, int height);
+        static RenderTarget Create(float width, float height);
         static void         Destroy(RenderTarget& renderTarget);
 
         inline operator RenderTargetHandle*(void) const
         {
-            return (RenderTargetHandle*)frameBuffer;
+            return (RenderTargetHandle*)(long long)frameBuffer;
         }
 
         inline operator TextureHandle*(void) const
         {
-            return (TextureHandle*)texture;
+            return (TextureHandle*)(long long)texture;
         }
     };
 

@@ -168,19 +168,21 @@
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Core\Array.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Core\AsyncOperation.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Core\Atomic.h" />
-    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Core\Base.h" />
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Core\CmdArgs.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Core\ConfigVar.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Core\Coroutine.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Core\Delegate.h" />
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Core\Endian.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Core\HashTable.h" />
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Core\RingBuffer.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Core\Socket.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Core\SpinLock.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Core\Stream.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Core\String.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Core\Thread.h" />
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Core\Types.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\FileSystem.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Graphics.h" />
-    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Graphics\Api.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Graphics\Font.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Graphics\Material.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Graphics\Mesh.h" />
@@ -203,6 +205,7 @@
   <ItemGroup>
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Audio_OpenAL\Mojo_Audio.cc" />
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Core\Mojo_Allocator.cc" />
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Core\Mojo_CmdArgs.cc" />
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Core\Mojo_ConfigVar.cc" />
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Core\Mojo_Coroutine.cc" />
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Core\Mojo_Socket.cc" />

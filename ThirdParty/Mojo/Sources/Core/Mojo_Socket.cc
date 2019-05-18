@@ -8,7 +8,11 @@
 #   include <WinSock2.h>
 #   include <ws2tcpip.h>
 #   pragma comment(lib, "ws2_32.lib")
-#   define NATIVE_CLOSE_SOCKET(x) ::closesocket(x)
+#   define NATIVE_CLOSE_SOCKET(x) closesocket(x)
+#else
+
+#   define SOCKET int
+#   define NATIVE_CLOSE_SOCKET(x) close(x)
 #endif
 
 namespace Mojo
@@ -50,6 +54,12 @@ namespace Mojo
         return 0;
     }
 
+    //uint32 Stream::ReadUint32LE(void)
+    //{
+    //    uint32 result;
+    //    return this->Read(&result, sizeof(result)) == sizeof(result) ? LE_TO_NATIVE_32(result) : 0;
+    //}
+
     // Connect to server
     Socket* Socket::Connect(const char* host, int port, SocketType type)
     {
@@ -59,7 +69,7 @@ namespace Mojo
         }
 
         int rv;
-        int sockfd = -1;
+        SOCKET sockfd = -1;
         struct addrinfo hints, *servinfo, *p;
 
         hints = {};
@@ -83,7 +93,7 @@ namespace Mojo
                 continue;
             }
 
-            if (connect(sockfd, p->ai_addr, p->ai_addrlen) == -1)
+            if (connect(sockfd, p->ai_addr, (int)p->ai_addrlen) == -1)
             {
                 NATIVE_CLOSE_SOCKET(sockfd);
                 perror("client: connect");
@@ -103,7 +113,7 @@ namespace Mojo
         // Result
         Socket* socket  = new Socket();
         socket->type    = type;
-        socket->handle  = sockfd;
+        socket->handle  = (void*)(uintptr)sockfd;
         return socket;
     }
 
@@ -116,7 +126,7 @@ namespace Mojo
         }
 
         int rv;
-        int sockfd = -1;
+        SOCKET sockfd = -1;
         struct addrinfo hints, *servinfo, *p;
 
         hints = {};
@@ -152,7 +162,7 @@ namespace Mojo
                 exit(1);
             }
 
-            if (bind(sockfd, p->ai_addr, p->ai_addrlen) == -1)
+            if (bind(sockfd, p->ai_addr, (int)p->ai_addrlen) == -1)
             {
                 NATIVE_CLOSE_SOCKET(sockfd);
                 perror("server: bind");
@@ -179,14 +189,14 @@ namespace Mojo
         // Result
         Socket* socket  = new Socket();
         socket->type    = type;
-        socket->handle  = sockfd;
+        socket->handle  = (void*)(uintptr)sockfd;
         return socket;
     }
 
     // Close socket
     void Socket::Close(void) 
     {
-        NATIVE_CLOSE_SOCKET(handle);
+        NATIVE_CLOSE_SOCKET((SOCKET)(uintptr)handle);
 
         handle  = 0;
         type    = SocketType::None;
@@ -215,12 +225,12 @@ namespace Mojo
     // Read content of stream
     int Socket::Read(void* buffer, int length)
     {
-        return (int)::recv(handle, (char*)buffer, length, 0);
+        return (int)recv((SOCKET)(uintptr)handle, (char*)buffer, length, 0);
     }
 
     // Write content to stream
     int Socket::Write(const void* buffer, int length)
     {
-        return (int)::send(handle, (const char*)buffer, length, 0);
+        return (int)send((SOCKET)(uintptr)handle, (const char*)buffer, length, 0);
     }
 }

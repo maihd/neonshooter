@@ -1,5 +1,5 @@
 #include <Mojo/Audio.h>
-#include <Mojo/Core/Base.h>
+#include <Mojo/Core/Types.h>
 
 #include <stdio.h>
 #include <AL/al.h>

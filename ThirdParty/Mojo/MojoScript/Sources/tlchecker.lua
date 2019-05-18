@@ -342,7 +342,7 @@ local function check_tld (env, name, path, pos)
     elseif tag == "Interface" then
       check_interface(env, v)
     elseif tag == "Require" then
-      -- check only tld files
+      -- check only .d.ms files
       check_require(env, v[1][1], pos, "", true)
     elseif tag == "Userdata" then
       check_userdata(env, v)
@@ -356,7 +356,7 @@ end
 function check_require (env, name, pos, extra_path, only_tld)
   extra_path = extra_path or ""
   if not env["loaded"][name] then
-    local path = string.gsub(package.path..";", "[.]lua;", ".tl;")
+    local path = string.gsub(package.path..";", "[.]lua;", ".ms;")
     local filepath, msg1 = searchpath(extra_path .. name, path)
     if filepath and not only_tld then
       if not env.parent[name] then
@@ -367,7 +367,7 @@ function check_require (env, name, pos, extra_path, only_tld)
         env["loaded"][name] = Any
       end
     else
-      path = string.gsub(package.path..";", "[.]lua;", ".tld;")
+      path = string.gsub(package.path..";", "[.]lua;", ".d.ms;")
       local msg2
       filepath, msg2 = searchpath(extra_path .. name, path)
       if filepath then

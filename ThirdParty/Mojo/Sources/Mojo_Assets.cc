@@ -11,6 +11,12 @@
 
 namespace Mojo
 {
+    //inline uint32 Stream::ReadUint32LE(void)
+    //{
+    //    uint32 result;
+    //    return this->Read(&result, sizeof(result)) == sizeof(result) ? LE_TO_NATIVE_32(result) : 0;
+    //}
+
     namespace Assets
     {
         void AddSearchPath(const char* path)

@@ -321,7 +321,7 @@ namespace Mojo
         glBindVertexArray(0);
     }
 
-    RenderTarget RenderTarget::Create(int width, int height)
+    RenderTarget RenderTarget::Create(float width, float height)
     {
         RenderTarget renderTarget;
 
@@ -332,12 +332,15 @@ namespace Mojo
             return renderTarget;
         }
 
+        int pixelsWidth  = (int)width;
+        int pixelsHeight = (int)height;
+
         glBindTexture(GL_TEXTURE_2D, renderTarget.texture);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, pixelsWidth, pixelsHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
         glBindTexture(GL_TEXTURE_2D, 0);
 
         // Generate depth stencil buffer
@@ -352,7 +355,7 @@ namespace Mojo
 
         // Generate render buffer
         glGenRenderbuffers(1, &renderTarget.renderBuffer);
-        glNamedRenderbufferStorage(renderTarget.renderBuffer, GL_DEPTH24_STENCIL8, width, height);
+        glNamedRenderbufferStorage(renderTarget.renderBuffer, GL_DEPTH24_STENCIL8, pixelsWidth, pixelsHeight);
 
         // Generate frame buffer
         GLint bindingFramebuffer;

@@ -545,7 +545,7 @@ namespace World
 
         for (int i = 0; i < 1200; i++)
         {
-            float speed = 10.0f * max(Window::GetWidth(), Window::GetHeight()) * (0.6f + (rand() % 101 / 100.0f) * 0.4f);
+            float speed = 10.0f * maxf(Window::GetWidth(), Window::GetHeight()) * (0.6f + (rand() % 101 / 100.0f) * 0.4f);
             float angle = rand() % 101 / 100.0f * 2 * PI;
             float2 vel = float2(cosf(angle) * speed, sinf(angle) * speed);
 
@@ -567,7 +567,7 @@ namespace World
         else if (distance(other->position, blackhole->position) <= other->radius + blackhole->radius * 10.0f)
         {
             float2 diff = blackhole->position - other->position;
-            other->velocity += normalize(diff) * lerp(1, 0, length(diff) / (Window::GetWidth() * 0.2f));
+            other->velocity += normalize(diff) * lerpf(1, 0, length(diff) / (Window::GetWidth() * 0.2f));
             other->velocity = normalize(other->velocity);
         }
 
@@ -1016,7 +1016,7 @@ namespace ParticleSystem
                 float2 diff = blackhole->position - p.position;
                 float d = length(diff);
                 float2 normal = normalize(diff);
-                p.velocity += normal * max(0.0f, Window::GetWidth() / d);
+                p.velocity += normal * maxf(0.0f, Window::GetWidth() / d);
 
                 // add tangential acceleration for nearby particles
                 if (d < 10.0f * blackhole->radius)
@@ -1237,7 +1237,7 @@ namespace Game
     void Init()
     {
         // System
-        srand(time(NULL));
+        srand((unsigned int)time(NULL));
 
         Assets::AddSearchPath("..");
 
@@ -1257,28 +1257,28 @@ namespace Game
 
         if (Input::GetKey(KeyCode::W) || Input::GetKey(KeyCode::UpArrow))
         {
-            axis_vertical = lerp(axis_vertical, 1.0f, LERP_RATE);
+            axis_vertical = lerpf(axis_vertical, 1.0f, LERP_RATE);
         }
         else if (Input::GetKey(KeyCode::S) || Input::GetKey(KeyCode::DownArrow))
         {
-            axis_vertical = lerp(axis_vertical, -1.0f, LERP_RATE);
+            axis_vertical = lerpf(axis_vertical, -1.0f, LERP_RATE);
         }
         else
         {
-            axis_vertical = lerp(axis_vertical, 0.0f, LERP_RATE);
+            axis_vertical = lerpf(axis_vertical, 0.0f, LERP_RATE);
         }
         
         if (Input::GetKey(KeyCode::A) || Input::GetKey(KeyCode::LeftArrow))
         {
-            axis_horizontal = lerp(axis_horizontal, -1.0f, LERP_RATE);
+            axis_horizontal = lerpf(axis_horizontal, -1.0f, LERP_RATE);
         }
         else if (Input::GetKey(KeyCode::D) || Input::GetKey(KeyCode::RightArrow))
         {
-            axis_horizontal = lerp(axis_horizontal, 1.0f, LERP_RATE);
+            axis_horizontal = lerpf(axis_horizontal, 1.0f, LERP_RATE);
         }
         else
         {
-            axis_horizontal = lerp(axis_horizontal, 0.0f, LERP_RATE);
+            axis_horizontal = lerpf(axis_horizontal, 0.0f, LERP_RATE);
         }
 
         float mx;
@@ -1305,8 +1305,8 @@ namespace Game
 
         if (Input::IsGamepadAttached(0))
         {
-            axis_vertical = lerp(axis_vertical, Input::GetAxis(0, GamepadAxis::LeftVertical), LERP_RATE);
-            axis_horizontal = lerp(axis_horizontal, Input::GetAxis(0, GamepadAxis::LeftHorizontal), LERP_RATE);
+            axis_vertical = lerpf(axis_vertical, Input::GetAxis(0, GamepadAxis::LeftVertical), LERP_RATE);
+            axis_horizontal = lerpf(axis_horizontal, Input::GetAxis(0, GamepadAxis::LeftHorizontal), LERP_RATE);
 
             float x = Input::GetAxis(0, GamepadAxis::RightHorizontal);
             float y = Input::GetAxis(0, GamepadAxis::RightVertical);
@@ -1322,12 +1322,12 @@ namespace Game
                 float cur_angle = atan2f(aim.y, aim.x);
                 float aim_angle = atan2f(y, x);
 
-                cur_angle = lerp(cur_angle, aim_angle, 0.8f);
+                cur_angle = lerpf(cur_angle, aim_angle, 0.8f);
                 aim = float2(cosf(cur_angle), sinf(cur_angle));
 
 
-                aim.x = lerp(aim.x, x, 0.6f);
-                aim.y = lerp(aim.y, y, 0.6f);
+                aim.x = lerpf(aim.x, x, 0.6f);
+                aim.y = lerpf(aim.y, y, 0.6f);
             }
         }
 
@@ -1338,10 +1338,10 @@ namespace Game
         }
         else
         {
-            float len = clamp(length(axes), 0, 1);
-            float angle = atan2(axes.y, axes.x);
+            float len = clampf(length(axes), 0, 1);
+            float angle = atan2f(axes.y, axes.x);
 
-            axes = float2(cos(angle) * len, sin(angle) * len);
+            axes = float2(cosf(angle) * len, sinf(angle) * len);
         }
 
         axis_vertical = axes.y;

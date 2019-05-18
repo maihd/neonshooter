@@ -14,7 +14,7 @@ inline namespace Mojo
     struct Socket : public Stream
     {
         SocketType  type;
-        int         handle;
+        void*       handle;
         
         // Connect to server
         static Socket* Connect(const char* host, int port, SocketType type = SocketType::Stream);

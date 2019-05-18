@@ -69,7 +69,7 @@
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Core\Atomic.h">
       <Filter>Include\Mojo\Core</Filter>
     </ClInclude>
-    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Core\Base.h">
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Core\CmdArgs.h">
       <Filter>Include\Mojo\Core</Filter>
     </ClInclude>
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Core\ConfigVar.h">
@@ -81,7 +81,13 @@
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Core\Delegate.h">
       <Filter>Include\Mojo\Core</Filter>
     </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Core\Endian.h">
+      <Filter>Include\Mojo\Core</Filter>
+    </ClInclude>
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Core\HashTable.h">
+      <Filter>Include\Mojo\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Core\RingBuffer.h">
       <Filter>Include\Mojo\Core</Filter>
     </ClInclude>
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Core\Socket.h">
@@ -99,14 +105,14 @@
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Core\Thread.h">
       <Filter>Include\Mojo\Core</Filter>
     </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Core\Types.h">
+      <Filter>Include\Mojo\Core</Filter>
+    </ClInclude>
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\FileSystem.h">
       <Filter>Include\Mojo</Filter>
     </ClInclude>
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Graphics.h">
       <Filter>Include\Mojo</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Graphics\Api.h">
-      <Filter>Include\Mojo\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Graphics\Font.h">
       <Filter>Include\Mojo\Graphics</Filter>
@@ -168,6 +174,9 @@
       <Filter>Sources\Audio_OpenAL</Filter>
     </ClCompile>
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Core\Mojo_Allocator.cc">
+      <Filter>Sources\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Core\Mojo_CmdArgs.cc">
       <Filter>Sources\Core</Filter>
     </ClCompile>
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Core\Mojo_ConfigVar.cc">
