@@ -3,6 +3,8 @@
 #include <Mojo/Native/System.h>
 #include <Mojo/Native/Window.h>
 
+#include "Imgui/Mojo_ImGui_Impl.h"
+
 namespace Mojo
 {
     namespace
@@ -12,6 +14,7 @@ namespace Mojo
         //static ConfigVar _configHeight      ("Window::Height"       , "Height of window", 0, 720);
     }
 
+#if 0
     int RunEngine(Engine* engine)
     {
         ConfigVar* windowTitle  = ConfigVar::Find("Window::Title");
@@ -22,12 +25,18 @@ namespace Mojo
         int width  = windowWidth ? windowWidth->asInt : 1280;
         int height = windowHeight ? windowHeight->asInt : 720;
 
+
         if (!Window::Setup(title, width, height))
         {
             return 1;
         }
 
         if (!Graphics::Setup())
+        {
+            return 1;
+        }
+
+        if (!ImGuiImpl_Setup())
         {
             return 1;
         }
@@ -74,11 +83,17 @@ namespace Mojo
             // Renderer
             engine->Render();
 
+            ImGuiImpl_NewFrame();
+            engine->OnGui();
+            ImGuiImpl_EndFrame();
+
             Graphics::SwapBuffers();
         }
 
+        ImGuiImpl_Shutdown();
         Graphics::Shutdown();
         Window::Shutdown();
         return 0;
     }
+#endif
 }

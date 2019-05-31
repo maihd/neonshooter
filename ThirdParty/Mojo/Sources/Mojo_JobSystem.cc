@@ -202,7 +202,7 @@ namespace Mojo
                 allocator = Allocator::Default;
             }
 
-            int cpuCores = System::CpuCount();
+            int cpuCores = System::CpuCores();
 
             _flags |= Flags::Init;
             _flags |= Flags::Running;

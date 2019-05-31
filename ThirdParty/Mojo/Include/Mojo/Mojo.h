@@ -2,16 +2,15 @@
 
 #include <Mojo/Graphics.h>
 
+struct MojoModule;
+
 namespace Mojo
 {
-    struct Engine
-    {
-        virtual bool Setup(void)    = 0;
-        virtual void Shutdown(void) = 0;
+    void    AddModule(MojoModule* module, const char* moduleName);
+    void    RemoveModule(MojoModule* module, const char* moduleName);
 
-        virtual void Render(void)   = 0;
-        virtual void Update(void)   = 0;
-    };
+    void    LoadDynamicModule(const char* path);
+    void    UnloadDynamicModule(const char* path);
 
-    int RunEngine(Engine* engine);
+    int     Run(void);
 }

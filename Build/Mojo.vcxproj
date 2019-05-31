@@ -192,6 +192,7 @@
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Graphics\SpriteMesh.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Graphics\StaticMesh.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Graphics\Texture.h" />
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\ImGui.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\JobCounter.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\JobSystem.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Math.h" />
@@ -200,6 +201,11 @@
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Native\Input.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Native\System.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Native\Window.h" />
+    <ClInclude Include="..\ThirdParty\Mojo\Sources\Imgui\Mojo_ImGui_Impl.h" />
+    <ClInclude Include="..\ThirdParty\Mojo\Sources\Imgui\imgui_internal.h" />
+    <ClInclude Include="..\ThirdParty\Mojo\Sources\Imgui\imstb_rectpack.h" />
+    <ClInclude Include="..\ThirdParty\Mojo\Sources\Imgui\imstb_textedit.h" />
+    <ClInclude Include="..\ThirdParty\Mojo\Sources\Imgui\imstb_truetype.h" />
     <ClInclude Include="..\ThirdParty\Mojo\Sources\Native_SDL2\Mojo_SDL2_Input.h" />
   </ItemGroup>
   <ItemGroup>
@@ -218,6 +224,11 @@
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Graphics_OpenGL\Mojo_Graphics.cc" />
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Graphics_OpenGL\Mojo_Shader.cc" />
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Graphics_OpenGL\Mojo_Texture.cc" />
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Imgui\Mojo_ImGui_Impl.cc" />
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Imgui\imgui.cpp" />
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Imgui\imgui_demo.cpp" />
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Imgui\imgui_draw.cpp" />
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Imgui\imgui_widgets.cpp" />
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo.cc" />
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Assets.cc" />
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_FileSystem.cc" />

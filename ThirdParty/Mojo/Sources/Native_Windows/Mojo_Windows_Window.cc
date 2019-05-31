@@ -649,6 +649,16 @@ inline namespace Mojo
                 return false;
             }
         }
+
+        void* GetSDLHandle(void)
+        {
+            return NULL;
+        }
+
+        void* GetNativeHandle(void)
+        {
+            return _mainWindow;
+        }
     }
 
     namespace Graphics

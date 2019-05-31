@@ -31,6 +31,9 @@
     <Filter Include="Sources\Graphics_OpenGL">
       <UniqueIdentifier>{2D5679CE-998D-C165-A297-25890E4EE85E}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Imgui">
+      <UniqueIdentifier>{9356EF6B-FF16-6BA2-C851-B41F34D1AF7E}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Sources\Native">
       <UniqueIdentifier>{FFBDB1F4-EB8B-A5FA-D41F-1621C08C815F}</UniqueIdentifier>
     </Filter>
@@ -141,6 +144,9 @@
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Graphics\Texture.h">
       <Filter>Include\Mojo\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\ImGui.h">
+      <Filter>Include\Mojo</Filter>
+    </ClInclude>
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\JobCounter.h">
       <Filter>Include\Mojo</Filter>
     </ClInclude>
@@ -164,6 +170,21 @@
     </ClInclude>
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Native\Window.h">
       <Filter>Include\Mojo\Native</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Sources\Imgui\Mojo_ImGui_Impl.h">
+      <Filter>Sources\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Sources\Imgui\imgui_internal.h">
+      <Filter>Sources\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Sources\Imgui\imstb_rectpack.h">
+      <Filter>Sources\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Sources\Imgui\imstb_textedit.h">
+      <Filter>Sources\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Sources\Imgui\imstb_truetype.h">
+      <Filter>Sources\Imgui</Filter>
     </ClInclude>
     <ClInclude Include="..\ThirdParty\Mojo\Sources\Native_SDL2\Mojo_SDL2_Input.h">
       <Filter>Sources\Native_SDL2</Filter>
@@ -214,6 +235,21 @@
     </ClCompile>
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Graphics_OpenGL\Mojo_Texture.cc">
       <Filter>Sources\Graphics_OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Imgui\Mojo_ImGui_Impl.cc">
+      <Filter>Sources\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Imgui\imgui.cpp">
+      <Filter>Sources\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Imgui\imgui_demo.cpp">
+      <Filter>Sources\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Imgui\imgui_draw.cpp">
+      <Filter>Sources\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Imgui\imgui_widgets.cpp">
+      <Filter>Sources\Imgui</Filter>
     </ClCompile>
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo.cc">
       <Filter>Sources</Filter>

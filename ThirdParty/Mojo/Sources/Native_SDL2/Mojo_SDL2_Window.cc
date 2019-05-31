@@ -6,6 +6,7 @@
 #include <limits.h>
 #include <GL/glew.h>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_syswm.h>
 #include <SDL2/SDL_opengl.h>
 
 #include "Mojo_SDL2_Input.h"
@@ -486,6 +487,17 @@ namespace Mojo
         bool HasMouseFocus(void)
         {
             return _mainWindow && (_mainWindow == SDL_GetMouseFocus());
+        }
+
+        void* GetSDLHandle(void)
+        {
+            return _mainWindow;
+        }
+
+        void* GetNativeHandle(void)
+        {
+            SDL_SysWMinfo info;
+            return SDL_GetWindowWMInfo(_mainWindow, &info) ? info.info.win.window : NULL;
         }
     }
 

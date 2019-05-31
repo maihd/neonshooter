@@ -56,6 +56,8 @@ do
 
         "Sources/Audio_OpenAL",
 
+        "Sources/Imgui",
+
         "Sources/Native",
         "Sources/Native_SDL2",
     }

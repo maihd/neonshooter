@@ -52,5 +52,8 @@ inline namespace Mojo
 
         bool HasInputFocus(void);
         bool HasMouseFocus(void);
+
+        void* GetSDLHandle(void);
+        void* GetNativeHandle(void);
     }
 }

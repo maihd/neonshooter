@@ -4,12 +4,12 @@ inline namespace Mojo
 {
     namespace System
     {
-        int CpuCount(void);
+        int         CpuCores(void);
 
-        void Sleep(int miliseconds);
-        void MicroSleep(long long microseconds);
+        void        Sleep(int miliseconds);
+        void        MicroSleep(long long microseconds);
 
-        long long PerformanceCounter(void);
-        long long PerformanceFrequency(void);
+        long long   PerformanceCounter(void);
+        long long   PerformanceFrequency(void);
     }
 }

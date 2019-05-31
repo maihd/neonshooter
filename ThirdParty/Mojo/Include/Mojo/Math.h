@@ -3,6 +3,35 @@
 #include <math.h>
 #include <Mojo/Core/Types.h>
 
+#if defined(__SSSE3__)
+#   define SSE_SUPPORT 1
+#endif
+
+#if defined(__SSE__) || defined(__SSE2__) || defined(__SSE3__)
+#   undef  SSE_SUPPORT
+#   define SSE_SUPPORT 1
+#endif
+
+#if defined(__SSE4_1__) || defined(__SSE4_2__) || defined(__SSE_MATH__)
+#   undef  SSE_SUPPORT
+#   define SSE_SUPPORT 1
+#endif
+
+#if defined(_MSC_VER) && (defined(_M_IX86) || defined(_M_IX64))
+#   if defined(_M_HYBRID_X86_ARM64)
+#       define SSE_SUPPORT 0
+#   else
+#       define SSE_SUPPORT 1
+#   endif
+#endif
+
+#if SSE_SUPPORT
+#   include <mmintrin.h>
+//# include <smmintrin.h>
+//# include <xmmintrin.h>
+#   include <emmintrin.h>
+#endif
+
 //
 // @region: Math extensions
 //
@@ -1509,7 +1538,7 @@ inline namespace Mojo
         const float k = 1.0f - eta * eta * (1.0f - dot(v, n) * dot(v, n));
         return k < 0.0f
             ? float2(0.0f)
-            : eta * v - (eta * dot(v, n) + sqrt(k)) * v;
+            : eta * v - (eta * dot(v, n) + sqrtf(k)) * v;
     }
 
     /* Compute faceforward vector

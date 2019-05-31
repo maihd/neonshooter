@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Mojo/Math.h>
+#include <Mojo/Core/Types.h>
 #include <Mojo/Core/HashTable.h>
 #include <Mojo/Graphics/Shader.h>
 
@@ -33,7 +33,6 @@ inline namespace Mojo
             float       asFloat;
             double      asDouble;
 
-            quat        asQuat;
             float2      asFloat2;
             float3      asFloat3;
             float4      asFloat4;
