@@ -21,6 +21,12 @@ inline namespace Mojo
         TriangleFan,
     };
 
+    enum struct DrawMode
+    {
+        Fill,
+        Line,
+    };
+
     enum struct BufferUsage
     {
         StaticCopy,
@@ -178,9 +184,10 @@ inline namespace Mojo
         bool Setup(const GraphicsSettings& settings = GraphicsSettings());
         void Shutdown(void);
 
-        void ClearBuffer(void);
-        void SwapBuffers(void);
+        void Clear(void);
+        void Present(void);
 
+        void SetClearColor(float r, float g, float b, float a = 1.0f);
         void SetMultisample(int samples);
 
         void SetBlendOp(BlendOp op);
@@ -201,6 +208,10 @@ inline namespace Mojo
 
         void DrawArrays(DrawType type, int count, int offset = 0);
         void DrawIndices(DrawType type, DataType dataType, int count, int offset = 0);
+
+        void SetColor(unsigned color24, float a = 1.0f);
+        void SetColor(float r, float g, float b, float a = 1.0f);
+        void Rectangle(DrawMode mode, float x, float y, float w, float h);
 
         //void DrawArrays(DrawType type, ShaderHandle* shader, VertexArrayHandle* array, int count, int offset = 0);
         //void DrawIndices(DrawType type, ShaderHandle* shader, VertexArrayHandle* array, const IndexBuffer& indices, int count, int offset = 0);

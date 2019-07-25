@@ -191,6 +191,8 @@ namespace Mojo
 
     namespace
     {
+        float4       _globalColor;
+
         VertexArray  _renderTargetVertexArray;
         VertexBuffer _renderTargetVertexBuffer;
     }
@@ -409,10 +411,10 @@ namespace Mojo
             Graphics::SetBlendFunc(BlendFactor::SrcAlpha, BlendFactor::InvertSrcAlpha);
 
             // First Clear and swap buffer
-            //Graphics::ClearBuffer();
-            //Graphics::SwapBuffers();
-            //Graphics::ClearBuffer();
-            //Graphics::SwapBuffers();
+            //Graphics::Clear();
+            //Graphics::Present();
+            //Graphics::Clear();
+            //Graphics::Present();
         }
 
         void CreateDefaultObjects(void)
@@ -503,7 +505,7 @@ namespace Mojo
                 glBindFramebuffer(GL_FRAMEBUFFER, ConvertHandle(dst));
 
                 // Clear dst buffer
-                Graphics::ClearBuffer();
+                Graphics::Clear();
 
                 glUseProgram(ConvertHandle(shader));
                 glBindVertexArray(_renderTargetVertexArray.handle);
@@ -599,6 +601,27 @@ namespace Mojo
 
             glBindTexture(GL_TEXTURE_2D, 0);
             glUseProgram(0);
+        }
+
+        void SetColor(unsigned color24, float a)
+        {
+            const float factor = 1.0f / 255.0f;
+
+            float r = ((color24 >> 16) & 0xff) * factor;
+            float g = ((color24 >>  8) & 0xff) * factor;
+            float b = ((color24 >>  0) & 0xff) * factor;
+
+            _globalColor = float4(r, g, b, a);
+        }
+
+        void SetColor(float r, float g, float b, float a)
+        {
+            _globalColor = float4(r, g, b, a);
+        }
+
+        void Rectangle(DrawMode mode, float x, float y, float w, float h)
+        {
+            
         }
     }
 }

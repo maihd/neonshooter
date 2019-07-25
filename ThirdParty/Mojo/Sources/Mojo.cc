@@ -78,7 +78,7 @@ namespace Mojo
             // Update
             engine->Update();
 
-            Graphics::ClearBuffer();
+            Graphics::Clear();
 
             // Renderer
             engine->Render();
@@ -87,7 +87,7 @@ namespace Mojo
             engine->OnGui();
             ImGuiImpl_EndFrame();
 
-            Graphics::SwapBuffers();
+            Graphics::Present();
         }
 
         ImGuiImpl_Shutdown();

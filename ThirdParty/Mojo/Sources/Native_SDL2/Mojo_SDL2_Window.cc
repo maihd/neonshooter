@@ -513,40 +513,6 @@ namespace Mojo
                 return SDL_GL_MakeCurrent(Window::_mainWindow, Window::_mainContext) != 0;
             }
 
-            //int formatAttribs[] = {
-            //    WGL_DOUBLE_BUFFER_ARB, GL_TRUE,
-            //    WGL_SUPPORT_OPENGL_ARB, GL_TRUE,
-            //    WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
-            //
-            //    WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
-            //    //WGL_ACCELERATION_ARB, WGL_FULL_ACCELERATION_ARB,
-            //
-            //    WGL_ACCUM_RED_BITS_ARB, 8,
-            //    WGL_ACCUM_GREEN_BITS_ARB, 8,
-            //    WGL_ACCUM_BLUE_BITS_ARB, 8,
-            //    WGL_ACCUM_ALPHA_BITS_ARB, 8,
-            //
-            //    WGL_RED_BITS_ARB, 8,
-            //    WGL_GREEN_BITS_ARB, 8,
-            //    WGL_BLUE_BITS_ARB, 8,
-            //    WGL_ALPHA_BITS_ARB, 8,
-            //
-            //    WGL_RED_SHIFT_ARB, 0,
-            //    WGL_GREEN_SHIFT_ARB, 8,
-            //    WGL_BLUE_SHIFT_ARB, 16,
-            //    WGL_ALPHA_SHIFT_ARB, 24,
-            //
-            //    WGL_ACCUM_BITS_ARB, 32,
-            //    WGL_COLOR_BITS_ARB, 32,
-            //    WGL_DEPTH_BITS_ARB, 24,
-            //    WGL_STENCIL_BITS_ARB, 8,
-            //
-            //    WGL_ARB_multisample && settings.multisamples > 1 ? WGL_SAMPLE_BUFFERS_ARB : 0, 1,
-            //    WGL_ARB_multisample && settings.multisamples > 1 ? WGL_SAMPLES_ARB : 0, settings.multisamples,
-            //
-            //    0
-            //};
-
             SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
             SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
             SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
@@ -604,16 +570,21 @@ namespace Mojo
             Window::_mainContext = NULL;
         }
 
-        void SwapBuffers(void)
+        void Clear(void)
+        {
+            //GLbitfield flags = GL_COLOR_BUFFER_BIT;
+            GLbitfield flags = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT;
+            glClear(flags);
+        }
+
+        void Present(void)
         {
             SDL_GL_SwapWindow(Window::_mainWindow);
         }
 
-        void ClearBuffer(void)
+        void SetClearColor(float r, float g, float b, float a)
         {
-            GLbitfield flags = GL_COLOR_BUFFER_BIT;
-            //GLbitfield flags = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT;
-            glClear(flags);
+            glClearColor(r, g, b, a);
         }
 
         void SetMultisample(int samples)

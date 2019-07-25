@@ -1215,7 +1215,7 @@ namespace Renderer
     void Present()
     {
         Graphics::BindRenderTarget(_fxaaRenderTarget);
-        Graphics::ClearBuffer();
+        Graphics::Clear();
 
         _spriteBatch->Present(proj_matrix);
 
