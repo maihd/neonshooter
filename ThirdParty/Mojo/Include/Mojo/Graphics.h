@@ -211,12 +211,13 @@ inline namespace Mojo
 
         void SetColor(unsigned color24, float a = 1.0f);
         void SetColor(float r, float g, float b, float a = 1.0f);
-        void Rectangle(DrawMode mode, float x, float y, float w, float h);
 
-        //void DrawArrays(DrawType type, ShaderHandle* shader, VertexArrayHandle* array, int count, int offset = 0);
-        //void DrawIndices(DrawType type, ShaderHandle* shader, VertexArrayHandle* array, const IndexBuffer& indices, int count, int offset = 0);
-        //
-        //void DrawArrays(DrawType type, ShaderHandle* shader, VertexArrayHandle* array, TextureHandle* texture, int count, int offset = 0);
-        //void DrawIndices(DrawType type, ShaderHandle* shader, VertexArrayHandle* array, TextureHandle* texture, const IndexBuffer& indices, int count, int offset = 0);
+        float4 GetColor(void);
+        void   GetColor(float* r, float* g, float* b, float* a = 0);
+
+        void Arc(DrawMode mode, float x, float y, float radius, float angle, int segments = 30);
+        void Circle(DrawMode mode, float x, float y, float radius, int segments = 30);
+        void Polygon(DrawMode mode, const float* points);
+        void Rectangle(DrawMode mode, float x, float y, float w, float h);
     }
 }

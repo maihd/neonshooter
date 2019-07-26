@@ -11,10 +11,54 @@ namespace Mojo
         const char* _defaultEffectVertexSource =
             "#version 330 core\n"
             "layout (location = 0) in vec4 vertex;"
-            "out vec2 mj_UV;"
+            "out vec2 VertexTexCoord;"
             "void main() {"
-            "mj_UV = vertex.zw;"
+            "VertexTexCoord = vertex.zw;"
             "gl_Position = vec4(vertex.xy, 0, 1.0);"
+            "}";
+
+        const char*  _defaultVertexSource =
+            "#version 330 core\n"
+            "layout (location = 0) in vec3 position;"
+            "layout (location = 1) in vec2 texcoord;"
+            "layout (location = 2) in vec4 color;"
+            
+            "out     vec2 VaryingTexCoord;"
+            "out     vec4 VaryingColor;"
+
+            "uniform vec4 MainColor;"
+            "uniform mat4 TransformMatrix;"
+            "uniform mat4 ProjectionMatrix;"
+            
+            "vec4 VertexPosition;"
+            "vec2 VertexTexCoord;"
+            "vec4 VertexColor;"
+            
+            "void main() {"
+            "VertexPosition  = vec4(position, 1.0);"
+            "VertexTexCoord  = texcoord;"
+            "VertexColor     = color;"
+
+            "VaryingTexCoord = VertexTexCoord;"
+            "VaryingColor    = MainColor * VertexColor;"
+            
+            "gl_Position     = ProjectionMatrix * TransformMatrix * VertexPosition;"
+            
+            "}";
+
+        const char*  _defaultPixelsSource =
+            "#version 330 core\n"
+
+            "in      vec2       VaryingTexCoord;"
+            "in      vec4       VaryingColor;"
+
+            "uniform vec4       MainColor;"
+            "uniform sampler2D  MainTexture;"
+
+            "out     vec4       ResultColor;"
+
+            "void main() {"
+            "ResultColor = texture(MainTexture, VaryingTexCoord) * VaryingColor;"
             "}";
 
         static GLuint CreateGLShader(GLenum type, const char* src)
@@ -81,6 +125,16 @@ namespace Mojo
     Shader Shader::Create(const char* vertexSource, const char* pixelsSource)
     {
         Shader shader = {};
+
+        if (!vertexSource)
+        {
+            vertexSource = _defaultVertexSource;
+        }
+
+        if (!pixelsSource)
+        {
+            pixelsSource = _defaultPixelsSource;
+        }
 
         GLuint vshader = CreateGLShader(GL_VERTEX_SHADER, vertexSource);
         if (!vshader)
@@ -208,5 +262,25 @@ namespace Mojo
     bool Shader::SetFloat4x4(const char* name, const float* value, bool transpose)
     {
         return this->SetFloat4x4(this->FindUniform(name), value, transpose);
+    }
+
+    bool Shader::SetTransform(const float4x4& matrix)
+    {
+        return this->SetFloat4x4("TransformMatrix", (float*)&matrix, false);
+    }
+
+    bool Shader::SetProjection(const float4x4& matrix)
+    {
+        return this->SetFloat4x4("ProjectionMatrix", (float*)&matrix, false);
+    }
+
+    bool Shader::SetMainColor(const float4& color)
+    {
+        return this->SetFloat4("MainColor", color.x, color.y, color.z, color.w);
+    }
+
+    bool Shader::SetMainTexture(TextureHandle* texture)
+    {
+        return true;
     }
 }

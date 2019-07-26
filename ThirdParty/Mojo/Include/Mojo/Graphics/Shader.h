@@ -1,8 +1,11 @@
 #pragma once
 
+#include <Mojo/Core/Types.h>
+
 inline namespace Mojo
 {
     struct ShaderHandle;
+    struct TextureHandle;
 
     // Graphics shader
     // @note: use for graphics only, compute shader is ComputeShader
@@ -28,7 +31,13 @@ inline namespace Mojo
         bool SetFloat4x4(int location, const float* value, bool transpose = false);
         bool SetFloat4x4(const char* name, const float* value, bool transpose = false);
 
-        static Shader Create(const char* vertexSource, const char* pixelsSource);
+        bool SetTransform(const float4x4& matrix);
+        bool SetProjection(const float4x4& matrix);
+
+        bool SetMainColor(const float4& color);
+        bool SetMainTexture(TextureHandle* texture);
+
+        static Shader Create(const char* vertexSource = 0, const char* pixelsSource = 0);
         static void   Destroy(Shader& shader);
         
         static Shader CreateEffect(const char* pixelsSource);

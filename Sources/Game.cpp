@@ -1104,41 +1104,36 @@ namespace Renderer
         // Create post processing _spriteShader
         printf("renderer::init(): Starting create framebuffer's shader...\n");
         {
-            const char* vshader_src =
-                "#version 330 core\n"
-                "layout (location = 0) in vec4 vertex;"
-                "out vec2 uv;"
-                "void main() {"
-                "uv = vertex.zw;"
-                "gl_Position = vec4(vertex.xy, 0, 1.0);"
-                "}";
-
             const char* fshader_src =
                 "#version 330 core\n"
-                "in vec2 uv;"
+                "in vec2 VertexTexCoord;"
                 "out vec4 fragColor;"
                 "uniform sampler2D image;"
                 "void main() {"
                 "float weight[5] = float[] (0.227027, 0.1945946, 0.1216216, 0.054054, 0.016216);"
-                "vec2 texOffset = 1.0 / textureSize(image, 0);"
-                "vec3 result = texture(image, uv).rgb * weight[0];"
+                "vec2 texSize = textureSize(image, 0);"
+                "float size = max(texSize.x, texSize.y);"
+                "vec2 texOffset = 1.0 / vec2(size, size);"
+                "vec3 result = texture(image, VertexTexCoord).rgb * weight[0];"
                 "for(int i = 1; i < 5; ++i) {"
-                "result += texture(image, uv + vec2(texOffset.x * i, 0.0)).rgb * weight[i];"
-                "result += texture(image, uv - vec2(texOffset.x * i, 0.0)).rgb * weight[i];"
+                "result += texture(image, VertexTexCoord + vec2(texOffset.x * i, 0.0)).rgb * weight[i];"
+                "result += texture(image, VertexTexCoord - vec2(texOffset.x * i, 0.0)).rgb * weight[i];"
+                "result += texture(image, VertexTexCoord + vec2(0.0, texOffset.y * i)).rgb * weight[i];"
+                "result += texture(image, VertexTexCoord - vec2(0.0, texOffset.y * i)).rgb * weight[i];"
                 "}"
-                "result = texture(image, uv).rgb + result;"
+                "result = texture(image, VertexTexCoord).rgb + result;"
                 "result = vec3(1.0) - exp(-result * 0.5f);"
                 "result = pow(result, vec3(1.0 / 2.2));"
                 "fragColor = vec4(result, 1.0);"
                 "}";
-            _glowShader = Shader::Create(vshader_src, fshader_src);
+            _glowShader = Shader::CreateEffect(fshader_src);
         }
 
         // FXAA shader
         {
             const char* shaderSource =
                 "#version 330 core\n"
-                "in vec2 mj_UV;"
+                "in vec2 VertexTexCoord;"
                 "out vec4 fragColor;"
                 "uniform vec2 frameSize;"
                 "uniform sampler2D image;"
@@ -1149,11 +1144,11 @@ namespace Renderer
                 "float FXAA_REDUCE_MUL = 1.0 / 8.0;"
                 "float FXAA_REDUCE_MIN = 1.0 / 128.0;"
 
-                "vec3 rgbNW = texture2D(image, mj_UV + (vec2(-1.0, -1.0) / frameSize)).xyz;"
-                "vec3 rgbNE = texture2D(image, mj_UV + (vec2(1.0, -1.0) / frameSize)).xyz;"
-                "vec3 rgbSW = texture2D(image, mj_UV + (vec2(-1.0, 1.0) / frameSize)).xyz;"
-                "vec3 rgbSE = texture2D(image, mj_UV + (vec2(1.0, 1.0) / frameSize)).xyz;"
-                "vec3 rgbM = texture2D(image, mj_UV).xyz;"
+                "vec3 rgbNW = texture2D(image, VertexTexCoord + (vec2(-1.0, -1.0) / frameSize)).xyz;"
+                "vec3 rgbNE = texture2D(image, VertexTexCoord + (vec2(1.0, -1.0) / frameSize)).xyz;"
+                "vec3 rgbSW = texture2D(image, VertexTexCoord + (vec2(-1.0, 1.0) / frameSize)).xyz;"
+                "vec3 rgbSE = texture2D(image, VertexTexCoord + (vec2(1.0, 1.0) / frameSize)).xyz;"
+                "vec3 rgbM = texture2D(image, VertexTexCoord).xyz;"
 
                 "vec3 luma = vec3(0.299, 0.587, 0.114);"
                 "float lumaNW = dot(rgbNW, luma);"
@@ -1180,11 +1175,11 @@ namespace Renderer
                 "        dir * rcpDirMin)) / frameSize;"
                 
                 "vec3 rgbA = (1.0 / 2.0) * ("
-                "    texture2D(image, mj_UV.xy + dir * (1.0 / 3.0 - 0.5)).xyz +"
-                "    texture2D(image, mj_UV.xy + dir * (2.0 / 3.0 - 0.5)).xyz);"
+                "    texture2D(image, VertexTexCoord.xy + dir * (1.0 / 3.0 - 0.5)).xyz +"
+                "    texture2D(image, VertexTexCoord.xy + dir * (2.0 / 3.0 - 0.5)).xyz);"
                 "vec3 rgbB = rgbA * (1.0 / 2.0) + (1.0 / 4.0) * ("
-                "    texture2D(image, mj_UV.xy + dir * (0.0 / 3.0 - 0.5)).xyz +"
-                "    texture2D(image, mj_UV.xy + dir * (3.0 / 3.0 - 0.5)).xyz);"
+                "    texture2D(image, VertexTexCoord.xy + dir * (0.0 / 3.0 - 0.5)).xyz +"
+                "    texture2D(image, VertexTexCoord.xy + dir * (3.0 / 3.0 - 0.5)).xyz);"
                 "float lumaB = dot(rgbB, luma);"
                 
                 "if ((lumaB < lumaMin) || (lumaB > lumaMax)) {"

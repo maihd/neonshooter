@@ -195,6 +195,26 @@ namespace Mojo
 
         VertexArray  _renderTargetVertexArray;
         VertexBuffer _renderTargetVertexBuffer;
+
+        const char*  _shapeVertexProcessor =
+            "#version 330 core\n"
+            "layout (location = 0) in vec2 vertex;"
+            "out vec4 VertexPosition;"
+            "out vec2 VertexTexCoord;"
+            "out vec4 VertexColor;"
+            "void main() {"
+            "gl_Position = vec4(vertex.xy, 0, 1.0);"
+            "}";
+
+        const char*  _shapePixelsProcessor =
+            "#version 330\n"
+            "out vec4 fragColor;"
+            "uniform vec4 shapeColor;"
+            "void main() {"
+            "fragColor = shapeColor;"
+            "}";
+
+        Shader       _shapeShader;
     }
 
     IndexBuffer IndexBuffer::Create(void)
@@ -227,8 +247,6 @@ namespace Mojo
             ::glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, data, ConvertBufferUsage(usage));
             ::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, (GLuint)boundHandle);
         }
-
-        //glNamedBufferData(handle, size, data, ConvertBufferUsage(usage));
     }
 
     void IndexBuffer::SetBlendOp(BlendOp op)
@@ -277,8 +295,6 @@ namespace Mojo
             ::glBufferData(GL_ARRAY_BUFFER, size, data, ConvertBufferUsage(usage));
             ::glBindBuffer(GL_ARRAY_BUFFER, (GLuint)boundHandle);
         }
-
-        //glNamedBufferData(handle, size, data, ConvertBufferUsage(usage));
     }
 
     void VertexBuffer::SetBlendOp(BlendOp op) 
@@ -409,12 +425,6 @@ namespace Mojo
             // Default blend
             Graphics::SetBlendOp(BlendOp::Add);
             Graphics::SetBlendFunc(BlendFactor::SrcAlpha, BlendFactor::InvertSrcAlpha);
-
-            // First Clear and swap buffer
-            //Graphics::Clear();
-            //Graphics::Present();
-            //Graphics::Clear();
-            //Graphics::Present();
         }
 
         void CreateDefaultObjects(void)
@@ -437,6 +447,8 @@ namespace Mojo
 
             _renderTargetVertexBuffer.SetData(vertices, sizeof(vertices), BufferUsage::StaticDraw);
             _renderTargetVertexArray.SetAttribute(_renderTargetVertexBuffer, 0, 4, DataType::Float, false, 4 * sizeof(float));
+
+            _shapeShader = Shader::CreateEffect(_shapePixelsProcessor);
         }
 
         void SetBlendOp(BlendOp op)
@@ -621,7 +633,7 @@ namespace Mojo
 
         void Rectangle(DrawMode mode, float x, float y, float w, float h)
         {
-            
+            float4x4 transform = Math::Transform(float2(x, y), 0.0, float2(w, h));
         }
     }
 }
