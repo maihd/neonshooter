@@ -109,7 +109,7 @@ namespace Mojo
             Graphics::BindTexture(cmd.texture);
             Graphics::DrawIndices(DrawType::Triangles, DataType::U16, cmd.drawCount, offset);
             
-            offset += cmd.drawCount;
+            offset += 0;// cmd.drawCount;
         }
     }
 }

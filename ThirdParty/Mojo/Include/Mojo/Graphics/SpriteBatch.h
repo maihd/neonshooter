@@ -62,7 +62,7 @@ inline namespace Mojo
             float rotation = 0.0f,
             const Vector2& scale = Vector2(1.0f),
             const Vector4& color = Vector4(1.0f),
-            BlendFunc blend = { BlendFactor::SrcAlpha, BlendFactor::InvertSrcAlpha }
+            BlendFunc blend = BlendModes::Alpha
         );
         
         void Clear(void);

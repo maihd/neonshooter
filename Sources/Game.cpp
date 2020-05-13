@@ -1045,7 +1045,7 @@ namespace ParticleSystem
 
     void Render()
     {
-        BlendFunc blend = { BlendFactor::SrcAlpha, BlendFactor::One };
+        BlendFunc blend = BlendModes::Additive;
         for (int i = 0, n = particles.count; i < n; i++)
         {
             Particle& p = particles[i];

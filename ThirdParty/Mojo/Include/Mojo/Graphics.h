@@ -94,6 +94,12 @@ inline namespace Mojo
         BlendFactor dst;
     };
 
+    namespace BlendModes
+    {
+        constexpr BlendFunc Alpha = { BlendFactor::SrcAlpha, BlendFactor::InvertSrcAlpha };
+        constexpr BlendFunc Additive = { BlendFactor::SrcAlpha, BlendFactor::One };
+    };
+
     struct IndexBuffer
     {
         unsigned handle = 0;
