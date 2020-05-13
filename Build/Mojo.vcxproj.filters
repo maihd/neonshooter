@@ -16,6 +16,30 @@
     <Filter Include="Include\Mojo\Native">
       <UniqueIdentifier>{23677C5A-8FC8-5968-1836-A01A84969027}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Include\Mojo\Physics">
+      <UniqueIdentifier>{9FA0B154-8B2F-3B1E-344E-4F1920BC4BC4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\Mojo\Physics\Collision">
+      <UniqueIdentifier>{7A680794-668E-D1FA-4FD4-56C63B99F6C6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\Mojo\Physics\Collision\Shapes">
+      <UniqueIdentifier>{ED3D2027-5902-1F17-2268-4FE18EEBBA4C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\Mojo\Physics\Common">
+      <UniqueIdentifier>{F7E4D1AB-63F2-FF91-ECD8-FB7C58E5CB48}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\Mojo\Physics\Dynamics">
+      <UniqueIdentifier>{E61462D7-522D-4901-1BDA-D89A87B1DD9A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\Mojo\Physics\Dynamics\Contacts">
+      <UniqueIdentifier>{543A0C5C-408C-E34B-29AB-205C159CFC34}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\Mojo\Physics\Dynamics\Joints">
+      <UniqueIdentifier>{2CD38BB3-18BA-4DAB-C10A-B4C8ADD0C611}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\Mojo\Physics\Rope">
+      <UniqueIdentifier>{C4391B9B-30FC-4E25-79AC-DDB1E5AD2703}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Sources">
       <UniqueIdentifier>{89565304-F535-D29F-FE4D-5D766AAC3801}</UniqueIdentifier>
     </Filter>
@@ -156,6 +180,9 @@
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Math.h">
       <Filter>Include\Mojo</Filter>
     </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Module.h">
+      <Filter>Include\Mojo</Filter>
+    </ClInclude>
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Mojo.h">
       <Filter>Include\Mojo</Filter>
     </ClInclude>
@@ -170,6 +197,150 @@
     </ClInclude>
     <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Native\Window.h">
       <Filter>Include\Mojo\Native</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Collision\Shapes\b2ChainShape.h">
+      <Filter>Include\Mojo\Physics\Collision\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Collision\Shapes\b2CircleShape.h">
+      <Filter>Include\Mojo\Physics\Collision\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Collision\Shapes\b2EdgeShape.h">
+      <Filter>Include\Mojo\Physics\Collision\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Collision\Shapes\b2PolygonShape.h">
+      <Filter>Include\Mojo\Physics\Collision\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Collision\Shapes\b2Shape.h">
+      <Filter>Include\Mojo\Physics\Collision\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Collision\b2BroadPhase.h">
+      <Filter>Include\Mojo\Physics\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Collision\b2Collision.h">
+      <Filter>Include\Mojo\Physics\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Collision\b2Distance.h">
+      <Filter>Include\Mojo\Physics\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Collision\b2DynamicTree.h">
+      <Filter>Include\Mojo\Physics\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Collision\b2TimeOfImpact.h">
+      <Filter>Include\Mojo\Physics\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Common\b2BlockAllocator.h">
+      <Filter>Include\Mojo\Physics\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Common\b2Draw.h">
+      <Filter>Include\Mojo\Physics\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Common\b2GrowableStack.h">
+      <Filter>Include\Mojo\Physics\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Common\b2Math.h">
+      <Filter>Include\Mojo\Physics\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Common\b2Settings.h">
+      <Filter>Include\Mojo\Physics\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Common\b2StackAllocator.h">
+      <Filter>Include\Mojo\Physics\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Common\b2Timer.h">
+      <Filter>Include\Mojo\Physics\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Dynamics\Contacts\b2ChainAndCircleContact.h">
+      <Filter>Include\Mojo\Physics\Dynamics\Contacts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Dynamics\Contacts\b2ChainAndPolygonContact.h">
+      <Filter>Include\Mojo\Physics\Dynamics\Contacts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Dynamics\Contacts\b2CircleContact.h">
+      <Filter>Include\Mojo\Physics\Dynamics\Contacts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Dynamics\Contacts\b2Contact.h">
+      <Filter>Include\Mojo\Physics\Dynamics\Contacts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Dynamics\Contacts\b2ContactSolver.h">
+      <Filter>Include\Mojo\Physics\Dynamics\Contacts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Dynamics\Contacts\b2EdgeAndCircleContact.h">
+      <Filter>Include\Mojo\Physics\Dynamics\Contacts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Dynamics\Contacts\b2EdgeAndPolygonContact.h">
+      <Filter>Include\Mojo\Physics\Dynamics\Contacts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Dynamics\Contacts\b2PolygonAndCircleContact.h">
+      <Filter>Include\Mojo\Physics\Dynamics\Contacts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Dynamics\Contacts\b2PolygonContact.h">
+      <Filter>Include\Mojo\Physics\Dynamics\Contacts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Dynamics\Joints\b2DistanceJoint.h">
+      <Filter>Include\Mojo\Physics\Dynamics\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Dynamics\Joints\b2FrictionJoint.h">
+      <Filter>Include\Mojo\Physics\Dynamics\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Dynamics\Joints\b2GearJoint.h">
+      <Filter>Include\Mojo\Physics\Dynamics\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Dynamics\Joints\b2Joint.h">
+      <Filter>Include\Mojo\Physics\Dynamics\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Dynamics\Joints\b2MotorJoint.h">
+      <Filter>Include\Mojo\Physics\Dynamics\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Dynamics\Joints\b2MouseJoint.h">
+      <Filter>Include\Mojo\Physics\Dynamics\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Dynamics\Joints\b2PrismaticJoint.h">
+      <Filter>Include\Mojo\Physics\Dynamics\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Dynamics\Joints\b2PulleyJoint.h">
+      <Filter>Include\Mojo\Physics\Dynamics\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Dynamics\Joints\b2RevoluteJoint.h">
+      <Filter>Include\Mojo\Physics\Dynamics\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Dynamics\Joints\b2RopeJoint.h">
+      <Filter>Include\Mojo\Physics\Dynamics\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Dynamics\Joints\b2WeldJoint.h">
+      <Filter>Include\Mojo\Physics\Dynamics\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Dynamics\Joints\b2WheelJoint.h">
+      <Filter>Include\Mojo\Physics\Dynamics\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Dynamics\b2Body.h">
+      <Filter>Include\Mojo\Physics\Dynamics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Dynamics\b2ContactManager.h">
+      <Filter>Include\Mojo\Physics\Dynamics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Dynamics\b2Fixture.h">
+      <Filter>Include\Mojo\Physics\Dynamics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Dynamics\b2Island.h">
+      <Filter>Include\Mojo\Physics\Dynamics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Dynamics\b2TimeStep.h">
+      <Filter>Include\Mojo\Physics\Dynamics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Dynamics\b2World.h">
+      <Filter>Include\Mojo\Physics\Dynamics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Dynamics\b2WorldCallbacks.h">
+      <Filter>Include\Mojo\Physics\Dynamics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Physics.h">
+      <Filter>Include\Mojo\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Physics\Rope\Rope.h">
+      <Filter>Include\Mojo\Physics\Rope</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Mojo\Include\Mojo\Time.h">
+      <Filter>Include\Mojo</Filter>
     </ClInclude>
     <ClInclude Include="..\ThirdParty\Mojo\Sources\Imgui\Mojo_ImGui_Impl.h">
       <Filter>Sources\Imgui</Filter>
@@ -261,6 +432,9 @@
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_JobSystem.cc">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Mojo\Sources\Mojo_Time.cc">
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="..\ThirdParty\Mojo\Sources\Native\Mojo_System.cc">

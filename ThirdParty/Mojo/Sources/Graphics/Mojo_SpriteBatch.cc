@@ -101,7 +101,7 @@ namespace Mojo
             //_spriteVertexBuffer.SetBlendFunc(cmd.blend);
 
             Matrix4 model_matrix = Math::Transform(cmd.position, cmd.rotation, cmd.scale);
-            Matrix4 MVP_matrix = mul(projection, model_matrix);
+            Matrix4 MVP_matrix = Math::Mul(projection, model_matrix);
 
             _spriteShader.SetMatrix4("MVP", (float*)&MVP_matrix);
             _spriteShader.SetVector4("color", cmd.color.x, cmd.color.y, cmd.color.z, cmd.color.w);

@@ -314,14 +314,14 @@ namespace World
 
         // First bullet
         {
-            Vector2 vel = normalize(aim_dir);
+            Vector2 vel = Math::Normalize(aim_dir);
             Vector2 pos = player.position + Vector2(cosf(angle + offset), sinf(angle + offset)) * player.texture.width * 1.25f;
             SpawnBullet(pos, vel);
         }
 
         // Second bullet
         {
-            Vector2 vel = normalize(aim_dir);
+            Vector2 vel = Math::Normalize(aim_dir);
             Vector2 pos = player.position + Vector2(cosf(angle - offset), sinf(angle - offset)) * player.texture.width * 1.25f;
             SpawnBullet(pos, vel);
         }
@@ -338,7 +338,7 @@ namespace World
             float x = (2.0f * (rand() % 101) / 100.0f - 1.0f) * 0.8f * Window::GetWidth();
             float y = (2.0f * (rand() % 101) / 100.0f - 1.0f) * 0.8f * Window::GetHeight();
             pos = Vector2(x, y);
-        } while (distsqr(pos, player.position) < minDistanceSq);
+        } while (Math::DistanceSq(pos, player.position) < minDistanceSq);
 
         return pos;
     }
@@ -362,7 +362,7 @@ namespace World
 
         en->active      = true;
         en->color       = Vector4(1.0f, 1.0f, 1.0f, 0.0f);
-        en->velocity    = normalize(player.position - pos);
+        en->velocity    = Math::Normalize(player.position - pos);
         en->position    = pos;
         en->movespeed   = 360.0f;
         en->scale       = Vector2(1.0f);
@@ -390,7 +390,7 @@ namespace World
 
         en->active      = true;
         en->color       = Vector4(1.0f, 1.0f, 1.0f, 0.0f);
-        en->velocity    = normalize(player.position - pos);
+        en->velocity    = Math::Normalize(player.position - pos);
         en->position    = pos;
         en->movespeed   = 240.0f;
         en->scale       = Vector2(1.0f);
@@ -547,7 +547,7 @@ namespace World
 
         for (int i = 0; i < 1200; i++)
         {
-            float speed = 10.0f * maxf(Window::GetWidth(), Window::GetHeight()) * (0.6f + (rand() % 101 / 100.0f) * 0.4f);
+            float speed = 10.0f * Math::Max(Window::GetWidth(), Window::GetHeight()) * (0.6f + (rand() % 101 / 100.0f) * 0.4f);
             float angle = rand() % 101 / 100.0f * 2 * PI;
             Vector2 vel = Vector2(cosf(angle) * speed, sinf(angle) * speed);
 
@@ -562,15 +562,15 @@ namespace World
 
     bool UpdateBlackhole(Entity* blackhole, Entity* other)
     {
-        if (distance(other->position, blackhole->position) <= other->radius + blackhole->radius)
+        if (Math::Distance(other->position, blackhole->position) <= other->radius + blackhole->radius)
         {
             return true;
         }
-        else if (distance(other->position, blackhole->position) <= other->radius + blackhole->radius * 10.0f)
+        else if (Math::Distance(other->position, blackhole->position) <= other->radius + blackhole->radius * 10.0f)
         {
             Vector2 diff = blackhole->position - other->position;
-            other->velocity += normalize(diff) * lerpf(1, 0, length(diff) / (Window::GetWidth() * 0.2f));
-            other->velocity = normalize(other->velocity);
+            other->velocity += Math::Normalize(diff) * Math::Lerp(1, 0, Math::Length(diff) / (Window::GetWidth() * 0.2f));
+            other->velocity = Math::Normalize(other->velocity);
         }
 
         return false;
@@ -587,9 +587,9 @@ namespace World
         // Update is in progress, locking the list
         lock = true;
 
-        player.velocity = lerp(player.velocity, normalize(Vector2(horizontal, vertical)), 5.0f * dt);
+        player.velocity = Math::Lerp(player.velocity, Math::Normalize(Vector2(horizontal, vertical)), 5.0f * dt);
         player.Update(Vector2(Window::GetWidth(), Window::GetHeight()), dt);
-        if (lensqr(player.velocity) > 0.1f && fmodf(Game::totalTime, 0.025f) <= 0.01f)
+        if (Math::LengthSq(player.velocity) > 0.1f && fmodf(Game::totalTime, 0.025f) <= 0.01f)
         {
             float speed;
             float angle = atan2f(player.velocity.y, player.velocity.x);
@@ -648,7 +648,7 @@ namespace World
                 }
                 else
                 {
-                    s->velocity = normalize(s->velocity + normalize(player.position - s->position) * 10.0f * dt);
+                    s->velocity = Math::Normalize(s->velocity + Math::Normalize(player.position - s->position) * 10.0f * dt);
                     s->Update(dt);
                 }
             }
@@ -701,7 +701,7 @@ namespace World
                 Entity* s = &seekers[j];
                 if (!s->active || s->color.w < 1.0f) continue;
 
-                if (distance(b->position, s->position) <= b->radius + s->radius)
+                if (Math::Distance(b->position, s->position) <= b->radius + s->radius)
                 {
                     DestroyBullet(b, i);
                     DestroySeeker(s, j);
@@ -715,7 +715,7 @@ namespace World
                 Entity* s = &wanderers[j];
                 if (!s->active || s->color.w < 1.0f) continue;
 
-                if (distance(b->position, s->position) <= b->radius + s->radius)
+                if (Math::Distance(b->position, s->position) <= b->radius + s->radius)
                 {
                     DestroyBullet(b, i);
                     DestroyWanderer(s, j);
@@ -729,7 +729,7 @@ namespace World
                 Entity* s = &blackHoles[j];
                 if (!s->active || s->color.w < 1.0f) continue;
 
-                float d = distance(b->position, s->position);
+                float d = Math::Distance(b->position, s->position);
                 if (d <= b->radius + s->radius)
                 {
                     DestroyBullet(b, i);
@@ -740,7 +740,7 @@ namespace World
                 {
                     float r = b->radius + s->radius * 5.0f;
                     float t = (d - r) / r;
-                    b->velocity = normalize(b->velocity + normalize(b->position - s->position) * 0.3f);
+                    b->velocity = Math::Normalize(b->velocity + Math::Normalize(b->position - s->position) * 0.3f);
                 }
             }
         }
@@ -750,7 +750,7 @@ namespace World
             Entity* s = &seekers[j];
             if (!s->active || s->color.w < 1.0f) continue;
 
-            if (distance(player.position, s->position) <= player.radius + s->radius)
+            if (Math::Distance(player.position, s->position) <= player.radius + s->radius)
             {
                 OnGameOver();
                 break;
@@ -762,7 +762,7 @@ namespace World
             Entity* s = &wanderers[j];
             if (!s->active || s->color.w < 1.0f) continue;
 
-            if (distance(player.position, s->position) <= player.radius + s->radius)
+            if (Math::Distance(player.position, s->position) <= player.radius + s->radius)
             {
                 OnGameOver();
                 break;
@@ -1016,9 +1016,9 @@ namespace ParticleSystem
                 if (!blackhole->active) continue;
 
                 Vector2 diff = blackhole->position - p.position;
-                float d = length(diff);
-                Vector2 normal = normalize(diff);
-                p.velocity += normal * maxf(0.0f, Window::GetWidth() / d);
+                float d = Math::Length(diff);
+                Vector2 normal = Math::Normalize(diff);
+                p.velocity += normal * Math::Max(0.0f, Window::GetWidth() / d);
 
                 // add tangential acceleration for nearby particles
                 if (d < 10.0f * blackhole->radius)
@@ -1254,28 +1254,28 @@ namespace Game
 
         if (Input::GetKey(KeyCode::W) || Input::GetKey(KeyCode::UpArrow))
         {
-            axis_vertical = lerpf(axis_vertical, 1.0f, LERP_RATE);
+            axis_vertical = Math::Lerp(axis_vertical, 1.0f, LERP_RATE);
         }
         else if (Input::GetKey(KeyCode::S) || Input::GetKey(KeyCode::DownArrow))
         {
-            axis_vertical = lerpf(axis_vertical, -1.0f, LERP_RATE);
+            axis_vertical = Math::Lerp(axis_vertical, -1.0f, LERP_RATE);
         }
         else
         {
-            axis_vertical = lerpf(axis_vertical, 0.0f, LERP_RATE);
+            axis_vertical = Math::Lerp(axis_vertical, 0.0f, LERP_RATE);
         }
         
         if (Input::GetKey(KeyCode::A) || Input::GetKey(KeyCode::LeftArrow))
         {
-            axis_horizontal = lerpf(axis_horizontal, -1.0f, LERP_RATE);
+            axis_horizontal = Math::Lerp(axis_horizontal, -1.0f, LERP_RATE);
         }
         else if (Input::GetKey(KeyCode::D) || Input::GetKey(KeyCode::RightArrow))
         {
-            axis_horizontal = lerpf(axis_horizontal, 1.0f, LERP_RATE);
+            axis_horizontal = Math::Lerp(axis_horizontal, 1.0f, LERP_RATE);
         }
         else
         {
-            axis_horizontal = lerpf(axis_horizontal, 0.0f, LERP_RATE);
+            axis_horizontal = Math::Lerp(axis_horizontal, 0.0f, LERP_RATE);
         }
 
         float mx;
@@ -1287,7 +1287,7 @@ namespace Game
         
             Vector2 mpos = Vector2(clip.x * Window::GetWidth(), clip.y * Window::GetHeight());
         
-            Vector2 taim = normalize(mpos - World::player.position);
+            Vector2 taim = Math::Normalize(mpos - World::player.position);
         
 #if 0   
             float cur_angle = vec2_angle(aim);
@@ -1297,17 +1297,17 @@ namespace Game
             aim = Vector2(cosf(cur_angle), sinf(cur_angle));
 #endif  
         
-            aim = lerp(aim, taim, 0.8f);
+            aim = Math::Lerp(aim, taim, 0.8f);
         }
 
         if (Input::IsGamepadAttached(0))
         {
-            axis_vertical = lerpf(axis_vertical, Input::GetAxis(0, GamepadAxis::LeftVertical), LERP_RATE);
-            axis_horizontal = lerpf(axis_horizontal, Input::GetAxis(0, GamepadAxis::LeftHorizontal), LERP_RATE);
+            axis_vertical = Math::Lerp(axis_vertical, Input::GetAxis(0, GamepadAxis::LeftVertical), LERP_RATE);
+            axis_horizontal = Math::Lerp(axis_horizontal, Input::GetAxis(0, GamepadAxis::LeftHorizontal), LERP_RATE);
 
             float x = Input::GetAxis(0, GamepadAxis::RightHorizontal);
             float y = Input::GetAxis(0, GamepadAxis::RightVertical);
-            if (length(Vector2(x, y)) < 0.01f)
+            if (Math::Length(Vector2(x, y)) < 0.01f)
             {
                 aim = Vector2();
             }
@@ -1319,23 +1319,23 @@ namespace Game
                 float cur_angle = atan2f(aim.y, aim.x);
                 float aim_angle = atan2f(y, x);
 
-                cur_angle = lerpf(cur_angle, aim_angle, 0.8f);
+                cur_angle = Math::Lerp(cur_angle, aim_angle, 0.8f);
                 aim = Vector2(cosf(cur_angle), sinf(cur_angle));
 
 
-                aim.x = lerpf(aim.x, x, 0.6f);
-                aim.y = lerpf(aim.y, y, 0.6f);
+                aim.x = Math::Lerp(aim.x, x, 0.6f);
+                aim.y = Math::Lerp(aim.y, y, 0.6f);
             }
         }
 
         Vector2 axes = Vector2(axis_horizontal, axis_vertical);
-        if (length(axes) < 0.01f)
+        if (Math::Length(axes) < 0.01f)
         {
             axes = Vector2();
         }
         else
         {
-            float len = clampf(length(axes), 0, 1);
+            float len = Math::Clamp(Math::Length(axes), 0.0f, 1.0f);
             float angle = atan2f(axes.y, axes.x);
 
             axes = Vector2(cosf(angle) * len, sinf(angle) * len);
