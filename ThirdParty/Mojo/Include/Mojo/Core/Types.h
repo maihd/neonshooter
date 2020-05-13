@@ -3,34 +3,39 @@
 inline namespace Mojo
 {
 #if _WIN32
-    using int8      = char;
-    using uint8     = unsigned char;
-    using int16     = short;
-    using uint16    = unsigned short;
-    using int32     = long;
-    using uint32    = unsigned long;
-    using int64     = long long;
-    using uint64    = unsigned long long;
+    using I8    = char;
+    using U8    = unsigned char;
+    using I16   = short;
+    using U16   = unsigned short;
+    using I32   = long;
+    using U32   = unsigned long;
+    using I64   = long long;
+    using U64   = unsigned long long;
 #else
-    using int8      = char;
-    using uint8     = unsigned char;
-    using int16     = short;
-    using uint16    = unsigned short;
-    using int32     = int;
-    using uint32    = unsigned int;
-    using int64     = long;
-    using uint64    = unsigned long;
+    using I8    = char;
+    using U8    = unsigned char;
+    using I16   = short;
+    using U16   = unsigned short;
+    using I32   = int;
+    using U32   = unsigned int;
+    using I64   = long;
+    using U64   = unsigned long;
 #endif
 
 #if _WIN64
-    using intptr    = int64;
-    using uintptr   = uint64;
+    using IPtr  = I64;
+    using UPtr  = U64;
 #else
-    using intptr    = int32;
-    using uintptr   = uint32;
+    using IPtr  = I32;
+    using UPtr  = U32;
 #endif
 
-    //using NullPtr   = decltype(nullptr);
+    using Handle    = U32;
+    using NullPtr   = decltype(nullptr);
+
+    //----------------------------------
+    // Math types
+    //----------------------------------
 
     struct Vector2;
     struct Vector3;
@@ -168,10 +173,12 @@ inline namespace Mojo
             rows[3] = m3;
         }
 
-        inline Matrix4(float m00, float m01, float m02, float m03,
+        inline Matrix4(
+            float m00, float m01, float m02, float m03,
             float m10, float m11, float m12, float m13,
             float m20, float m21, float m22, float m23,
-            float m30, float m31, float m32, float m33)
+            float m30, float m31, float m32, float m33
+        )
         {
             rows[0] = Vector4(m00, m01, m02, m03);
             rows[1] = Vector4(m10, m11, m12, m13);
@@ -189,4 +196,64 @@ inline namespace Mojo
             return rows[index];
         }
     };
+
+    //----------------------------
+    // Atomic types
+    //----------------------------
+
+    struct AtomicI32
+    {
+        volatile I32 value;
+
+        AtomicI32(I32 value = 0)
+            : value(value)
+        {
+        }
+
+        operator I32(void) const
+        {
+            return value;
+        }
+
+        AtomicI32& operator=(I32 value);
+        AtomicI32& operator=(const AtomicI32& other);
+    };
+
+    struct AtomicI64
+    {
+        volatile I64 value;
+
+        AtomicI64(I64 value = 0)
+            : value(value)
+        {
+        }
+
+        operator I64(void) const
+        {
+            return value;
+        }
+
+        AtomicI64& operator=(I64 value);
+        AtomicI64& operator=(const AtomicI64& other);
+    };
+
+    AtomicI32& operator++(AtomicI32& atomic);
+    AtomicI32& operator--(AtomicI32& atomic);
+    AtomicI32  operator++(AtomicI32& atomic, int);
+    AtomicI32  operator--(AtomicI32& atomic, int);
+    AtomicI32& operator+=(AtomicI32& atomic, I32 value);
+    AtomicI32& operator-=(AtomicI32& atomic, I32 value);
+    AtomicI32& operator^=(AtomicI32& atomic, I32 value);
+    AtomicI32& operator|=(AtomicI32& atomic, I32 value);
+    AtomicI32& operator&=(AtomicI32& atomic, I32 value);
+
+    AtomicI64& operator++(AtomicI64& atomic);
+    AtomicI64& operator--(AtomicI64& atomic);
+    AtomicI64  operator++(AtomicI64& atomic, int);
+    AtomicI64  operator--(AtomicI64& atomic, int);
+    AtomicI64& operator+=(AtomicI64& atomic, I64 value);
+    AtomicI64& operator-=(AtomicI64& atomic, I64 value);
+    AtomicI64& operator^=(AtomicI64& atomic, I64 value);
+    AtomicI64& operator|=(AtomicI64& atomic, I64 value);
+    AtomicI64& operator&=(AtomicI64& atomic, I64 value);
 }

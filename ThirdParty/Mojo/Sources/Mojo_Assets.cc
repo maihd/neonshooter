@@ -11,9 +11,9 @@
 
 namespace Mojo
 {
-    //inline uint32 Stream::ReadUint32LE(void)
+    //inline U32 Stream::ReadUint32LE(void)
     //{
-    //    uint32 result;
+    //    U32 result;
     //    return this->Read(&result, sizeof(result)) == sizeof(result) ? LE_TO_NATIVE_32(result) : 0;
     //}
 
@@ -34,21 +34,21 @@ namespace Mojo
 #pragma pack(push, 1)
             struct WAVHeader
             {
-                uint8  riff[4];
-                uint32 size;
+                U8  riff[4];
+                U32 size;
 
-                uint8  wave[4];   // "WAVE"
-                uint8  fmt[4];    // "fmt\0"
-                uint32 fmtLength;
+                U8  wave[4];   // "WAVE"
+                U8  fmt[4];    // "fmt\0"
+                U32 fmtLength;
 
-                uint16 audioFormat;
-                uint16 channels;
+                U16 audioFormat;
+                U16 channels;
 
-                uint32 sampleRate;
-                uint32 byteRate;
+                U32 sampleRate;
+                U32 byteRate;
 
-                uint16 blockAlign;
-                uint16 bitsPerSample;
+                U16 blockAlign;
+                U16 bitsPerSample;
             };
 #pragma pack(pop, 1)
 
@@ -92,7 +92,7 @@ namespace Mojo
 
                 if (header.audioFormat == 1)
                 {
-                    uint16 extraParams = file->ReadUint16LE();
+                    U16 extraParams = file->ReadUint16LE();
                     file->Skip(extraParams);
                 }
 
@@ -103,7 +103,7 @@ namespace Mojo
                     return NULL;
                 }
                 
-                uint32 dataChunkSize = file->ReadUint32LE();
+                U32 dataChunkSize = file->ReadUint32LE();
                 if (!dataChunkSize)
                 {
                     file->Close();

@@ -61,22 +61,22 @@ namespace Mojo
         {
             switch (type)
             {
-            case DataType::Uint8:
+            case DataType::U8:
                 return GL_UNSIGNED_BYTE;
 
-            case DataType::Int8:
+            case DataType::I8:
                 return GL_BYTE;
 
-            case DataType::Int32:
+            case DataType::I32:
                 return GL_INT;
 
-            case DataType::Uint32:
+            case DataType::U32:
                 return GL_UNSIGNED_INT;
 
-            case DataType::Int16:
+            case DataType::I16:
                 return GL_SHORT;
 
-            case DataType::Uint16:
+            case DataType::U16:
                 return GL_UNSIGNED_SHORT;
 
             case DataType::Float:
@@ -93,22 +93,22 @@ namespace Mojo
         {
             switch (type)
             {
-            case DataType::Uint8:
+            case DataType::U8:
                 return 1;
 
-            case DataType::Int8:
+            case DataType::I8:
                 return 1;
 
-            case DataType::Int32:
+            case DataType::I32:
                 return 4;
 
-            case DataType::Uint32:
+            case DataType::U32:
                 return 4;
 
-            case DataType::Int16:
+            case DataType::I16:
                 return 2;
 
-            case DataType::Uint16:
+            case DataType::U16:
                 return 2;
 
             case DataType::Float:

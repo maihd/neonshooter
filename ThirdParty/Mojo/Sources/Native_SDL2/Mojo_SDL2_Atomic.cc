@@ -14,7 +14,7 @@
 
 namespace Mojo
 {
-    AtomicI32& AtomicI32::operator=(int value)
+    AtomicI32& AtomicI32::operator=(I32 value)
     {
         _InterlockedExchange((long*)&this->value, value);
         return *this;
@@ -57,7 +57,7 @@ namespace Mojo
         return result;
     }
 
-    AtomicI32& operator+=(AtomicI32& atomic, int value)
+    AtomicI32& operator+=(AtomicI32& atomic, I32 value)
     {
 #if WIN10_SDK
         _InlineInterlockedAdd((volatile LONG*)&atomic.value, (LONG)value);
@@ -68,7 +68,7 @@ namespace Mojo
         return atomic;
     }
 
-    AtomicI32& operator-=(AtomicI32& atomic, int value)
+    AtomicI32& operator-=(AtomicI32& atomic, I32 value)
     {
 #if WIN10_SDK
         _InlineInterlockedAdd((volatile LONG*)&atomic.value, (LONG)-value);
@@ -79,28 +79,28 @@ namespace Mojo
         return atomic;
     }
 
-    AtomicI32& operator^=(AtomicI32& atomic, int value)
+    AtomicI32& operator^=(AtomicI32& atomic, I32 value)
     {
         _InterlockedXor((volatile LONG*)&atomic.value, (LONG)value);
 
         return atomic;
     }
 
-    AtomicI32& operator|=(AtomicI32& atomic, int value)
+    AtomicI32& operator|=(AtomicI32& atomic, I32 value)
     {
         _InterlockedOr((volatile LONG*)&atomic.value, (LONG)value);
 
         return atomic;
     }
 
-    AtomicI32& operator&=(AtomicI32& atomic, int value)
+    AtomicI32& operator&=(AtomicI32& atomic, I32 value)
     {
         _InterlockedAnd((volatile LONG*)&atomic.value, (LONG)value);
 
         return atomic;
     }
 
-    AtomicI64& AtomicI64::operator=(int value)
+    AtomicI64& AtomicI64::operator=(I64 value)
     {
 #if WIN10_SDK
         _InlineInterlockedExchange64(&this->value, value);
@@ -168,7 +168,7 @@ namespace Mojo
         return result;
     }
 
-    AtomicI64& operator+=(AtomicI64& atomic, long long value)
+    AtomicI64& operator+=(AtomicI64& atomic, I64 value)
     {
 #if WIN10_SDK
         _InlineInterlockedAdd64(&atomic.value, value);
@@ -179,7 +179,7 @@ namespace Mojo
         return atomic;
     }
 
-    AtomicI64& operator-=(AtomicI64& atomic, long long value)
+    AtomicI64& operator-=(AtomicI64& atomic, I64 value)
     {
 #if WIN10_SDK
         _InlineInterlockedAdd64(&atomic.value, -value);
@@ -190,7 +190,7 @@ namespace Mojo
         return atomic;
     }
 
-    AtomicI64& operator^=(AtomicI64& atomic, long long value)
+    AtomicI64& operator^=(AtomicI64& atomic, I64 value)
     {
 #if WIN10_SDK
         _InlineInterlockedXor64(&atomic.value, value);
@@ -201,7 +201,7 @@ namespace Mojo
         return atomic;
     }
 
-    AtomicI64& operator|=(AtomicI64& atomic, long long value)
+    AtomicI64& operator|=(AtomicI64& atomic, I64 value)
     {
 #if WIN10_SDK
         _InlineInterlockedOr64(&atomic.value, value);
@@ -212,7 +212,7 @@ namespace Mojo
         return atomic;
     }
 
-    AtomicI64& operator&=(AtomicI64& atomic, long long value)
+    AtomicI64& operator&=(AtomicI64& atomic, I64 value)
     {
 #if WIN10_SDK
         _InlineInterlockedAnd64(&atomic.value, value);

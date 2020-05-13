@@ -14,7 +14,7 @@ namespace Mojo
 
         inline ALuint ConvertHandle(void* handle)
         {
-            return (ALuint)(intptr)handle;
+            return (ALuint)(IPtr)handle;
         }
 
         inline ALenum ConvertAudioFormat(AudioFormat format)

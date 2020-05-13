@@ -103,11 +103,11 @@ namespace Mojo
             Matrix4 model_matrix = Math::Transform(cmd.position, cmd.rotation, cmd.scale);
             Matrix4 MVP_matrix = mul(projection, model_matrix);
 
-            _spriteShader.SetFloat4x4("MVP", (float*)&MVP_matrix);
-            _spriteShader.SetFloat4("color", cmd.color.x, cmd.color.y, cmd.color.z, cmd.color.w);
+            _spriteShader.SetMatrix4("MVP", (float*)&MVP_matrix);
+            _spriteShader.SetVector4("color", cmd.color.x, cmd.color.y, cmd.color.z, cmd.color.w);
 
             Graphics::BindTexture(cmd.texture);
-            Graphics::DrawIndices(DrawType::Triangles, DataType::Uint16, cmd.drawCount, offset);
+            Graphics::DrawIndices(DrawType::Triangles, DataType::U16, cmd.drawCount, offset);
             
             offset += cmd.drawCount;
         }

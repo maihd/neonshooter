@@ -213,7 +213,7 @@ namespace Mojo
         return this->SetFloat2(this->FindUniform(name), x, y);
     }
 
-    bool Shader::SetFloat3(int location, float x, float y, float z)
+    bool Shader::SetVector3(int location, float x, float y, float z)
     {
         if (location < 0)
         {
@@ -225,12 +225,12 @@ namespace Mojo
         return true;
     }
 
-    bool Shader::SetFloat3(const char* name, float x, float y, float z)
+    bool Shader::SetVector3(const char* name, float x, float y, float z)
     {
-        return this->SetFloat3(this->FindUniform(name), x, y, z);
+        return this->SetVector3(this->FindUniform(name), x, y, z);
     }
 
-    bool Shader::SetFloat4(int location, float x, float y, float z, float w)
+    bool Shader::SetVector4(int location, float x, float y, float z, float w)
     {
         if (location < 0)
         {
@@ -242,12 +242,12 @@ namespace Mojo
         return true;
     }
 
-    bool Shader::SetFloat4(const char* name, float x, float y, float z, float w)
+    bool Shader::SetVector4(const char* name, float x, float y, float z, float w)
     {
-        return this->SetFloat4(this->FindUniform(name), x, y, z, w);
+        return this->SetVector4(this->FindUniform(name), x, y, z, w);
     }
 
-    bool Shader::SetFloat4x4(int location, const float* value, bool transpose)
+    bool Shader::SetMatrix4(int location, const float* value, bool transpose)
     {
         if (location < 0)
         {
@@ -259,24 +259,24 @@ namespace Mojo
         return true;
     }
 
-    bool Shader::SetFloat4x4(const char* name, const float* value, bool transpose)
+    bool Shader::SetMatrix4(const char* name, const float* value, bool transpose)
     {
-        return this->SetFloat4x4(this->FindUniform(name), value, transpose);
+        return this->SetMatrix4(this->FindUniform(name), value, transpose);
     }
 
     bool Shader::SetTransform(const Matrix4& matrix)
     {
-        return this->SetFloat4x4("TransformMatrix", (float*)&matrix, false);
+        return this->SetMatrix4("TransformMatrix", (float*)&matrix, false);
     }
 
     bool Shader::SetProjection(const Matrix4& matrix)
     {
-        return this->SetFloat4x4("ProjectionMatrix", (float*)&matrix, false);
+        return this->SetMatrix4("ProjectionMatrix", (float*)&matrix, false);
     }
 
     bool Shader::SetMainColor(const Vector4& color)
     {
-        return this->SetFloat4("MainColor", color.x, color.y, color.z, color.w);
+        return this->SetVector4("MainColor", color.x, color.y, color.z, color.w);
     }
 
     bool Shader::SetMainTexture(TextureHandle* texture)

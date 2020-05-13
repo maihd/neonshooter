@@ -12,8 +12,8 @@ inline namespace Mojo
         {
             Null,
             
-            Int32,
-            Uint32,
+            I32,
+            U32,
             Float,
             Double,
 

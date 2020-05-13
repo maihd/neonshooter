@@ -54,9 +54,9 @@ namespace Mojo
         return 0;
     }
 
-    //uint32 Stream::ReadUint32LE(void)
+    //U32 Stream::ReadUint32LE(void)
     //{
-    //    uint32 result;
+    //    U32 result;
     //    return this->Read(&result, sizeof(result)) == sizeof(result) ? LE_TO_NATIVE_32(result) : 0;
     //}
 
@@ -113,7 +113,7 @@ namespace Mojo
         // Result
         Socket* socket  = new Socket();
         socket->type    = type;
-        socket->handle  = (void*)(uintptr)sockfd;
+        socket->handle  = (void*)(UPtr)sockfd;
         return socket;
     }
 
@@ -189,14 +189,14 @@ namespace Mojo
         // Result
         Socket* socket  = new Socket();
         socket->type    = type;
-        socket->handle  = (void*)(uintptr)sockfd;
+        socket->handle  = (void*)(UPtr)sockfd;
         return socket;
     }
 
     // Close socket
     void Socket::Close(void) 
     {
-        NATIVE_CLOSE_SOCKET((SOCKET)(uintptr)handle);
+        NATIVE_CLOSE_SOCKET((SOCKET)(UPtr)handle);
 
         handle  = 0;
         type    = SocketType::None;
@@ -225,12 +225,12 @@ namespace Mojo
     // Read content of stream
     int Socket::Read(void* buffer, int length)
     {
-        return (int)recv((SOCKET)(uintptr)handle, (char*)buffer, length, 0);
+        return (int)recv((SOCKET)(UPtr)handle, (char*)buffer, length, 0);
     }
 
     // Write content to stream
     int Socket::Write(const void* buffer, int length)
     {
-        return (int)send((SOCKET)(uintptr)handle, (const char*)buffer, length, 0);
+        return (int)send((SOCKET)(UPtr)handle, (const char*)buffer, length, 0);
     }
 }

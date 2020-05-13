@@ -38,82 +38,82 @@ namespace Mojo
     }
 
     // Reserve memory, preserving the current of the buffer
-    void String::Reserve(int new_capacity)
+    void String::Reserve(int newCapacity)
     {
-        if (new_capacity <= capacity)
+        if (newCapacity <= capacity)
         {
             return;
         }
 
-        char* new_data;
-        if (new_capacity < localBufSize)
+        char* newData;
+        if (newCapacity < localBufSize)
         {
             // Disowned -> LocalBuf
-            new_data = GetLocalBuffer();
-            new_capacity = localBufSize;
+            newData = this->GetLocalBuffer();
+            newCapacity = localBufSize;
         }
         else
         {
             // Disowned or LocalBuf -> Heap
-            new_data = (char*)malloc(new_capacity * sizeof(char));
+            newData = (char*)malloc(newCapacity * sizeof(char));
         }
-        strcpy(new_data, buffer);
+        strcpy(newData, buffer);
 
-        if (isOwned && !IsUsingLocalBuffer())
+        if (isOwned && !this->IsUsingLocalBuffer())
         {
             free(buffer);
         }
 
-        buffer = new_data;
-        capacity = new_capacity;
+        buffer = newData;
+        capacity = newCapacity;
     }
 
     // Reserve memory, discarding the current of the buffer (if we expect to be fully rewritten)
-    void String::ReserveDiscard(int new_capacity)
+    void String::ReserveDiscard(int newCapacity)
     {
-        if (new_capacity <= capacity)
+        if (newCapacity <= capacity)
         {
             return;
         }
 
-        if (isOwned && !IsUsingLocalBuffer())
+        if (isOwned && !this->IsUsingLocalBuffer())
         {
             free(buffer);
         }
 
-        if (new_capacity < localBufSize)
+        if (newCapacity < localBufSize)
         {
             // Disowned -> LocalBuf
-            buffer = GetLocalBuffer();
+            buffer = this->GetLocalBuffer();
             capacity = localBufSize;
         }
         else
         {
             // Disowned or LocalBuf -> Heap
-            buffer = (char*)malloc(new_capacity * sizeof(char));
-            capacity = new_capacity;
+            buffer = (char*)malloc(newCapacity * sizeof(char));
+            capacity = newCapacity;
         }
     }
 
     void String::ShrinkToFit()
     {
-        if (!isOwned || IsUsingLocalBuffer())
+        if (!isOwned || this->IsUsingLocalBuffer())
         {
             return;
         }
 
-        int new_capacity = GetLength() + 1;
-        if (capacity <= new_capacity)
+        int newCapacity = this->GetLength() + 1;
+        if (capacity <= newCapacity)
         {
             return;
         }
 
-        char* new_data = (char*)malloc(new_capacity * sizeof(char));
-        memcpy(new_data, buffer, new_capacity);
+        char* newData = (char*)malloc(newCapacity * sizeof(char));
+        memcpy(newData, buffer, newCapacity);
         free(buffer);
 
-        buffer = new_data;
-        capacity = new_capacity;
+        buffer = newData;
+        capacity = newCapacity;
     }
 
     // FIXME: merge SetFormatArgs() and AppendFormatArgs()?
@@ -131,7 +131,7 @@ namespace Mojo
 
         if (capacity < len + 1)
         {
-            ReserveDiscard(len + 1);
+            this->ReserveDiscard(len + 1);
         }
 
         len = vsnprintf(buffer, len + 1, fmt, args2);
@@ -142,7 +142,7 @@ namespace Mojo
 
         if (capacity < len + 1)
         {
-            ReserveDiscard(len + 1);
+            this->ReserveDiscard(len + 1);
             len = vsnprintf(data, len + 1, fmt, args2);
         }
 #endif
@@ -155,7 +155,7 @@ namespace Mojo
     {
         va_list args;
         va_start(args, fmt);
-        int len = SetFormatArgs(fmt, args);
+        int len = this->SetFormatArgs(fmt, args);
         va_end(args);
         return len;
     }
@@ -165,6 +165,7 @@ namespace Mojo
         int w = vsnprintf(buffer, capacity, fmt, args);
         buffer[capacity - 1] = 0;
         isOwned = 1;
+
         return (w == -1) ? capacity - 1 : w;
     }
 

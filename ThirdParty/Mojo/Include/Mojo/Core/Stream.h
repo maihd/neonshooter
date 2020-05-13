@@ -53,142 +53,142 @@ inline namespace Mojo
         }
 
         // Read 8bit signed integer
-        inline int8 ReadInt8(void)
+        inline I8 ReadInt8(void)
         {
-            int8 result;
+            I8 result;
             return this->Read(&result, sizeof(result)) == sizeof(result) ? result : 0;
         }
 
         // Read 8bit unsigned integer
-        inline uint8 ReadUint8(void)
+        inline U8 ReadUint8(void)
         {
-            uint8 result;
+            U8 result;
             return this->Read(&result, sizeof(result)) == sizeof(result) ? result : 0;
         }
 
         // Read 16bit signed integer, and dont care about endian
-        inline int16 ReadInt16(void)
+        inline I16 ReadInt16(void)
         {
-            int16 result;
+            I16 result;
             return this->Read(&result, sizeof(result)) == sizeof(result) ? result : 0;
         }
 
         // Read 16bit unsigned integer, and dont care about endian
-        inline uint16 ReadUint16(void)
+        inline U16 ReadUint16(void)
         {
-            uint16 result;
+            U16 result;
             return this->Read(&result, sizeof(result)) == sizeof(result) ? result : 0;
         }
         
         // Read 32bit signed integer, and dont care about endian
-        inline int32 ReadInt32(void)
+        inline I32 ReadInt32(void)
         {
-            int32 result;
+            I32 result;
             return this->Read(&result, sizeof(result)) == sizeof(result) ? result : 0;
         }
 
         // Read 32bit unsigned integer, and dont care about endian
-        inline uint32 ReadUint32(void)
+        inline U32 ReadUint32(void)
         {
-            uint32 result;
+            U32 result;
             return this->Read(&result, sizeof(result)) == sizeof(result) ? result : 0;
         }
         
         // Read 64bit signed integer, and dont care about endian
-        inline int64 ReadInt64(void)
+        inline I64 ReadInt64(void)
         {
-            int64 result;
+            I64 result;
             return this->Read(&result, sizeof(result)) == sizeof(result) ? result : 0;
         }
 
         // Read 64bit unsigned integer, and dont care about endian
-        inline uint64 ReadUint64(void)
+        inline U64 ReadUint64(void)
         {
-            uint64 result;
+            U64 result;
             return this->Read(&result, sizeof(result)) == sizeof(result) ? result : 0;
         }
 
         // Read little endian 16bit signed integer
-        inline int16 ReadInt16LE(void)
+        inline I16 ReadInt16LE(void)
         {
-            int16 result;
+            I16 result;
             return this->Read(&result, sizeof(result)) == sizeof(result) ? LE_TO_NATIVE_16(result) : 0;
         }
 
         // Read big endian 16bit signed integer
-        inline int16 ReadInt16BE(void)
+        inline I16 ReadInt16BE(void)
         {
-            int16 result;
+            I16 result;
             return this->Read(&result, sizeof(result)) == sizeof(result) ? BE_TO_NATIVE_16(result) : 0;
         }
 
         // Read little endian 16bit unsigned integer
-        inline uint16 ReadUint16LE(void)
+        inline U16 ReadUint16LE(void)
         {
-            uint16 result;
+            U16 result;
             return this->Read(&result, sizeof(result)) == sizeof(result) ? LE_TO_NATIVE_16(result) : 0;
         }
 
         // Read big endian 16bit unsigned integer
-        inline uint16 ReadUint16BE(void)
+        inline U16 ReadUint16BE(void)
         {
-            uint16 result;
+            U16 result;
             return this->Read(&result, sizeof(result)) == sizeof(result) ? BE_TO_NATIVE_16(result) : 0;
         }
         
         // Read little endian 32bit signed integer
-        inline int32 ReadInt32LE(void)
+        inline I32 ReadInt32LE(void)
         {
-            int32 result;
+            I32 result;
             return this->Read(&result, sizeof(result)) == sizeof(result) ? LE_TO_NATIVE_32(result) : 0;
         }
 
         // Read big endian 32bit signed integer
-        inline int32 ReadInt32BE(void)
+        inline I32 ReadInt32BE(void)
         {
-            int32 result;
+            I32 result;
             return this->Read(&result, sizeof(result)) == sizeof(result) ? BE_TO_NATIVE_32(result) : 0;
         }
 
         // Read little endian 32bit unsigned integer
-        inline uint32 ReadUint32LE(void)
+        inline U32 ReadUint32LE(void)
         {
-            uint32 result;
+            U32 result;
             return this->Read(&result, sizeof(result)) == sizeof(result) ? LE_TO_NATIVE_32(result) : 0;
         }
 
         // Read big endian 32bit unsigned integer
-        inline uint32 ReadUint32BE(void)
+        inline U32 ReadUint32BE(void)
         {
-            uint32 result;
+            U32 result;
             return this->Read(&result, sizeof(result)) == sizeof(result) ? BE_TO_NATIVE_32(result) : 0;
         }
         
         // Read little endian 64bit signed integer
-        inline int64 ReadInt64LE(void)
+        inline I64 ReadInt64LE(void)
         {
-            int64 result;
+            I64 result;
             return this->Read(&result, sizeof(result)) == sizeof(result) ? LE_TO_NATIVE_64(result) : 0;
         }
 
         // Read big endian 64bit signed integer
-        inline int64 ReadInt64BE(void)
+        inline I64 ReadInt64BE(void)
         {
-            int64 result;
+            I64 result;
             return this->Read(&result, sizeof(result)) == sizeof(result) ? BE_TO_NATIVE_64(result) : 0;
         }
 
         // Read little endian 64bit unsigned integer
-        inline uint64 ReadUint64LE(void)
+        inline U64 ReadUint64LE(void)
         {
-            uint64 result;
+            U64 result;
             return this->Read(&result, sizeof(result)) == sizeof(result) ? LE_TO_NATIVE_64(result) : 0;
         }
 
         // Read big endian 64bit unsigned integer
-        inline uint64 ReadUint64BE(void)
+        inline U64 ReadUint64BE(void)
         {
-            uint64 result;
+            U64 result;
             return this->Read(&result, sizeof(result)) == sizeof(result) ? BE_TO_NATIVE_64(result) : 0;
         }
 
@@ -235,134 +235,134 @@ inline namespace Mojo
         }
 
         // Read 8bit signed integer
-        inline bool WriteInt8(int8 x)
+        inline bool WriteInt8(I8 x)
         {
             return this->Write(&x, sizeof(x)) == sizeof(x);
         }
 
         // Read 8bit unsigned integer
-        inline bool WriteUint8(uint8 x)
+        inline bool WriteUint8(U8 x)
         {
             return this->Write(&x, sizeof(x)) == sizeof(x);
         }
 
         // Read 16bit signed integer, and dont care about endian
-        inline bool WriteInt16(int16 x)
+        inline bool WriteInt16(I16 x)
         {
             return this->Write(&x, sizeof(x)) == sizeof(x);
         }
 
         // Read 16bit unsigned integer, and dont care about endian
-        inline bool WriteUint16(uint16 x)
+        inline bool WriteUint16(U16 x)
         {
             return this->Write(&x, sizeof(x)) == sizeof(x);
         }
 
         // Read 32bit signed integer, and dont care about endian
-        inline bool WriteInt32(int32 x)
+        inline bool WriteInt32(I32 x)
         {
             return this->Write(&x, sizeof(x)) == sizeof(x);
         }
 
         // Read 32bit unsigned integer, and dont care about endian
-        inline bool WriteUint32(uint32 x)
+        inline bool WriteUint32(U32 x)
         {
             return this->Write(&x, sizeof(x)) == sizeof(x);
         }
 
         // Read 64bit signed integer, and dont care about endian
-        inline bool WriteInt64(int64 x)
+        inline bool WriteInt64(I64 x)
         {
             return this->Write(&x, sizeof(x)) == sizeof(x);
         }
 
         // Read 64bit unsigned integer, and dont care about endian
-        inline bool WriteUint64(uint64 x)
+        inline bool WriteUint64(U64 x)
         {
             return this->Write(&x, sizeof(x)) == sizeof(x);
         }
 
         // Read little endian 16bit signed integer
-        inline bool WriteInt16LE(int16 x)
+        inline bool WriteInt16LE(I16 x)
         {
-            int16 result = NATIVE_TO_LE_16(x);
+            I16 result = NATIVE_TO_LE_16(x);
             return this->Write(&result, sizeof(result)) == sizeof(result);
         }
 
         // Read big endian 16bit signed integer
-        inline bool WriteInt16BE(int16 x)
+        inline bool WriteInt16BE(I16 x)
         {
-            int16 result = NATIVE_TO_BE_16(x);
+            I16 result = NATIVE_TO_BE_16(x);
             return this->Write(&result, sizeof(result)) == sizeof(result);
         }
 
         // Read little endian 16bit unsigned integer
-        inline bool WriteUint16LE(uint16 x)
+        inline bool WriteUint16LE(U16 x)
         {
-            uint16 result = NATIVE_TO_LE_16(x);
+            U16 result = NATIVE_TO_LE_16(x);
             return this->Write(&result, sizeof(result)) == sizeof(result);
         }
 
         // Read big endian 16bit unsigned integer
-        inline bool WriteUint16BE(uint16 x)
+        inline bool WriteUint16BE(U16 x)
         {
-            uint16 result = NATIVE_TO_BE_16(x);
+            U16 result = NATIVE_TO_BE_16(x);
             return this->Write(&result, sizeof(result)) == sizeof(result);
         }
 
         // Read little endian 32bit signed integer
-        inline bool WriteInt32LE(int32 x)
+        inline bool WriteInt32LE(I32 x)
         {
-            int32 result = NATIVE_TO_LE_32(x);
+            I32 result = NATIVE_TO_LE_32(x);
             return this->Write(&result, sizeof(result)) == sizeof(result);
         }
 
         // Read big endian 32bit signed integer
-        inline bool WriteInt32BE(int32 x)
+        inline bool WriteInt32BE(I32 x)
         {
-            int32 result = NATIVE_TO_BE_32(x);
+            I32 result = NATIVE_TO_BE_32(x);
             return this->Write(&result, sizeof(result)) == sizeof(result);
         }
 
         // Read little endian 32bit unsigned integer
-        inline bool WriteUint32LE(uint32 x)
+        inline bool WriteUint32LE(U32 x)
         {
-            uint32 result = NATIVE_TO_LE_32(x);
+            U32 result = NATIVE_TO_LE_32(x);
             return this->Write(&result, sizeof(result)) == sizeof(result);
         }
 
         // Read big endian 32bit unsigned integer
-        inline bool WriteUint32BE(uint32 x)
+        inline bool WriteUint32BE(U32 x)
         {
-            uint32 result = NATIVE_TO_BE_32(x);
+            U32 result = NATIVE_TO_BE_32(x);
             return this->Write(&result, sizeof(result)) == sizeof(result);
         }
 
         // Read little endian 64bit signed integer
-        inline bool WriteInt64LE(int64 x)
+        inline bool WriteInt64LE(I64 x)
         {
-            int64 result = NATIVE_TO_LE_64(x);
+            I64 result = NATIVE_TO_LE_64(x);
             return this->Write(&result, sizeof(result)) == sizeof(result);
         }
 
         // Read big endian 64bit signed integer
-        inline bool WriteInt64BE(int64 x)
+        inline bool WriteInt64BE(I64 x)
         {
-            int64 result = NATIVE_TO_BE_64(x);
+            I64 result = NATIVE_TO_BE_64(x);
             return this->Write(&result, sizeof(result)) == sizeof(result);
         }
 
         // Read little endian 64bit unsigned integer
-        inline bool WriteUint64LE(uint64 x)
+        inline bool WriteUint64LE(U64 x)
         {
-            uint64 result = NATIVE_TO_LE_64(x);
+            U64 result = NATIVE_TO_LE_64(x);
             return this->Write(&result, sizeof(result)) == sizeof(result);
         }
 
         // Read big endian 64bit unsigned integer
-        inline bool WriteUint64BE(uint64 x)
+        inline bool WriteUint64BE(U64 x)
         {
-            uint64 result = NATIVE_TO_BE_64(x);
+            U64 result = NATIVE_TO_BE_64(x);
             return this->Write(&result, sizeof(result)) == sizeof(result);
         }
 

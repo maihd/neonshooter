@@ -48,15 +48,15 @@ inline namespace Mojo
     {
         None,
 
-        Int8,
-        Int16,
-        Int32,
-        Int64,
+        I8,
+        I16,
+        I32,
+        I64,
 
-        Uint8,
-        Uint16,
-        Uint32,
-        Uint64,
+        U8,
+        U16,
+        U32,
+        U64,
 
         Float,
         Double,

@@ -22,14 +22,14 @@ inline namespace Mojo
         bool SetFloat2(int location, float x, float y);
         bool SetFloat2(const char* name, float x, float y);
         
-        bool SetFloat3(int location, float x, float y, float z);
-        bool SetFloat3(const char* name, float x, float y, float z);
+        bool SetVector3(int location, float x, float y, float z);
+        bool SetVector3(const char* name, float x, float y, float z);
         
-        bool SetFloat4(int location, float x, float y, float z, float w);
-        bool SetFloat4(const char* name, float x, float y, float z, float w);
+        bool SetVector4(int location, float x, float y, float z, float w);
+        bool SetVector4(const char* name, float x, float y, float z, float w);
 
-        bool SetFloat4x4(int location, const float* value, bool transpose = false);
-        bool SetFloat4x4(const char* name, const float* value, bool transpose = false);
+        bool SetMatrix4(int location, const float* value, bool transpose = false);
+        bool SetMatrix4(const char* name, const float* value, bool transpose = false);
 
         bool SetTransform(const Matrix4& matrix);
         bool SetProjection(const Matrix4& matrix);

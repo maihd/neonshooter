@@ -1,3 +1,4 @@
+#include <Mojo/Core/Types.h>
 #include <Mojo/Native/System.h>
 
 #include <SDL2/SDL.h>
@@ -13,7 +14,7 @@ namespace Mojo
 
         void Sleep(int milliseconds)
         {
-            SDL_Delay((Uint32)milliseconds);
+            SDL_Delay((U32)milliseconds);
         }
 
         long long PerformanceCounter(void)

@@ -1,5 +1,7 @@
 #include <Mojo/ImGui.h>
+#include <Mojo/Core/Types.h>
 #include <Mojo/Native/Window.h>
+
 #include "Mojo_ImGui_Impl.h"
 
 // SDL
@@ -38,11 +40,11 @@ void ImGui_ImplOpenGL3_DestroyDeviceObjects(void);
 #define SDL_HAS_VULKAN                      SDL_VERSION_ATLEAST(2,0,6)
 #define SDL_HAS_MOUSE_FOCUS_CLICKTHROUGH    SDL_VERSION_ATLEAST(2,0,5)
 #if !SDL_HAS_VULKAN
-static const Uint32 SDL_WINDOW_VULKAN = 0x10000000;
+static const U32 SDL_WINDOW_VULKAN = 0x10000000;
 #endif
 // Data
 static SDL_Window*  g_Window = NULL;
-static Uint64       g_Time = 0;
+static U64          g_Time = 0;
 static bool         g_MousePressed[3] = { false, false, false };
 static SDL_Cursor*  g_MouseCursors[ImGuiMouseCursor_COUNT] = { 0 };
 static char*        g_ClipboardTextData = NULL;
@@ -108,7 +110,7 @@ bool ImGui_ImplSDL2_ProcessEvent(const SDL_Event* event)
     }
     // Multi-viewport support
     case SDL_WINDOWEVENT:
-        Uint8 window_event = event->window.event;
+        U8 window_event = event->window.event;
         if (window_event == SDL_WINDOWEVENT_CLOSE || window_event == SDL_WINDOWEVENT_MOVED || window_event == SDL_WINDOWEVENT_RESIZED)
             if (ImGuiViewport* viewport = ImGui::FindViewportByPlatformHandle((void*)SDL_GetWindowFromID(event->window.windowID)))
             {
@@ -241,7 +243,7 @@ static void ImGui_ImplSDL2_UpdateMousePosAndButtons()
     // [2]
     // Set Dear ImGui mouse pos from OS mouse pos + get buttons. (this is the common behavior)
     int mouse_x_local, mouse_y_local;
-    Uint32 mouse_buttons = SDL_GetMouseState(&mouse_x_local, &mouse_y_local);
+    U32 mouse_buttons = SDL_GetMouseState(&mouse_x_local, &mouse_y_local);
     io.MouseDown[0] = g_MousePressed[0] || (mouse_buttons & SDL_BUTTON(SDL_BUTTON_LEFT)) != 0;      // If a mouse press event came, always pass it as "mouse held this frame", so we don't miss click-release events that are shorter than 1 frame.
     io.MouseDown[1] = g_MousePressed[1] || (mouse_buttons & SDL_BUTTON(SDL_BUTTON_RIGHT)) != 0;
     io.MouseDown[2] = g_MousePressed[2] || (mouse_buttons & SDL_BUTTON(SDL_BUTTON_MIDDLE)) != 0;
@@ -358,8 +360,8 @@ void ImGui_ImplSDL2_NewFrame(SDL_Window* window)
         io.DisplayFramebufferScale = ImVec2((float)display_w / w, (float)display_h / h);
 
     // Setup time step (we don't use SDL_GetTicks() because it is using millisecond resolution)
-    static Uint64 frequency = SDL_GetPerformanceFrequency();
-    Uint64 current_time = SDL_GetPerformanceCounter();
+    static U64 frequency = SDL_GetPerformanceFrequency();
+    U64 current_time = SDL_GetPerformanceCounter();
     io.DeltaTime = g_Time > 0 ? (float)((double)(current_time - g_Time) / frequency) : (float)(1.0f / 60.0f);
     g_Time = current_time;
 
@@ -379,7 +381,7 @@ void ImGui_ImplSDL2_NewFrame(SDL_Window* window)
 struct ImGuiViewportDataSDL2
 {
     SDL_Window*     Window;
-    Uint32          WindowID;
+    U32          WindowID;
     bool            WindowOwned;
     SDL_GLContext   GLContext;
 
@@ -405,7 +407,7 @@ static void ImGui_ImplSDL2_CreateWindow(ImGuiViewport* viewport)
         SDL_GL_MakeCurrent(main_viewport_data->Window, main_viewport_data->GLContext);
     }
 
-    Uint32 sdl_flags = 0;
+    U32 sdl_flags = 0;
     sdl_flags |= use_opengl ? SDL_WINDOW_OPENGL : SDL_WINDOW_VULKAN;
     sdl_flags |= SDL_GetWindowFlags(g_Window) & SDL_WINDOW_ALLOW_HIGHDPI;
     sdl_flags |= SDL_WINDOW_HIDDEN;

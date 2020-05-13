@@ -233,7 +233,7 @@ namespace Mojo
                 return true;
             }
 
-            Uint32 sdlFlags = SDL_WINDOW_OPENGL;
+            U32 sdlFlags = SDL_WINDOW_OPENGL;
             if (flags & WindowFlag::Visible)
             {
                 sdlFlags |= SDL_WINDOW_SHOWN;

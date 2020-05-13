@@ -30,19 +30,19 @@
 struct Entity
 {
 public:
-    bool  active;
+    bool        active;
 
-    Vector2  scale;
-    Vector2  position;
-    float rotation;
+    Vector2     scale;
+    Vector2     position;
+    float       rotation;
 
-    Vector2  velocity;
-    float movespeed;
+    Vector2     velocity;
+    float       movespeed;
 
-    Vector4  color;
-    float radius;
+    Vector4     color;
+    float       radius;
 
-    Texture texture;
+    Texture     texture;
 
     void Update(float dt)
     {
@@ -87,15 +87,15 @@ public:
 
 struct Particle
 {
-    bool       active;
-    Texture    texture;
+    bool        active;
+    Texture     texture;
     Vector2     velocity;
     Vector2     position;
-    float      rotation;
+    float       rotation;
     Vector2     scale;
     Vector4     color;
-    float      timer;
-    float      duration;
+    float       timer;
+    float       duration;
 };
 
 static HashTable<Texture> _textures;
@@ -184,7 +184,9 @@ namespace Color
     Vector4 HSV(float h, float s, float v)
     {
         if (h == 0 && s == 0)
+        {
             return Vector4(v, v, v, 1.0f);
+        }
 
         float c = s * v;
         float x = c * (1 - fabsf(fmodf(h, 2) - 1));
@@ -327,7 +329,7 @@ namespace World
 
     Vector2 GetSpawnPosition()
     {
-        const float min_distance_sqr = (Window::GetHeight() * 0.3f) * (Window::GetHeight() * 0.3f);
+        const float minDistanceSq = (Window::GetHeight() * 0.3f) * (Window::GetHeight() * 0.3f);
 
         Vector2 pos;
 
@@ -336,7 +338,7 @@ namespace World
             float x = (2.0f * (rand() % 101) / 100.0f - 1.0f) * 0.8f * Window::GetWidth();
             float y = (2.0f * (rand() % 101) / 100.0f - 1.0f) * 0.8f * Window::GetHeight();
             pos = Vector2(x, y);
-        } while (distsqr(pos, player.position) < min_distance_sqr);
+        } while (distsqr(pos, player.position) < minDistanceSq);
 
         return pos;
     }
