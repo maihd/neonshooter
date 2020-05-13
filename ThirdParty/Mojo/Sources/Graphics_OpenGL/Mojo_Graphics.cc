@@ -11,11 +11,6 @@ namespace Mojo
 {
     namespace
     {
-        inline GLuint ConvertHandle(void* handle)
-        {
-            return (GLuint)(GLintptr)handle;
-        }
-
         static void HandleError()
         {
             glGetError();
@@ -220,7 +215,7 @@ namespace Mojo
     IndexBuffer IndexBuffer::Create(void)
     {
         IndexBuffer buffer;
-        glGenBuffers(1, &buffer.handle);
+        glGenBuffers(1, (GLuint*)&buffer.handle);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer.handle);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0, 0, GL_STATIC_DRAW);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -229,7 +224,7 @@ namespace Mojo
 
     void IndexBuffer::Destroy(IndexBuffer& buffer)
     {
-        glDeleteBuffers(1, &buffer.handle);
+        glDeleteBuffers(1, (GLuint*)&buffer.handle);
         buffer.handle = 0;
     }
 
@@ -267,7 +262,7 @@ namespace Mojo
     VertexBuffer VertexBuffer::Create(void)
     {
         VertexBuffer buffer = {};
-        glGenBuffers(1, &buffer.handle);
+        glGenBuffers(1, (GLuint*)&buffer.handle);
         glBindBuffer(GL_ARRAY_BUFFER, buffer.handle);
         glBufferData(GL_ARRAY_BUFFER, 0, 0, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -276,7 +271,7 @@ namespace Mojo
 
     void VertexBuffer::Destroy(VertexBuffer& buffer)
     {
-        ::glDeleteBuffers(1, &buffer.handle);
+        ::glDeleteBuffers(1, (GLuint*)&buffer.handle);
         buffer.handle = 0;
     }
 
@@ -315,13 +310,13 @@ namespace Mojo
     VertexArray VertexArray::Create(void)
     {
         VertexArray array;
-        glGenVertexArrays(1, &array.handle);
+        glGenVertexArrays(1, (GLuint*)&array.handle);
         return array;
     }
 
     void VertexArray::Destroy(VertexArray& array)
     {
-        glDeleteVertexArrays(1, &array.handle);
+        glDeleteVertexArrays(1, (GLuint*)&array.handle);
         array.handle = 0;
     }
 
@@ -343,23 +338,17 @@ namespace Mojo
     {
         RenderTarget renderTarget;
 
-        // Generate color texture
-        glGenTextures(1, &renderTarget.texture);
-        if (!renderTarget.texture)
-        {
-            return renderTarget;
-        }
-
         int pixelsWidth  = (int)width;
         int pixelsHeight = (int)height;
 
-        glBindTexture(GL_TEXTURE_2D, renderTarget.texture);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, pixelsWidth, pixelsHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-        glBindTexture(GL_TEXTURE_2D, 0);
+        renderTarget.texture = Texture::Create();
+        renderTarget.texture.SetPixels(pixelsWidth, pixelsHeight, PixelFormat::RGB, nullptr, PixelFormat::RGB);
+
+        // Failed to generate texture
+        if (!renderTarget.texture.handle)
+        {
+            return renderTarget;
+        }
 
         // Generate depth stencil buffer
         //glGenTextures(1, &renderTarget.depthStencilTexture);
@@ -372,16 +361,16 @@ namespace Mojo
         //glBindTexture(GL_TEXTURE_2D, 0);
 
         // Generate render buffer
-        glGenRenderbuffers(1, &renderTarget.renderBuffer);
+        glGenRenderbuffers(1, (GLuint*)&renderTarget.renderBuffer);
         glNamedRenderbufferStorage(renderTarget.renderBuffer, GL_DEPTH24_STENCIL8, pixelsWidth, pixelsHeight);
 
         // Generate frame buffer
         GLint bindingFramebuffer;
         glGetIntegerv(GL_FRAMEBUFFER_BINDING, &bindingFramebuffer);
 
-        glGenFramebuffers(1, &renderTarget.frameBuffer);
+        glGenFramebuffers(1, (GLuint*)&renderTarget.frameBuffer);
         glBindFramebuffer(GL_FRAMEBUFFER, renderTarget.frameBuffer);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderTarget.texture, 0); 
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderTarget.texture.handle, 0); 
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, renderTarget.renderBuffer);
         //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, renderTarget.depthStencilTexture, 0);
 
@@ -476,54 +465,83 @@ namespace Mojo
             glViewport((GLint)x, (GLint)y, (GLsizei)width, (GLsizei)height);
         }
 
-        void BindShader(ShaderHandle* shader)
+        void BindShader(const Shader& shader)
         {
-            glUseProgram(ConvertHandle(shader));
+            glUseProgram(shader.handle);
         }
 
-        void BindTexture(TextureHandle* texture, int index)
+        void BindTexture(const Texture& texture, int index)
         {
             glActiveTexture(GL_TEXTURE0 + index);
-            glBindTexture(GL_TEXTURE_2D, ConvertHandle(texture));
+            glBindTexture(GL_TEXTURE_2D, texture.handle);
         }
 
-        void BindVertexArray(VertexArrayHandle* array)
+        void BindVertexArray(const VertexArray& array)
         {
-            glBindVertexArray(ConvertHandle(array));
+            glBindVertexArray(array.handle);
         }
 
-        void BindIndexBuffer(IndexBufferHandle* buffer)
+        void BindIndexBuffer(const IndexBuffer& buffer)
         {
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ConvertHandle(buffer));
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer.handle);
         }
 
-        void BindVertexBuffer(VertexBufferHandle* buffer)
+        void BindVertexBuffer(const VertexBuffer& buffer)
         {
-            glBindBuffer(GL_ARRAY_BUFFER, ConvertHandle(buffer));
+            glBindBuffer(GL_ARRAY_BUFFER, buffer.handle);
         }
 
-        void BindRenderTarget(RenderTargetHandle* renderTarget)
+        void BindRenderTarget(const RenderTarget& renderTarget)
         {
-            glBindFramebuffer(GL_FRAMEBUFFER, ConvertHandle(renderTarget));
+            glBindFramebuffer(GL_FRAMEBUFFER, renderTarget.frameBuffer);
         }
 
-        void BlitRenderTarget(TextureHandle* src, RenderTargetHandle* dst, ShaderHandle* shader)
+        void BlitRenderTarget(const RenderTarget& src, RenderTarget& dst, const Shader& shader)
         {
-            if (src)
+            if (src.texture.handle)
             {
                 GLint bindingFramebuffer;
                 glGetIntegerv(GL_FRAMEBUFFER_BINDING, &bindingFramebuffer);
 
-                glBindFramebuffer(GL_FRAMEBUFFER, ConvertHandle(dst));
+                glBindFramebuffer(GL_FRAMEBUFFER, dst.frameBuffer);
 
                 // Clear dst buffer
                 Graphics::Clear();
 
-                glUseProgram(ConvertHandle(shader));
+                glUseProgram(shader.handle);
                 glBindVertexArray(_renderTargetVertexArray.handle);
 
                 glActiveTexture(GL_TEXTURE0);
-                glBindTexture(GL_TEXTURE_2D, ConvertHandle(src));
+                glBindTexture(GL_TEXTURE_2D, src.texture.handle);
+
+                glDrawArrays(GL_TRIANGLES, 0, 6);
+
+                glBindTexture(GL_TEXTURE_2D, 0);
+
+                glBindVertexArray(0);
+                glUseProgram(0);
+
+                glBindFramebuffer(GL_FRAMEBUFFER, bindingFramebuffer);
+            }
+        }
+
+        void BlitRenderTarget(const RenderTarget& src, const Shader& shader)
+        {
+            if (src.texture.handle)
+            {
+                GLint bindingFramebuffer;
+                glGetIntegerv(GL_FRAMEBUFFER_BINDING, &bindingFramebuffer);
+
+                glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+                // Clear dst buffer
+                Graphics::Clear();
+
+                glUseProgram(shader.handle);
+                glBindVertexArray(_renderTargetVertexArray.handle);
+
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, src.texture.handle);
 
                 glDrawArrays(GL_TRIANGLES, 0, 6);
 
@@ -548,24 +566,24 @@ namespace Mojo
             glDrawElements(glDrawType, count, ConvertDataType(dataType), (const void*)(GLintptr)(offset * ConvertDataSize(dataType)));
         }
 
-        void DrawArrays(DrawType type, ShaderHandle* shader, VertexArrayHandle* array, int count, int offset)
+        void DrawArrays(DrawType type, const Shader& shader, const VertexArray& array, int count, int offset)
         {
             GLenum glDrawType = (GLenum)type;
 
-            glUseProgram(ConvertHandle(shader));
-            glBindVertexArray(ConvertHandle(array));
+            glUseProgram(shader.handle);
+            glBindVertexArray(array.handle);
             glDrawArrays(glDrawType, offset, count);
             glBindVertexArray(0);
             glUseProgram(0);
         }
 
-        void DrawIndices(DrawType type, ShaderHandle* shader, VertexArrayHandle* array, const IndexBuffer& indices, int count, int offset)
+        void DrawIndices(DrawType type, const Shader& shader, const VertexArray& array, const IndexBuffer& indices, int count, int offset)
         {
             GLenum glDrawType = (GLenum)type;
 
-            glUseProgram(ConvertHandle(shader));
+            glUseProgram(shader.handle);
 
-            glBindVertexArray(ConvertHandle(array));
+            glBindVertexArray(array.handle);
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indices.handle);
             
             //glDrawElements(glDrawType, count, ConvertDataType(indices._dataType), (const void*)(offset * ConvertDataSize(indices._dataType)));
@@ -576,15 +594,15 @@ namespace Mojo
             glUseProgram(0);
         }
 
-        void DrawArrays(DrawType type, ShaderHandle* shader, VertexArrayHandle* array, TextureHandle* texture, int count, int offset)
+        void DrawArrays(DrawType type, const Shader& shader, const VertexArray& array, const Texture& texture, int count, int offset)
         {
             GLenum glDrawType = (GLenum)type;
 
-            glUseProgram(ConvertHandle(shader));
+            glUseProgram(shader.handle);
             glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, ConvertHandle(texture));
+            glBindTexture(GL_TEXTURE_2D, texture.handle);
             
-            glBindVertexArray(ConvertHandle(array));
+            glBindVertexArray(array.handle);
             
             glDrawArrays(glDrawType, offset, count);
             
@@ -594,15 +612,15 @@ namespace Mojo
             glUseProgram(0);
         }
 
-        void DrawIndices(DrawType type, ShaderHandle* shader, VertexArrayHandle* array, TextureHandle* texture, const IndexBuffer& indices, int count, int offset)
+        void DrawIndices(DrawType type, const Shader& shader, const VertexArray& array, const Texture& texture, const IndexBuffer& indices, int count, int offset)
         {
             GLenum glDrawType = (GLenum)type;
 
-            glUseProgram(ConvertHandle(shader));
+            glUseProgram(shader.handle);
             glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, ConvertHandle(texture));
+            glBindTexture(GL_TEXTURE_2D, texture.handle);
             
-            glBindVertexArray(ConvertHandle(array));
+            glBindVertexArray(array.handle);
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indices.handle);
             
             //const void* memoryOffset = (const void*)(GLintptr)(offset * ConvertDataSize(indices._dataType));

@@ -4,14 +4,13 @@
 
 inline namespace Mojo
 {
-    struct ShaderHandle;
-    struct TextureHandle;
+    struct Texture;
 
     // Graphics shader
     // @note: use for graphics only, compute shader is ComputeShader
-    struct Shader final
+    struct Shader
     {
-        unsigned handle = 0;
+        Handle handle = 0;
 
         int FindAttribute(const char* name);
         int FindUniform(const char* name);
@@ -35,16 +34,15 @@ inline namespace Mojo
         bool SetProjection(const Matrix4& matrix);
 
         bool SetMainColor(const Vector4& color);
-        bool SetMainTexture(TextureHandle* texture);
+        bool SetMainTexture(const Texture& texture);
+
+        //-------------------------------------------------
+        // Create and destroy shaders
+        //-------------------------------------------------
 
         static Shader Create(const char* vertexSource = 0, const char* pixelsSource = 0);
         static void   Destroy(Shader& shader);
         
         static Shader CreateEffect(const char* pixelsSource);
-
-        inline operator ShaderHandle*(void) const
-        {
-            return (ShaderHandle*)(long long)handle;
-        }
     };
 }

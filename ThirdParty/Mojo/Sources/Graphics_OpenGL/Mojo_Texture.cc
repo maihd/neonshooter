@@ -85,83 +85,30 @@ namespace Mojo
 
     void Texture::Destroy(Texture& texture)
     {
-        ::glDeleteTextures(1, &texture.handle);
+        glDeleteTextures(1, (GLuint*)&texture.handle);
 
-        texture.handle = 0;
+        texture = {}; // Clear all memory
     }
 
     void Texture::SetWrap(TextureWrap wrap)
     {
-        this->SetWrap(wrap, wrap);
-    }
-
-    void Texture::SetWrap(TextureWrap wrapU, TextureWrap wrapV)
-    {
         GLint bindingTexture;
         glGetIntegerv(GL_TEXTURE_BINDING_2D, &bindingTexture);
 
         glBindTexture(GL_TEXTURE_2D, handle);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, ConvertTextureWrap(wrapU));
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, ConvertTextureWrap(wrapV));
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, ConvertTextureWrap(wrap));
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, ConvertTextureWrap(wrap));
         glBindTexture(GL_TEXTURE_2D, (GLuint)bindingTexture);
-
-        //glTextureParameteri(handle, GL_TEXTURE_WRAP_S, ConvertTextureWrap(wrapU));
-        //glTextureParameteri(handle, GL_TEXTURE_WRAP_T, ConvertTextureWrap(wrapV));
-
-        HandleError();
-    }
-
-    void Texture::SetWrapU(TextureWrap wrapU)
-    {
-        GLint bindingTexture;
-        glGetIntegerv(GL_TEXTURE_BINDING_2D, &bindingTexture);
-
-        glBindTexture(GL_TEXTURE_2D, handle);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, ConvertTextureWrap(wrapU));
-        glBindTexture(GL_TEXTURE_2D, (GLuint)bindingTexture);
-
-        //glTextureParameteri(handle, GL_TEXTURE_WRAP_S, ConvertTextureWrap(wrapU));
-        //glTextureParameteri(handle, GL_TEXTURE_WRAP_T, ConvertTextureWrap(wrapV));
-
-        HandleError();
-    }
-
-    void Texture::SetWrapV(TextureWrap wrapV)
-    {
-        GLint bindingTexture;
-        glGetIntegerv(GL_TEXTURE_BINDING_2D, &bindingTexture);
-
-        glBindTexture(GL_TEXTURE_2D, handle);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, ConvertTextureWrap(wrapV));
-        glBindTexture(GL_TEXTURE_2D, (GLuint)bindingTexture);
-
-        //glTextureParameteri(handle, GL_TEXTURE_WRAP_S, ConvertTextureWrap(wrapU));
-        //glTextureParameteri(handle, GL_TEXTURE_WRAP_T, ConvertTextureWrap(wrapV));
 
         HandleError();
     }
 
     void Texture::SetFilter(TextureFilter filter)
     {
-        this->SetFilter(filter, filter);
-    }
-
-    void Texture::SetFilter(TextureFilter minFilter, TextureFilter magFilter)
-    {
-        glTextureParameteri(handle, GL_TEXTURE_MIN_FILTER, ConvertTextureFilter(minFilter));
-        glTextureParameteri(handle, GL_TEXTURE_MAG_FILTER, ConvertTextureFilter(magFilter));
+        glTextureParameteri(handle, GL_TEXTURE_MIN_FILTER, ConvertTextureFilter(filter));
+        glTextureParameteri(handle, GL_TEXTURE_MAG_FILTER, ConvertTextureFilter(filter));
 
         HandleError();
-    }
-
-    void Texture::SetMinFilter(TextureFilter minFilter)
-    {
-        glTextureParameteri(handle, GL_TEXTURE_MIN_FILTER, ConvertTextureFilter(minFilter));
-    }
-
-    void Texture::SetMagFilter(TextureFilter magFilter)
-    {
-        glTextureParameteri(handle, GL_TEXTURE_MAG_FILTER, ConvertTextureFilter(magFilter));
     }
 
     void Texture::SetPixels(int w, int h, PixelFormat format, const void* pixels, PixelFormat targetFormat)
@@ -173,6 +120,7 @@ namespace Mojo
 
         this->width  = (float)w;
         this->height = (float)h;
+        this->format = targetFormat;
 
         glTextureImage2DEXT(handle, GL_TEXTURE_2D, 0, ConvertPixelFormat(targetFormat), w, h, 0, ConvertPixelFormat(format), GL_UNSIGNED_BYTE, pixels);
         HandleError();

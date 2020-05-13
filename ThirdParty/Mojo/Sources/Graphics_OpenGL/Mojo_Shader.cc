@@ -279,7 +279,7 @@ namespace Mojo
         return this->SetVector4("MainColor", color.x, color.y, color.z, color.w);
     }
 
-    bool Shader::SetMainTexture(TextureHandle* texture)
+    bool Shader::SetMainTexture(const Texture& texture)
     {
         return true;
     }

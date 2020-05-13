@@ -35,14 +35,14 @@ inline namespace Mojo
 
         struct DrawCommand
         {
-            TextureHandle*      texture;
-            int                 drawCount;
-            Vector2             position;
-            Vector2             scale;
-            float               rotation;
-            Vector4             color;
+            Texture     texture;
+            int         drawCount;
+            Vector2     position;
+            Vector2     scale;
+            float       rotation;
+            Vector4     color;
 
-            BlendFunc           blend;
+            BlendFunc   blend;
         };
 
         Array<DrawCommand>      _drawCmds;

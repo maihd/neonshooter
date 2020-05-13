@@ -1219,7 +1219,7 @@ namespace Renderer
         //Graphics::BlitRenderTarget(&_fxaaRenderTarget, &_glowRenderTarget, _fxaaShader);
         //Graphics::BlitRenderTarget(&_glowRenderTarget, &_fxaaRenderTarget, _fxaaShader);
         //Graphics::BlitRenderTarget(&_glowRenderTarget, NULL, _glowShader);
-        Graphics::BlitRenderTarget(_fxaaRenderTarget, NULL, _glowShader);
+        Graphics::BlitRenderTarget(_fxaaRenderTarget, _glowShader);
     }
 }
 
