@@ -181,18 +181,13 @@ inline namespace Mojo
 
         void BindShader(const Shader& shader);
         void BindTexture(const Texture& texture, int index = 0);
-        void BindVertexArray(const VertexArray& array);
-        void BindIndexBuffer(const IndexBuffer& buffer);
-        void BindVertexBuffer(const VertexBuffer& buffer);
 
         void BindRenderTarget(const RenderTarget& renderTarget);
         void BlitRenderTarget(const RenderTarget& src, RenderTarget& dst, const Shader& shader);
         void BlitRenderTarget(const RenderTarget& src, const Shader& shader);
 
-        void DrawArrays(DrawType type, int count, int offset = 0);
-        void DrawIndices(DrawType type, DataType dataType, int count, int offset = 0);
-
-        void SetColor(unsigned color24, float a = 1.0f);
+        void SetColor(const Color& color);
+        void SetColor(U32 color24, float a = 1.0f);
         void SetColor(float r, float g, float b, float a = 1.0f);
 
         Vector4 GetColor(void);
@@ -202,5 +197,16 @@ inline namespace Mojo
         void Circle(DrawMode mode, float x, float y, float radius, int segments = 30);
         void Polygon(DrawMode mode, const float* points);
         void Rectangle(DrawMode mode, float x, float y, float w, float h);
+        
+        //---------------------------------
+        // Low-level api
+        //---------------------------------
+
+        void BindVertexArray(const VertexArray& array);
+        void BindIndexBuffer(const IndexBuffer& buffer);
+        void BindVertexBuffer(const VertexBuffer& buffer);
+
+        void DrawArrays(DrawType type, int count, int offset = 0);
+        void DrawIndices(DrawType type, DataType dataType, int count, int offset = 0);
     }
 }
