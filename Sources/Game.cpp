@@ -1104,7 +1104,7 @@ namespace Renderer
         _spriteBatch = new SpriteBatch();
 
         // Create post processing _spriteShader
-        printf("renderer::init(): Starting create framebuffer's shader...\n");
+        printf("Renderer::Init(): Starting create framebuffer's shader...\n");
         {
             const char* fshader_src =
                 "#version 330 core\n"
