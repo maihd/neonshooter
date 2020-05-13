@@ -1259,7 +1259,7 @@ inline namespace Mojo
 
         /* Computes the floating-point remainder of the division operation x/y
          */
-        inline float Fmod(float a, float b)
+        inline float Mod(float a, float b)
         {
             return fmodf(a, b);
         }
@@ -1515,9 +1515,9 @@ inline namespace Mojo
 
         /* Computes the floating-point remainder of the division operation x/y
          */
-        inline Vector2 Fmod(const Vector2& a, const Vector2& b)
+        inline Vector2 Mod(const Vector2& a, const Vector2& b)
         {
-            return Vector2(Fmod(a.x, b.x), Fmod(a.y, b.y));
+            return Vector2(Mod(a.x, b.x), Mod(a.y, b.y));
         }
 
         /* Computes the smallest integer value not less than 'x'
@@ -1722,7 +1722,7 @@ inline namespace Mojo
          */
         inline Vector3 Abs(const Vector3& v)
         {
-            return Vector3(fabsf(v.x), fabsf(v.y), fabsf(v.z));
+            return Vector3(Abs(v.x), Abs(v.y), Abs(v.z));
         }
 
         /* Computes cosine
@@ -1864,11 +1864,11 @@ inline namespace Mojo
 
         /* Computes the floating-point remainder of the division operation x/y
          */
-        inline Vector3 Fmod(const Vector3& a, const Vector3& b)
+        inline Vector3 Mod(const Vector3& a, const Vector3& b)
         {
-            return Vector3(Fmod(a.x, b.x),
-                Fmod(a.y, b.y),
-                Fmod(a.z, b.z));
+            return Vector3(Mod(a.x, b.x),
+                Mod(a.y, b.y),
+                Mod(a.z, b.z));
         }
 
         /* Computes the smallest integer value not less than 'x'
@@ -2067,6 +2067,20 @@ inline namespace Mojo
             return LengthSq(a - b);
         }
 
+        /* Compute angle of vector, a.k.a direction of vector
+         */
+        inline float Angle(const Vector2& v)
+        {
+            return Atan2(v.y, v.x);
+        }
+
+        /* Compute angle of two vector
+         */
+        inline float Angle(const Vector2& a, const Vector2& b)
+        {
+            return Angle(b - a);
+        }
+
         /* Compute normalized vector
          */
         inline Vector3 Normalize(const Vector3& v)
@@ -2121,10 +2135,10 @@ inline namespace Mojo
          */
         inline Vector4 Abs(const Vector4& v)
         {
-            return Vector4(fabsf(v.x),
-                fabsf(v.y),
-                fabsf(v.z),
-                fabsf(v.w));
+            return Vector4(Abs(v.x),
+                Abs(v.y),
+                Abs(v.z),
+                Abs(v.w));
         }
 
         /* Computes cosine
@@ -2283,13 +2297,13 @@ inline namespace Mojo
 
         /* Computes the floating-point remainder of the division operation x/y
          */
-        inline Vector4 Fmod(const Vector4& a, const Vector4& b)
+        inline Vector4 Mod(const Vector4& a, const Vector4& b)
         {
             return Vector4(
-                Fmod(a.x, b.x),
-                Fmod(a.y, b.y),
-                Fmod(a.z, b.z),
-                Fmod(a.w, b.w));
+                Mod(a.x, b.x),
+                Mod(a.y, b.y),
+                Mod(a.z, b.z),
+                Mod(a.w, b.w));
         }
 
         /* Computes the smallest integer value not less than 'x'
