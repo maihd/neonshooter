@@ -219,7 +219,7 @@ namespace Mojo
         int   _windowedWidth;
         int   _windowedHeight;
 
-        bool Setup(const char* title, int width, int height, int flags)
+        bool Setup(const char* title, int width, int height, WindowFlag flags)
         {
             if (SDL_InitSubSystem(SDL_INIT_VIDEO) != 0)
             {

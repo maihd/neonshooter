@@ -40,13 +40,13 @@ inline namespace Mojo
         static ConfigVar* Find(const char* name);
 
     public:
-        ConfigVar(const char *name, const char *description, int flags, int value);
-        ConfigVar(const char *name, const char *description, int flags, int value, int min, int max);
+        ConfigVar(const char* name, const char* description, int flags, int value);
+        ConfigVar(const char* name, const char* description, int flags, int value, int min, int max);
 
-        ConfigVar(const char *name, const char *description, int flags, float value);
-        ConfigVar(const char *name, const char *description, int flags, float value, float min, float max);
+        ConfigVar(const char* name, const char* description, int flags, float value);
+        ConfigVar(const char* name, const char* description, int flags, float value, float min, float max);
 
-        ConfigVar(const char *name, const char *description, int flags, const char* value);
+        ConfigVar(const char* name, const char* description, int flags, const char* value);
 
     public:
         const char* name;				// name

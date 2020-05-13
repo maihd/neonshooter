@@ -31,10 +31,10 @@ inline namespace Mojo
         bool SetFloat4x4(int location, const float* value, bool transpose = false);
         bool SetFloat4x4(const char* name, const float* value, bool transpose = false);
 
-        bool SetTransform(const float4x4& matrix);
-        bool SetProjection(const float4x4& matrix);
+        bool SetTransform(const Matrix4& matrix);
+        bool SetProjection(const Matrix4& matrix);
 
-        bool SetMainColor(const float4& color);
+        bool SetMainColor(const Vector4& color);
         bool SetMainTexture(TextureHandle* texture);
 
         static Shader Create(const char* vertexSource = 0, const char* pixelsSource = 0);

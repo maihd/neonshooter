@@ -29,18 +29,18 @@ inline namespace Mojo
     {
         struct Vertex
         {
-            float2 pos;
-            float2 uv;
+            Vector2 pos;
+            Vector2 uv;
         };
 
         struct DrawCommand
         {
             TextureHandle*      texture;
             int                 drawCount;
-            float2              position;
-            float2              scale;
+            Vector2             position;
+            Vector2             scale;
             float               rotation;
-            float4              color;
+            Vector4             color;
 
             BlendFunc           blend;
         };
@@ -58,13 +58,14 @@ inline namespace Mojo
 
         void DrawTexture(
             const Texture& texture,
-            float2 position = float2(0.0f),
+            const Vector2& position = Vector2(0.0f),
             float rotation = 0.0f,
-            float2 scale = float2(1.0f),
-            float4 color = float4(1.0f),
-            BlendFunc blend = { BlendFactor::SrcAlpha, BlendFactor::InvertSrcAlpha });
+            const Vector2& scale = Vector2(1.0f),
+            const Vector4& color = Vector4(1.0f),
+            BlendFunc blend = { BlendFactor::SrcAlpha, BlendFactor::InvertSrcAlpha }
+        );
         
         void Clear(void);
-        void Present(const float4x4& projection);
+        void Present(const Matrix4& projection);
     };
 }

@@ -264,17 +264,17 @@ namespace Mojo
         return this->SetFloat4x4(this->FindUniform(name), value, transpose);
     }
 
-    bool Shader::SetTransform(const float4x4& matrix)
+    bool Shader::SetTransform(const Matrix4& matrix)
     {
         return this->SetFloat4x4("TransformMatrix", (float*)&matrix, false);
     }
 
-    bool Shader::SetProjection(const float4x4& matrix)
+    bool Shader::SetProjection(const Matrix4& matrix)
     {
         return this->SetFloat4x4("ProjectionMatrix", (float*)&matrix, false);
     }
 
-    bool Shader::SetMainColor(const float4& color)
+    bool Shader::SetMainColor(const Vector4& color)
     {
         return this->SetFloat4("MainColor", color.x, color.y, color.z, color.w);
     }

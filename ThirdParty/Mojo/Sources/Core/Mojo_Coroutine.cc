@@ -16,9 +16,9 @@ namespace Mojo
     static void WINAPI Coroutine_FiberProc(void* params) 
     {
         Coroutine* coro = (Coroutine*)params;
-        if (coro->_function)
+        if (coro->function)
         {
-            coro->_function(coro->_userdata);
+            coro->function(coro->userdata);
         }
 
         coro->handle = NULL;
@@ -39,8 +39,8 @@ namespace Mojo
             }
 
             handle = ::CreateFiber(0, Coroutine_FiberProc, this);
-            _userdata = args;
-            _function = entry;
+            userdata = args;
+             function = entry;
         }
 
         return handle != NULL;

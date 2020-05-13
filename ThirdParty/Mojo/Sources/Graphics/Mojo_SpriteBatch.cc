@@ -34,13 +34,13 @@ namespace Mojo
         _spriteVertexArray.SetAttribute(_spriteVertexBuffer, 0, 4, DataType::Float, false, sizeof(Vertex));
     }
 
-    void SpriteBatch::DrawTexture(const Texture& texture, float2 position, float rotation, float2 scale, float4 color, BlendFunc blend)
+    void SpriteBatch::DrawTexture(const Texture& texture, const Vector2& position, float rotation, const Vector2& scale, const Vector4& color, BlendFunc blend)
     {
         DrawCommand cmd;
         cmd.texture = texture;
         cmd.position = position;
         cmd.rotation = rotation;
-        cmd.scale = scale * float2((float)texture.width, (float)texture.height);
+        cmd.scale = scale * Vector2((float)texture.width, (float)texture.height);
         cmd.blend = blend;
         cmd.color = color;
         cmd.drawCount = 6;
@@ -58,20 +58,20 @@ namespace Mojo
         _indices.Push((unsigned short)(i + 3U));
 
         Vertex v;
-        v.pos = float2(-0.5f, -0.5f);
-        v.uv = float2(0.0f, 1.0f);
+        v.pos = Vector2(-0.5f, -0.5f);
+        v.uv = Vector2(0.0f, 1.0f);
         _vertices.Push(v);
 
-        v.pos = float2(-0.5f, 0.5f);
-        v.uv = float2(0.0f, 0.0f);
+        v.pos = Vector2(-0.5f, 0.5f);
+        v.uv = Vector2(0.0f, 0.0f);
         _vertices.Push(v);
 
-        v.pos = float2(0.5f, 0.5f);
-        v.uv = float2(1.0f, 0.0f);
+        v.pos = Vector2(0.5f, 0.5f);
+        v.uv = Vector2(1.0f, 0.0f);
         _vertices.Push(v);
 
-        v.pos = float2(0.5f, -0.5f);
-        v.uv = float2(1.0f, 1.0f);
+        v.pos = Vector2(0.5f, -0.5f);
+        v.uv = Vector2(1.0f, 1.0f);
         _vertices.Push(v);
     }
 
@@ -82,7 +82,7 @@ namespace Mojo
         _indices.Clear();
     }
 
-    void SpriteBatch::Present(const float4x4& projection)
+    void SpriteBatch::Present(const Matrix4& projection)
     {
         Graphics::BindShader(_spriteShader);
         Graphics::BindVertexArray(_spriteVertexArray);
@@ -92,6 +92,7 @@ namespace Mojo
         _spriteVertexBuffer.SetData(_vertices.elements, _vertices.count * sizeof(Vertex), BufferUsage::StreamDraw);
         _spriteIndexBuffer.SetData(_indices.elements, _indices.count * sizeof(unsigned short), BufferUsage::StreamDraw);
 
+        int offset = 0;
         for (int i = 0, n = _drawCmds.count; i < n; i++)
         {
             const DrawCommand& cmd = _drawCmds[i];
@@ -99,14 +100,16 @@ namespace Mojo
             Graphics::SetBlendFunc(cmd.blend);
             //_spriteVertexBuffer.SetBlendFunc(cmd.blend);
 
-            float4x4 model_matrix = Math::Transform(cmd.position, cmd.rotation, cmd.scale);
-            float4x4 MVP_matrix = mul(projection, model_matrix);
+            Matrix4 model_matrix = Math::Transform(cmd.position, cmd.rotation, cmd.scale);
+            Matrix4 MVP_matrix = mul(projection, model_matrix);
 
             _spriteShader.SetFloat4x4("MVP", (float*)&MVP_matrix);
             _spriteShader.SetFloat4("color", cmd.color.x, cmd.color.y, cmd.color.z, cmd.color.w);
 
             Graphics::BindTexture(cmd.texture);
-            Graphics::DrawIndices(DrawType::Triangles, DataType::Uint16, cmd.drawCount, 0);
+            Graphics::DrawIndices(DrawType::Triangles, DataType::Uint16, cmd.drawCount, offset);
+            
+            offset += cmd.drawCount;
         }
     }
 }

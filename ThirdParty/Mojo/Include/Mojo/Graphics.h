@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Mojo/Core/Types.h>
+
 inline namespace Mojo
 {
     struct ShaderHandle;
@@ -212,8 +214,8 @@ inline namespace Mojo
         void SetColor(unsigned color24, float a = 1.0f);
         void SetColor(float r, float g, float b, float a = 1.0f);
 
-        float4 GetColor(void);
-        void   GetColor(float* r, float* g, float* b, float* a = 0);
+        Vector4 GetColor(void);
+        void    GetColor(float* r, float* g, float* b, float* a = 0);
 
         void Arc(DrawMode mode, float x, float y, float radius, float angle, int segments = 30);
         void Circle(DrawMode mode, float x, float y, float radius, int segments = 30);

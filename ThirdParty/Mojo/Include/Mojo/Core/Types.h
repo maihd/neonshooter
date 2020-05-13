@@ -22,11 +22,6 @@ inline namespace Mojo
     using uint64    = unsigned long;
 #endif
 
-    using sbyte     = int8;
-    using byte      = uint8;
-    using word      = uint16;
-    using dword     = uint32;
-
 #if _WIN64
     using intptr    = int64;
     using uintptr   = uint64;
@@ -37,63 +32,63 @@ inline namespace Mojo
 
     //using NullPtr   = decltype(nullptr);
 
-    struct quat;
-    struct float2;
-    struct float3;
-    struct float4;
-    struct float4x4;
+    struct Vector2;
+    struct Vector3;
+    struct Vector4;
+    struct Matrix4;
+    struct Quaterion;
 
-    struct float2
+    struct Vector2
     {
         float x, y;
 
-        constexpr float2(void)
+        constexpr Vector2(void)
             : x(0)
             , y(0)
         {
         }
 
-        inline float2(float x, float y)
+        inline Vector2(float x, float y)
             : x(x)
             , y(y)
         {
         }
 
-        float2(float s);
-        float2(const float3& v);
-        float2(const float4& v);
-        float2(const quat& q);
+        Vector2(float s);
+        Vector2(const Vector3& v);
+        Vector2(const Vector4& v);
+        Vector2(const Quaterion& q);
     };
 
-    struct float3
+    struct Vector3
     {
         float x, y, z;
 
-        constexpr float3(void)
+        constexpr Vector3(void)
             : x(0)
             , y(0)
             , z(0)
         {
         }
 
-        inline float3(float x, float y, float z = 0.0f)
+        inline Vector3(float x, float y, float z = 0.0f)
             : x(x)
             , y(y)
             , z(z)
         {
         }
 
-        float3(float s);
-        float3(const float4& v);
-        float3(const quat& v);
-        float3(const float2& v, float z = 0.0f);
+        Vector3(float s);
+        Vector3(const Vector4& v);
+        Vector3(const Quaterion& v);
+        Vector3(const Vector2& v, float z = 0.0f);
     };
 
-    struct float4
+    struct Vector4
     {
         float x, y, z, w;
 
-        constexpr float4(void)
+        constexpr Vector4(void)
             : x(0)
             , y(0)
             , z(0)
@@ -101,7 +96,7 @@ inline namespace Mojo
         {
         }
 
-        inline float4(float x, float y, float z, float w)
+        inline Vector4(float x, float y, float z, float w)
             : x(x)
             , y(y)
             , z(z)
@@ -109,10 +104,10 @@ inline namespace Mojo
         {
         }
 
-        float4(float s);
-        float4(const quat& v);
-        float4(const float3& v, float w);
-        float4(const float2& v, float z, float w);
+        Vector4(float s);
+        Vector4(const Quaterion& v);
+        Vector4(const Vector3& v, float w);
+        Vector4(const Vector2& v, float z, float w);
 
         float& operator[](int index)
         {
@@ -125,11 +120,11 @@ inline namespace Mojo
         }
     };
 
-    struct quat
+    struct Quaterion
     {
         float x, y, z, w; 
 
-        constexpr quat(void)
+        constexpr Quaterion(void)
             : x(0)
             , y(0)
             , z(0)
@@ -137,7 +132,7 @@ inline namespace Mojo
         {
         }
 
-        inline quat(float x, float y, float z, float w)
+        inline Quaterion(float x, float y, float z, float w)
             : x(x)
             , y(y)
             , z(z)
@@ -145,27 +140,27 @@ inline namespace Mojo
         {
         }
 
-        quat(float s);
-        quat(const float4& v);
-        quat(float x, float y, float z);
-        quat(const float3& axis, float angle);
+        Quaterion(float s);
+        Quaterion(const Vector4& v);
+        Quaterion(float x, float y, float z);
+        Quaterion(const Vector3& axis, float angle);
     };
 
-    struct float4x4
+    struct Matrix4
     {
-        float4 rows[4];
+        Vector4 rows[4];
 
-        constexpr float4x4(void) {}
+        constexpr Matrix4(void) {}
 
-        inline float4x4(float s)
+        inline Matrix4(float s)
         {
-            rows[0] = float4(s, 0, 0, 0);
-            rows[1] = float4(0, s, 0, 0);
-            rows[2] = float4(0, 0, s, 0);
-            rows[3] = float4(0, 0, 0, s);
+            rows[0] = Vector4(s, 0, 0, 0);
+            rows[1] = Vector4(0, s, 0, 0);
+            rows[2] = Vector4(0, 0, s, 0);
+            rows[3] = Vector4(0, 0, 0, s);
         }
 
-        inline float4x4(const float4& m0, const float4& m1, const float4& m2, const float4& m3)
+        inline Matrix4(const Vector4& m0, const Vector4& m1, const Vector4& m2, const Vector4& m3)
         {
             rows[0] = m0;
             rows[1] = m1;
@@ -173,23 +168,23 @@ inline namespace Mojo
             rows[3] = m3;
         }
 
-        inline float4x4(float m00, float m01, float m02, float m03,
+        inline Matrix4(float m00, float m01, float m02, float m03,
             float m10, float m11, float m12, float m13,
             float m20, float m21, float m22, float m23,
             float m30, float m31, float m32, float m33)
         {
-            rows[0] = float4(m00, m01, m02, m03);
-            rows[1] = float4(m10, m11, m12, m13);
-            rows[2] = float4(m20, m21, m22, m23);
-            rows[3] = float4(m30, m31, m32, m33);
+            rows[0] = Vector4(m00, m01, m02, m03);
+            rows[1] = Vector4(m10, m11, m12, m13);
+            rows[2] = Vector4(m20, m21, m22, m23);
+            rows[3] = Vector4(m30, m31, m32, m33);
         }
 
-        float4& operator[](int index)
+        Vector4& operator[](int index)
         {
             return rows[index];
         }
 
-        const float4& operator[](int index) const
+        const Vector4& operator[](int index) const
         {
             return rows[index];
         }

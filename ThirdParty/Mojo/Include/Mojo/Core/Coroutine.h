@@ -5,8 +5,8 @@ inline namespace Mojo
     struct Coroutine
     {
         void* handle;
-        void* _userdata;
-        void(*_function)(void*);
+        void* userdata;
+        void(*function)(void*);
 
         bool Start(void(*entry)(void*), void* args);
         void Release(void);

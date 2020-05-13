@@ -191,7 +191,7 @@ namespace Mojo
 
     namespace
     {
-        float4       _globalColor;
+        Vector4       _globalColor;
 
         VertexArray  _renderTargetVertexArray;
         VertexBuffer _renderTargetVertexBuffer;
@@ -429,17 +429,17 @@ namespace Mojo
 
         void CreateDefaultObjects(void)
         {
-            float2 vertices[] =
+            Vector2 vertices[] =
             {
                 // First triangle
-                float2(-1.0f, -1.0f), float2(0.0f, 0.0f),
-                float2(-1.0f,  1.0f), float2(0.0f, 1.0f),
-                float2( 1.0f,  1.0f), float2(1.0f, 1.0f),
+                Vector2(-1.0f, -1.0f), Vector2(0.0f, 0.0f),
+                Vector2(-1.0f,  1.0f), Vector2(0.0f, 1.0f),
+                Vector2( 1.0f,  1.0f), Vector2(1.0f, 1.0f),
 
                 // Second triangle
-                float2( 1.0f,  1.0f), float2(1.0f, 1.0f),
-                float2( 1.0f, -1.0f), float2(1.0f, 0.0f),
-                float2(-1.0f, -1.0f), float2(0.0f, 0.0f),
+                Vector2( 1.0f,  1.0f), Vector2(1.0f, 1.0f),
+                Vector2( 1.0f, -1.0f), Vector2(1.0f, 0.0f),
+                Vector2(-1.0f, -1.0f), Vector2(0.0f, 0.0f),
             };
 
             _renderTargetVertexArray = VertexArray::Create();
@@ -623,17 +623,17 @@ namespace Mojo
             float g = ((color24 >>  8) & 0xff) * factor;
             float b = ((color24 >>  0) & 0xff) * factor;
 
-            _globalColor = float4(r, g, b, a);
+            _globalColor = Vector4(r, g, b, a);
         }
 
         void SetColor(float r, float g, float b, float a)
         {
-            _globalColor = float4(r, g, b, a);
+            _globalColor = Vector4(r, g, b, a);
         }
 
         void Rectangle(DrawMode mode, float x, float y, float w, float h)
         {
-            float4x4 transform = Math::Transform(float2(x, y), 0.0, float2(w, h));
+            Matrix4 transform = Math::Transform(Vector2(x, y), 0.0, Vector2(w, h));
         }
     }
 }

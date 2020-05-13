@@ -11,19 +11,20 @@ inline namespace Mojo
     // Footprint is 8-bytes (32-bits arch) or 16-bytes (64-bits arch)
     struct String
     {
-        char*               data;                   // Point to LocalBuf() or heap allocated
+        char*               buffer;                 // Point to LocalBuf() or heap allocated
         int                 capacity : 21;          // Max 2 MB
         int                 localBufSize : 10;      // Max 1023 bytes
         bool                isOwned : 1;            // Set when we have ownership of the pointed data (most common, unless using SetRef() method or StrRef constructor)
 
-        static const char*  EmptyBuffer;
+    public: // Constants
+        static const char* const EmptyBuffer;
 
     public:
-        inline char*        CString(void)           { return data;              }
-        inline const char*  CString(void)     const { return data;              }
-        inline bool         IsEmpty(void)     const { return data[0] == 0;      }
-        inline int          GetLength(void)   const { return (int)strlen(data); }    // by design, allow user to write into the buffer at any time
-        inline int          GetCapacity(void) const { return capacity;          }
+        inline char*        GetCString(void)        { return buffer;              }
+        inline const char*  GetCString(void)  const { return buffer;              }
+        inline bool         IsEmpty(void)     const { return buffer[0] == 0;      }
+        inline int          GetLength(void)   const { return (int)strlen(buffer); }    // by design, allow user to write into the buffer at any time
+        inline int          GetCapacity(void) const { return capacity;            }
 
         inline void         Set(const char* src);
         inline void         Set(const char* src, const char* end);
@@ -51,111 +52,126 @@ inline namespace Mojo
         void                ReserveDiscard(int capacity);
 
     public:
-        inline char&        operator[](int i)                    { return data[i]; }
-        inline char         operator[](int i) const              { return data[i]; }
+        inline char&        operator[](int i)                    { return buffer[i]; }
+        inline char         operator[](int i) const              { return buffer[i]; }
         //explicit operator const char*() const{ return data; }
 
-        inline String();
-        inline String(const char* rhs);
-        inline String&      operator=(const char* rhs)              { Set(rhs); return *this; }
-        inline bool         operator==(const char* rhs) const       { return strcmp(CString(), rhs) == 0; }
+        inline              String();
+        inline              String(const char* rhs);
+        inline String&      operator=(const char* rhs)           { this->Set(rhs); return *this;            }
+        inline bool         operator==(const char* rhs) const    { return strcmp(GetCString(), rhs) == 0;   }
 
-        inline String(const String& rhs);
-        inline String&      operator=(const String& rhs)               { Set(rhs); return *this; }
-        inline bool         operator==(const String& rhs) const        { return strcmp(CString(), rhs.CString()) == 0; }
+        inline              String(const String& rhs);
+        inline String&      operator=(const String& rhs)         { this->Set(rhs); return *this;                       }
+        inline bool         operator==(const String& rhs) const  { return strcmp(GetCString(), rhs.GetCString()) == 0; }
 
         // Destructor for all variants
         inline ~String()
         {
-            if (isOwned && !IsUsingLocalBuffer())
-                free(data);
+            if (this->isOwned && !this->IsUsingLocalBuffer())
+            {
+                free(this->buffer);
+            }
+
+            // Reset fields
+            this->buffer = (char*)EmptyBuffer;
+            this->capacity = 0;
+            this->localBufSize = 0;
+            this->isOwned = false;
         }
 
-    public:
-        inline char*        LocalBuffer(void)              { return (char*)this + sizeof(String);               }
-        inline const char*  LocalBuffer(void)        const { return (const char*)this + sizeof(String);         }
-        inline bool         IsUsingLocalBuffer(void) const { return data == LocalBuffer() && localBufSize != 0; }
+    public: // Working with local buffer
+        inline char*        GetLocalBuffer(void)           { return (char*)this + sizeof(String);                           }
+        inline const char*  GetLocalBuffer(void)     const { return (const char*)this + sizeof(String);                     }
+        inline bool         IsUsingLocalBuffer(void) const { return buffer == this->GetLocalBuffer() && localBufSize != 0;  }
 
         // Constructor for StrXXX variants with local buffer
         String(int localBufSize)
         {
             assert(localBufSize < 1024);
 
-            data = LocalBuffer();
-            data[0] = '\0';
-            capacity = localBufSize;
-            localBufSize = localBufSize;
-            isOwned = 1;
+            this->buffer        = this->GetLocalBuffer();
+            this->buffer[0]     = '\0';
+            this->capacity      = localBufSize;
+            this->localBufSize  = localBufSize;
+            this->isOwned       = 1;
         }
     };
 
-    void    String::Set(const char* src)
+    void String::Set(const char* src)
     {
         // We allow Set(NULL) or via = operator to Clear the string.
         if (src == NULL)
         {
-            Clear();
+            this->Clear();
             return;
         }
-        int buf_len = (int)strlen(src)+1;
-        if ((int)capacity < buf_len)
-            ReserveDiscard(buf_len);
-        memcpy(data, src, buf_len);
-        isOwned = 1;
+
+        int buflen = (int)strlen(src) + 1;
+        if (this->capacity < buflen)
+        {
+            this->ReserveDiscard(buflen);
+        }
+        memcpy(this->buffer, src, buflen);
+        this->isOwned = true;
     }
 
-    void    String::Set(const char* src, const char* src_end)
+    void String::Set(const char* src, const char* srcEnd)
     {
-        assert(src != NULL && src_end >= src);
-        int buf_len = (int)(src_end-src)+1;
-        if ((int)capacity < buf_len)
-            ReserveDiscard(buf_len);
-        memcpy(data, src, buf_len-1);
-        data[buf_len-1] = 0;
-        isOwned = 1;
+        assert(src != NULL && srcEnd >= src);
+
+        int buflen = (int)(srcEnd - src) + 1;
+        if (this->capacity < buflen)
+        {
+            this->ReserveDiscard(buflen);
+        }
+
+        memcpy(this->buffer, src, buflen - 1);
+        this->buffer[buflen - 1] = 0;
+        this->isOwned = true;
     }
 
-    void    String::Set(const String& src)
+    void String::Set(const String& src)
     {
-        int buf_len = (int)strlen(src.CString())+1;
-        if ((int)capacity < buf_len)
-            ReserveDiscard(buf_len);
-        memcpy(data, src.CString(), buf_len);
-        isOwned = 1;
+        int buffer = src.GetLength() + 1;
+        if (this->capacity < buffer)
+        {
+            this->ReserveDiscard(buffer);
+        }
+
+        memcpy(this->buffer, src.GetCString(), buffer);
+        this->isOwned = true;
     }
 
-    inline void String::SetRef(const char* src)
+    void String::SetRef(const char* src)
     {
-        if (isOwned && !IsUsingLocalBuffer())
-            free(data);
-        data = src ? (char*)src : (char*)EmptyBuffer;
-        capacity = 0;
-        isOwned = 0;
+        if (this->isOwned && !this->IsUsingLocalBuffer())
+        {
+            free(this->buffer);
+        }
+
+        this->buffer = src ? (char*)src : (char*)EmptyBuffer;
+        this->capacity = 0;
+        this->isOwned = false;
     }
 
     String::String()
     {
-        data = (char*)EmptyBuffer;      // Shared READ-ONLY initial buffer for 0 GetCapacity
-        capacity = 0;
-        localBufSize = 0;
-        isOwned = 0;
+        this->buffer = (char*)EmptyBuffer;      // Shared READ-ONLY initial buffer for 0 GetCapacity
+        this->capacity = 0;
+        this->localBufSize = 0;
+        this->isOwned = false;
     }
 
     String::String(const String& rhs)
+        : String()
     {
-        data = (char*)EmptyBuffer;
-        capacity = 0;
-        localBufSize = 0;
-        isOwned = 0;
-        Set(rhs);
+        this->Set(rhs);
     }
 
     String::String(const char* rhs)
+        : String()
     {
-        data = (char*)EmptyBuffer;
-        capacity = 0;
-        localBufSize = 0;
-        isOwned = 0;
-        Set(rhs);
+        this->Set(rhs);
     }
 }

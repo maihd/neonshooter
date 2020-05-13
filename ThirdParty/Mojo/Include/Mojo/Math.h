@@ -148,101 +148,101 @@ inline float fsqrtf(float x)
 
 inline namespace Mojo
 {
-    struct quat;
-    struct float2;
-    struct float3;
-    struct float4;
-    struct float4x4;
+    struct Quaterion;
+    struct Vector2;
+    struct Vector3;
+    struct Vector4;
+    struct Matrix4;
 
     namespace Math
     {
-        float4x4 Transform(const float2& position, float rotation, const float2& scale);
-        float4x4 Transform(const float3& position, const quat& rotation, const float3& scale);
+        Matrix4 Transform(const Vector2& position, float rotation, const Vector2& scale);
+        Matrix4 Transform(const Vector3& position, const Quaterion& rotation, const Vector3& scale);
 
-        float4x4 Scalation(float s);
-        float4x4 Scalation(const float2& v);
-        float4x4 Scalation(const float3& v);
-        float4x4 Scalation(float x, float y, float z = 1.0f);
+        Matrix4 Scalation(float s);
+        Matrix4 Scalation(const Vector2& v);
+        Matrix4 Scalation(const Vector3& v);
+        Matrix4 Scalation(float x, float y, float z = 1.0f);
 
-        float4x4 Translation(const float2& v);
-        float4x4 Translation(const float3& v);
-        float4x4 Translation(float x, float y, float z = 0.0f);
+        Matrix4 Translation(const Vector2& v);
+        Matrix4 Translation(const Vector3& v);
+        Matrix4 Translation(float x, float y, float z = 0.0f);
 
-        float4x4 Rotation(const quat& quaternion);
-        float4x4 Rotation(const float3& axis, float angle);
-        float4x4 Rotation(float x, float y, float z, float angle);
+        Matrix4 Rotation(const Quaterion& quaternion);
+        Matrix4 Rotation(const Vector3& axis, float angle);
+        Matrix4 Rotation(float x, float y, float z, float angle);
 
-        float4x4 RotationX(float angle);
-        float4x4 RotationY(float angle);
-        float4x4 RotationZ(float angle);
+        Matrix4 RotationX(float angle);
+        Matrix4 RotationY(float angle);
+        Matrix4 RotationZ(float angle);
 
-        float4x4 Lookat(const float3& eye, const float3& target, const float3& up);
+        Matrix4 Lookat(const Vector3& eye, const Vector3& target, const Vector3& up);
 
-        float4x4 Ortho(float l, float r, float b, float t, float n, float f);
-        float4x4 Frustum(float l, float r, float b, float t, float n, float f);
-        float4x4 Perspective(float fov, float aspect, float znear, float zfar);
+        Matrix4 Ortho(float l, float r, float b, float t, float n, float f);
+        Matrix4 Frustum(float l, float r, float b, float t, float n, float f);
+        Matrix4 Perspective(float fov, float aspect, float znear, float zfar);
 
-        void Decompose(const float4x4& m, float3* scalation, quat* quaternion, float3* translation);
-        void Decompose(const float4x4& m, float3* scalation, float3* axis, float* angle, float3* translation);
+        void Decompose(const Matrix4& m, Vector3* scalation, Quaterion* quaternion, Vector3* translation);
+        void Decompose(const Matrix4& m, Vector3* scalation, Vector3* axis, float* angle, Vector3* translation);
     }
 
     //
     // @region: Constructors
     //
 
-    inline float2::float2(float s)
+    inline Vector2::Vector2(float s)
         : x(s)
         , y(s)
     {
     }
 
-    inline float2::float2(const float3& v)
+    inline Vector2::Vector2(const Vector3& v)
         : x(v.x)
         , y(v.y)
     {
     }
 
-    inline float2::float2(const float4& v)
+    inline Vector2::Vector2(const Vector4& v)
         : x(v.x)
         , y(v.y)
     {
     }
 
-    inline float2::float2(const quat& q)
+    inline Vector2::Vector2(const Quaterion& q)
         : x(q.x)
         , y(q.y)
     {
     }
 
-    inline float3::float3(float s)
+    inline Vector3::Vector3(float s)
         : x(s)
         , y(s)
         , z(s)
     {
     }
 
-    inline float3::float3(const float2& v, float z)
+    inline Vector3::Vector3(const Vector2& v, float z)
         : x(v.x)
         , y(v.y)
         , z(z)
     {
     }
 
-    inline float3::float3(const float4& v)
+    inline Vector3::Vector3(const Vector4& v)
         : x(v.x)
         , y(v.y)
         , z(v.z)
     {
     }
 
-    inline float3::float3(const quat& q)
+    inline Vector3::Vector3(const Quaterion& q)
         : x(q.x)
         , y(q.y)
         , z(q.z)
     {
     }
 
-    inline float4::float4(float s)
+    inline Vector4::Vector4(float s)
         : x(s)
         , y(s)
         , z(s)
@@ -250,7 +250,7 @@ inline namespace Mojo
     {
     }
 
-    inline float4::float4(const quat& q)
+    inline Vector4::Vector4(const Quaterion& q)
         : x(q.x)
         , y(q.y)
         , z(q.z)
@@ -258,7 +258,7 @@ inline namespace Mojo
     {
     }
 
-    inline float4::float4(const float3& v, float w)
+    inline Vector4::Vector4(const Vector3& v, float w)
         : x(v.x)
         , y(v.y)
         , z(v.z)
@@ -266,7 +266,7 @@ inline namespace Mojo
     {
     }
 
-    inline float4::float4(const float2& v, float z, float w)
+    inline Vector4::Vector4(const Vector2& v, float z, float w)
         : x(v.x)
         , y(v.y)
         , z(z)
@@ -274,7 +274,7 @@ inline namespace Mojo
     {
     }
 
-    inline quat::quat(float s)
+    inline Quaterion::Quaterion(float s)
         : x(s)
         , y(s)
         , z(s)
@@ -282,7 +282,7 @@ inline namespace Mojo
     {
     }
 
-    inline quat::quat(const float4& v)
+    inline Quaterion::Quaterion(const Vector4& v)
         : x(v.x)
         , y(v.y)
         , z(v.z)
@@ -290,7 +290,7 @@ inline namespace Mojo
     {
     }
 
-    inline quat::quat(float x, float y, float z)
+    inline Quaterion::Quaterion(float x, float y, float z)
     {
         float r;
         float p;
@@ -312,7 +312,7 @@ inline namespace Mojo
         this->w = c1 * c2 * c3 - s1 * s2 * s3;
     }
 
-    inline quat::quat(const float3& axis, float angle)
+    inline Quaterion::Quaterion(const Vector3& axis, float angle)
     {
         const float lsqr = axis.x * axis.x + axis.y * axis.y + axis.z * axis.z;
         if (lsqr == 0.0f)
@@ -337,33 +337,33 @@ inline namespace Mojo
     // @region: Operators
     //
 
-    inline float2 operator-(const float2& v)
+    inline Vector2 operator-(const Vector2& v)
     {
-        return float2(-v.x, -v.y);
+        return Vector2(-v.x, -v.y);
     }
 
-    inline const float2& operator+(const float2& v)
+    inline const Vector2& operator+(const Vector2& v)
     {
         return v;
     }
 
-    inline float2& operator--(float2& v)
+    inline Vector2& operator--(Vector2& v)
     {
         --v.x;
         --v.y;
         return v;
     }
 
-    inline float2& operator++(float2& v)
+    inline Vector2& operator++(Vector2& v)
     {
         ++v.x;
         ++v.y;
         return v;
     }
 
-    inline float2 operator--(float2& v, int)
+    inline Vector2 operator--(Vector2& v, int)
     {
-        const float2 result = v;
+        const Vector2 result = v;
 
         v.x--;
         v.y--;
@@ -371,9 +371,9 @@ inline namespace Mojo
         return result;
     }
 
-    inline float2 operator++(float2& v, int)
+    inline Vector2 operator++(Vector2& v, int)
     {
-        const float2 result = v;
+        const Vector2 result = v;
 
         v.x++;
         v.y++;
@@ -381,37 +381,37 @@ inline namespace Mojo
         return result;
     }
 
-    inline float2 operator+(const float2& a, const float2& b)
+    inline Vector2 operator+(const Vector2& a, const Vector2& b)
     {
 #if MATH_ENABLE_NEON   
-        return float2(vadd_f32(a, b));
+        return Vector2(vadd_f32(a, b));
 #else
-        return float2(a.x + b.x, a.y + b.y);
+        return Vector2(a.x + b.x, a.y + b.y);
 #endif
     }
 
-    inline float2 operator-(const float2& a, const float2& b)
+    inline Vector2 operator-(const Vector2& a, const Vector2& b)
     {
 #if MATH_ENABLE_NEON   
-        return float2(vsub_f32(a, b));
+        return Vector2(vsub_f32(a, b));
 #else
-        return float2(a.x - b.x, a.y - b.y);
+        return Vector2(a.x - b.x, a.y - b.y);
 #endif
     }
 
-    inline float2 operator*(const float2& a, const float2& b)
+    inline Vector2 operator*(const Vector2& a, const Vector2& b)
     {
 #if MATH_ENABLE_NEON   
-        return float2(vmul_f32(a, b));
+        return Vector2(vmul_f32(a, b));
 #else
-        return float2(a.x * b.x, a.y * b.y);
+        return Vector2(a.x * b.x, a.y * b.y);
 #endif
     }
 
-    inline float2 operator/(const float2& a, const float2& b)
+    inline Vector2 operator/(const Vector2& a, const Vector2& b)
     {
 #if MATH_ENABLE_NEON && 0 // experimental
-        float2 res;
+        Vector2 res;
         __asm volatile(
         "vcvt.f32.u32  q0, q0     \n\t"
             "vrecpe.f32    q0, q0     \n\t"
@@ -422,111 +422,111 @@ inline namespace Mojo
             :
             );
 #else
-        return float2(a.x / b.x, a.y / b.y);
+        return Vector2(a.x / b.x, a.y / b.y);
 #endif
     }
 
-    inline float2 operator+(const float2& a, float b)
+    inline Vector2 operator+(const Vector2& a, float b)
     {
-        return a + float2(b);
+        return a + Vector2(b);
     }
 
-    inline float2 operator-(const float2& a, float b)
+    inline Vector2 operator-(const Vector2& a, float b)
     {
-        return a - float2(b);
+        return a - Vector2(b);
     }
 
-    inline float2 operator*(const float2& a, float b)
+    inline Vector2 operator*(const Vector2& a, float b)
     {
-        return a * float2(b);
+        return a * Vector2(b);
     }
 
-    inline float2 operator/(const float2& a, float b)
+    inline Vector2 operator/(const Vector2& a, float b)
     {
-        return a / float2(b);
+        return a / Vector2(b);
     }
 
-    inline float2 operator+(float a, const float2& b)
+    inline Vector2 operator+(float a, const Vector2& b)
     {
-        return float2(a) + b;
+        return Vector2(a) + b;
     }
 
-    inline float2 operator-(float a, const float2& b)
+    inline Vector2 operator-(float a, const Vector2& b)
     {
-        return float2(a) - b;
+        return Vector2(a) - b;
     }
 
-    inline float2 operator*(float a, const float2& b)
+    inline Vector2 operator*(float a, const Vector2& b)
     {
-        return float2(a) * b;
+        return Vector2(a) * b;
     }
 
-    inline float2 operator/(float a, const float2& b)
+    inline Vector2 operator/(float a, const Vector2& b)
     {
-        return float2(a) / b;
+        return Vector2(a) / b;
     }
 
-    inline float2& operator+=(float2& a, const float2& b)
-    {
-        return (a = a + b);
-    }
-
-    inline float2& operator+=(float2& a, float b)
+    inline Vector2& operator+=(Vector2& a, const Vector2& b)
     {
         return (a = a + b);
     }
 
-    inline float2& operator-=(float2& a, const float2& b)
+    inline Vector2& operator+=(Vector2& a, float b)
+    {
+        return (a = a + b);
+    }
+
+    inline Vector2& operator-=(Vector2& a, const Vector2& b)
     {
         return (a = a - b);
     }
 
-    inline float2& operator-=(float2& a, float b)
+    inline Vector2& operator-=(Vector2& a, float b)
     {
         return (a = a - b);
     }
 
-    inline float2& operator*=(float2& a, const float2& b)
+    inline Vector2& operator*=(Vector2& a, const Vector2& b)
     {
         return (a = a * b);
     }
 
-    inline float2& operator*=(float2& a, float b)
+    inline Vector2& operator*=(Vector2& a, float b)
     {
         return (a = a * b);
     }
 
-    inline float2& operator/=(float2& a, const float2& b)
+    inline Vector2& operator/=(Vector2& a, const Vector2& b)
     {
         return (a = a / b);
     }
 
-    inline float2& operator/=(float2& a, float b)
+    inline Vector2& operator/=(Vector2& a, float b)
     {
         return (a = a + b);
     }
 
-    inline bool operator==(const float2& a, const float2& b)
+    inline bool operator==(const Vector2& a, const Vector2& b)
     {
         return a.x == b.x && a.y == b.y;
     }
 
-    inline bool operator!=(const float2& a, const float2& b)
+    inline bool operator!=(const Vector2& a, const Vector2& b)
     {
         return a.x != b.x || a.y != b.y;
     }
 
-    inline float3 operator-(const float3& v)
+    inline Vector3 operator-(const Vector3& v)
     {
-        return float3(-v.x, -v.y, -v.z);
+        return Vector3(-v.x, -v.y, -v.z);
     }
 
-    inline const float3& operator+(const float3& v)
+    inline const Vector3& operator+(const Vector3& v)
     {
         return v;
     }
 
-    inline float3& operator--(float3& v)
+    inline Vector3& operator--(Vector3& v)
     {
         --v.x;
         --v.y;
@@ -534,7 +534,7 @@ inline namespace Mojo
         return v;
     }
 
-    inline float3& operator++(float3& v)
+    inline Vector3& operator++(Vector3& v)
     {
         ++v.x;
         ++v.y;
@@ -542,9 +542,9 @@ inline namespace Mojo
         return v;
     }
 
-    inline float3 operator--(float3& v, int)
+    inline Vector3 operator--(Vector3& v, int)
     {
-        const float3 result = v;
+        const Vector3 result = v;
 
         v.x--;
         v.y--;
@@ -553,9 +553,9 @@ inline namespace Mojo
         return result;
     }
 
-    inline float3 operator++(float3& v, int)
+    inline Vector3 operator++(Vector3& v, int)
     {
-        const float3 result = v;
+        const Vector3 result = v;
 
         v.x++;
         v.y++;
@@ -564,127 +564,127 @@ inline namespace Mojo
         return result;
     }
 
-    inline float3 operator+(const float3& a, const float3& b)
+    inline Vector3 operator+(const Vector3& a, const Vector3& b)
     {
-        return float3(a.x + b.x, a.y + b.y, a.z + b.z);
+        return Vector3(a.x + b.x, a.y + b.y, a.z + b.z);
     }
 
-    inline float3 operator-(const float3& a, const float3& b)
+    inline Vector3 operator-(const Vector3& a, const Vector3& b)
     {
-        return float3(a.x - b.x, a.y - b.y, a.z - b.z);
+        return Vector3(a.x - b.x, a.y - b.y, a.z - b.z);
     }
 
-    inline float3 operator*(const float3& a, const float3& b)
+    inline Vector3 operator*(const Vector3& a, const Vector3& b)
     {
-        return float3(a.x * b.x, a.y * b.y, a.z * b.z);
+        return Vector3(a.x * b.x, a.y * b.y, a.z * b.z);
     }
 
-    inline float3 operator/(const float3& a, const float3& b)
+    inline Vector3 operator/(const Vector3& a, const Vector3& b)
     {
-        return float3(a.x / b.x, a.y / b.y, a.z / b.z);
+        return Vector3(a.x / b.x, a.y / b.y, a.z / b.z);
     }
 
-    inline float3 operator+(const float3& a, float b)
+    inline Vector3 operator+(const Vector3& a, float b)
     {
-        return float3(a.x + b, a.y + b, a.z + b);
+        return Vector3(a.x + b, a.y + b, a.z + b);
     }
 
-    inline float3 operator-(const float3& a, float b)
+    inline Vector3 operator-(const Vector3& a, float b)
     {
-        return float3(a.x - b, a.y - b, a.z - b);
+        return Vector3(a.x - b, a.y - b, a.z - b);
     }
 
-    inline float3 operator*(const float3& a, float b)
+    inline Vector3 operator*(const Vector3& a, float b)
     {
-        return float3(a.x * b, a.y * b, a.z * b);
+        return Vector3(a.x * b, a.y * b, a.z * b);
     }
 
-    inline float3 operator/(const float3& a, float b)
+    inline Vector3 operator/(const Vector3& a, float b)
     {
-        return float3(a.x / b, a.y / b, a.z / b);
+        return Vector3(a.x / b, a.y / b, a.z / b);
     }
 
-    inline float3 operator+(float a, const float3& b)
+    inline Vector3 operator+(float a, const Vector3& b)
     {
-        return float3(a + b.x, a + b.y, a + b.z);
+        return Vector3(a + b.x, a + b.y, a + b.z);
     }
 
-    inline float3 operator-(float a, const float3& b)
+    inline Vector3 operator-(float a, const Vector3& b)
     {
-        return float3(a - b.x, a - b.y, a - b.z);
+        return Vector3(a - b.x, a - b.y, a - b.z);
     }
 
-    inline float3 operator*(float a, const float3& b)
+    inline Vector3 operator*(float a, const Vector3& b)
     {
-        return float3(a * b.x, a * b.y, a * b.z);
+        return Vector3(a * b.x, a * b.y, a * b.z);
     }
 
-    inline float3 operator/(float a, const float3& b)
+    inline Vector3 operator/(float a, const Vector3& b)
     {
-        return float3(a / b.x, a / b.y, a / b.z);
+        return Vector3(a / b.x, a / b.y, a / b.z);
     }
 
-    inline float3& operator+=(float3& a, const float3& b)
-    {
-        return (a = a + b);
-    }
-
-    inline float3& operator+=(float3& a, float b)
+    inline Vector3& operator+=(Vector3& a, const Vector3& b)
     {
         return (a = a + b);
     }
 
-    inline float3& operator-=(float3& a, const float3& b)
+    inline Vector3& operator+=(Vector3& a, float b)
+    {
+        return (a = a + b);
+    }
+
+    inline Vector3& operator-=(Vector3& a, const Vector3& b)
     {
         return (a = a - b);
     }
 
-    inline float3& operator-=(float3& a, float b)
+    inline Vector3& operator-=(Vector3& a, float b)
     {
         return (a = a - b);
     }
 
-    inline float3& operator*=(float3& a, const float3& b)
+    inline Vector3& operator*=(Vector3& a, const Vector3& b)
     {
         return (a = a * b);
     }
 
-    inline float3& operator*=(float3& a, float b)
+    inline Vector3& operator*=(Vector3& a, float b)
     {
         return (a = a * b);
     }
 
-    inline float3& operator/=(float3& a, const float3& b)
+    inline Vector3& operator/=(Vector3& a, const Vector3& b)
     {
         return (a = a / b);
     }
 
-    inline float3& operator/=(float3& a, float b)
+    inline Vector3& operator/=(Vector3& a, float b)
     {
         return (a = a + b);
     }
 
-    inline bool operator==(const float3& a, const float3& b)
+    inline bool operator==(const Vector3& a, const Vector3& b)
     {
         return a.x == b.x && a.y == b.y && a.z == b.z;
     }
 
-    inline bool operator!=(const float3& a, const float3& b)
+    inline bool operator!=(const Vector3& a, const Vector3& b)
     {
         return a.x != b.x || a.y != b.y || a.z != b.z;
     }
 
-    inline float4 operator-(const float4& v)
+    inline Vector4 operator-(const Vector4& v)
     {
-        return float4(-v.x, -v.y, -v.z, -v.w);
+        return Vector4(-v.x, -v.y, -v.z, -v.w);
     }
 
-    inline const float4& operator+(const float4& v)
+    inline const Vector4& operator+(const Vector4& v)
     {
         return v;
     }
 
-    inline float4& operator--(float4& v)
+    inline Vector4& operator--(Vector4& v)
     {
         --v.x;
         --v.y;
@@ -693,7 +693,7 @@ inline namespace Mojo
         return v;
     }
 
-    inline float4& operator++(float4& v)
+    inline Vector4& operator++(Vector4& v)
     {
         ++v.x;
         ++v.y;
@@ -702,9 +702,9 @@ inline namespace Mojo
         return v;
     }
 
-    inline float4 operator--(float4& v, int)
+    inline Vector4 operator--(Vector4& v, int)
     {
-        const float4 result = v;
+        const Vector4 result = v;
 
         v.x--;
         v.y--;
@@ -714,9 +714,9 @@ inline namespace Mojo
         return result;
     }
 
-    inline float4 operator++(float4& v, int)
+    inline Vector4 operator++(Vector4& v, int)
     {
-        const float4 result = v;
+        const Vector4 result = v;
 
         v.x++;
         v.y++;
@@ -726,126 +726,126 @@ inline namespace Mojo
         return result;
     }
 
-    inline float4 operator+(const float4& a, const float4& b)
+    inline Vector4 operator+(const Vector4& a, const Vector4& b)
     {
-        return float4(a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w);
+        return Vector4(a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w);
     }
 
-    inline float4 operator-(const float4& a, const float4& b)
+    inline Vector4 operator-(const Vector4& a, const Vector4& b)
     {
-        return float4(a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w);
+        return Vector4(a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w);
     }
 
-    inline float4 operator*(const float4& a, const float4& b)
+    inline Vector4 operator*(const Vector4& a, const Vector4& b)
     {
-        return float4(a.x * b.x, a.y * b.y, a.z * b.z, a.w * b.w);
+        return Vector4(a.x * b.x, a.y * b.y, a.z * b.z, a.w * b.w);
     }
 
-    inline float4 operator/(const float4& a, const float4& b)
+    inline Vector4 operator/(const Vector4& a, const Vector4& b)
     {
-        return float4(a.x / b.x, a.y / b.y, a.z / b.z, a.w / b.w);
+        return Vector4(a.x / b.x, a.y / b.y, a.z / b.z, a.w / b.w);
     }
 
-    inline float4 operator+(const float4& a, float b)
+    inline Vector4 operator+(const Vector4& a, float b)
     {
-        return float4(a.x + b, a.y + b, a.z + b, a.w + b);
+        return Vector4(a.x + b, a.y + b, a.z + b, a.w + b);
     }
 
-    inline float4 operator-(const float4& a, float b)
+    inline Vector4 operator-(const Vector4& a, float b)
     {
-        return float4(a.x - b, a.y - b, a.z - b, a.w - b);
+        return Vector4(a.x - b, a.y - b, a.z - b, a.w - b);
     }
 
-    inline float4 operator*(const float4& a, float b)
+    inline Vector4 operator*(const Vector4& a, float b)
     {
-        return float4(a.x * b, a.y * b, a.z * b, a.w * b);
+        return Vector4(a.x * b, a.y * b, a.z * b, a.w * b);
     }
 
-    inline float4 operator/(const float4& a, float b)
+    inline Vector4 operator/(const Vector4& a, float b)
     {
-        return float4(a.x / b, a.y / b, a.z / b, a.w / b);
+        return Vector4(a.x / b, a.y / b, a.z / b, a.w / b);
     }
 
-    inline float4 operator+(float a, const float4& b)
+    inline Vector4 operator+(float a, const Vector4& b)
     {
-        return float4(a + b.x, a + b.y, a + b.z, a + b.w);
+        return Vector4(a + b.x, a + b.y, a + b.z, a + b.w);
     }
 
-    inline float4 operator-(float a, const float4& b)
+    inline Vector4 operator-(float a, const Vector4& b)
     {
-        return float4(a - b.x, a - b.y, a - b.z, a - b.w);
+        return Vector4(a - b.x, a - b.y, a - b.z, a - b.w);
     }
 
-    inline float4 operator*(float a, const float4& b)
+    inline Vector4 operator*(float a, const Vector4& b)
     {
-        return float4(a * b.x, a * b.y, a * b.z, a * b.w);
+        return Vector4(a * b.x, a * b.y, a * b.z, a * b.w);
     }
 
-    inline float4 operator/(float a, const float4& b)
+    inline Vector4 operator/(float a, const Vector4& b)
     {
-        return float4(a / b.x, a / b.y, a / b.z, a / b.w);
+        return Vector4(a / b.x, a / b.y, a / b.z, a / b.w);
     }
 
-    inline float4& operator+=(float4& a, const float4& b)
-    {
-        return (a = a + b);
-    }
-
-    inline float4& operator+=(float4& a, float b)
+    inline Vector4& operator+=(Vector4& a, const Vector4& b)
     {
         return (a = a + b);
     }
 
-    inline float4& operator-=(float4& a, const float4& b)
+    inline Vector4& operator+=(Vector4& a, float b)
+    {
+        return (a = a + b);
+    }
+
+    inline Vector4& operator-=(Vector4& a, const Vector4& b)
     {
         return (a = a - b);
     }
 
-    inline float4& operator-=(float4& a, float b)
+    inline Vector4& operator-=(Vector4& a, float b)
     {
         return (a = a - b);
     }
 
-    inline float4& operator*=(float4& a, const float4& b)
+    inline Vector4& operator*=(Vector4& a, const Vector4& b)
     {
         return (a = a * b);
     }
 
-    inline float4& operator*=(float4& a, float b)
+    inline Vector4& operator*=(Vector4& a, float b)
     {
         return (a = a * b);
     }
 
-    inline float4& operator/=(float4& a, const float4& b)
+    inline Vector4& operator/=(Vector4& a, const Vector4& b)
     {
         return (a = a / b);
     }
 
-    inline float4& operator/=(float4& a, float b)
+    inline Vector4& operator/=(Vector4& a, float b)
     {
         return (a = a + b);
     }
 
-    inline bool operator==(const float4& a, const float4& b)
+    inline bool operator==(const Vector4& a, const Vector4& b)
     {
         return a.x == b.x && a.y == b.y && a.z == b.z && a.w == b.w;
     }
 
-    inline bool operator!=(const float4& a, const float4& b)
+    inline bool operator!=(const Vector4& a, const Vector4& b)
     {
         return a.x != b.x || a.y != b.y || a.z != b.z || a.w != b.w;
     }
-    inline quat operator-(const quat& v)
+    inline Quaterion operator-(const Quaterion& v)
     {
-        return quat(-v.x, -v.y, -v.z, -v.w);
+        return Quaterion(-v.x, -v.y, -v.z, -v.w);
     }
 
-    inline const quat& operator+(const quat& v)
+    inline const Quaterion& operator+(const Quaterion& v)
     {
         return v;
     }
 
-    inline quat& operator--(quat& v)
+    inline Quaterion& operator--(Quaterion& v)
     {
         --v.x;
         --v.y;
@@ -854,7 +854,7 @@ inline namespace Mojo
         return v;
     }
 
-    inline quat& operator++(quat& v)
+    inline Quaterion& operator++(Quaterion& v)
     {
         ++v.x;
         ++v.y;
@@ -863,9 +863,9 @@ inline namespace Mojo
         return v;
     }
 
-    inline quat operator--(quat& v, int)
+    inline Quaterion operator--(Quaterion& v, int)
     {
-        const quat result = v;
+        const Quaterion result = v;
 
         v.x--;
         v.y--;
@@ -875,9 +875,9 @@ inline namespace Mojo
         return result;
     }
 
-    inline quat operator++(quat& v, int)
+    inline Quaterion operator++(Quaterion& v, int)
     {
-        const quat result = v;
+        const Quaterion result = v;
 
         v.x++;
         v.y++;
@@ -887,129 +887,129 @@ inline namespace Mojo
         return result;
     }
 
-    inline quat operator+(const quat& a, const quat& b)
+    inline Quaterion operator+(const Quaterion& a, const Quaterion& b)
     {
-        return quat(a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w);
+        return Quaterion(a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w);
     }
 
-    inline quat operator-(const quat& a, const quat& b)
+    inline Quaterion operator-(const Quaterion& a, const Quaterion& b)
     {
-        return quat(a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w);
+        return Quaterion(a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w);
     }
 
-    inline quat operator*(const quat& a, const quat& b)
+    inline Quaterion operator*(const Quaterion& a, const Quaterion& b)
     {
-        return quat(a.x * b.x, a.y * b.y, a.z * b.z, a.w * b.w);
+        return Quaterion(a.x * b.x, a.y * b.y, a.z * b.z, a.w * b.w);
     }
 
-    inline quat operator/(const quat& a, const quat& b)
+    inline Quaterion operator/(const Quaterion& a, const Quaterion& b)
     {
-        return quat(a.x / b.x, a.y / b.y, a.z / b.z, a.w / b.w);
+        return Quaterion(a.x / b.x, a.y / b.y, a.z / b.z, a.w / b.w);
     }
 
-    inline quat operator+(const quat& a, float b)
+    inline Quaterion operator+(const Quaterion& a, float b)
     {
-        return quat(a.x + b, a.y + b, a.z + b, a.w + b);
+        return Quaterion(a.x + b, a.y + b, a.z + b, a.w + b);
     }
 
-    inline quat operator-(const quat& a, float b)
+    inline Quaterion operator-(const Quaterion& a, float b)
     {
-        return quat(a.x - b, a.y - b, a.z - b, a.w - b);
+        return Quaterion(a.x - b, a.y - b, a.z - b, a.w - b);
     }
 
-    inline quat operator*(const quat& a, float b)
+    inline Quaterion operator*(const Quaterion& a, float b)
     {
-        return quat(a.x * b, a.y * b, a.z * b, a.w * b);
+        return Quaterion(a.x * b, a.y * b, a.z * b, a.w * b);
     }
 
-    inline quat operator/(const quat& a, float b)
+    inline Quaterion operator/(const Quaterion& a, float b)
     {
-        return quat(a.x / b, a.y / b, a.z / b, a.w / b);
+        return Quaterion(a.x / b, a.y / b, a.z / b, a.w / b);
     }
 
-    inline quat operator+(float a, const quat& b)
+    inline Quaterion operator+(float a, const Quaterion& b)
     {
-        return quat(a + b.x, a + b.y, a + b.z, a + b.w);
+        return Quaterion(a + b.x, a + b.y, a + b.z, a + b.w);
     }
 
-    inline quat operator-(float a, const quat& b)
+    inline Quaterion operator-(float a, const Quaterion& b)
     {
-        return quat(a - b.x, a - b.y, a - b.z, a - b.w);
+        return Quaterion(a - b.x, a - b.y, a - b.z, a - b.w);
     }
 
-    inline quat operator*(float a, const quat& b)
+    inline Quaterion operator*(float a, const Quaterion& b)
     {
-        return quat(a * b.x, a * b.y, a * b.z, a * b.w);
+        return Quaterion(a * b.x, a * b.y, a * b.z, a * b.w);
     }
 
-    inline quat operator/(float a, const quat& b)
+    inline Quaterion operator/(float a, const Quaterion& b)
     {
-        return quat(a / b.x, a / b.y, a / b.z, a / b.w);
+        return Quaterion(a / b.x, a / b.y, a / b.z, a / b.w);
     }
 
-    inline quat& operator+=(quat& a, const quat& b)
-    {
-        return (a = a + b);
-    }
-
-    inline quat& operator+=(quat& a, float b)
+    inline Quaterion& operator+=(Quaterion& a, const Quaterion& b)
     {
         return (a = a + b);
     }
 
-    inline quat& operator-=(quat& a, const quat& b)
+    inline Quaterion& operator+=(Quaterion& a, float b)
+    {
+        return (a = a + b);
+    }
+
+    inline Quaterion& operator-=(Quaterion& a, const Quaterion& b)
     {
         return (a = a - b);
     }
 
-    inline quat& operator-=(quat& a, float b)
+    inline Quaterion& operator-=(Quaterion& a, float b)
     {
         return (a = a - b);
     }
 
-    inline quat& operator*=(quat& a, const quat& b)
+    inline Quaterion& operator*=(Quaterion& a, const Quaterion& b)
     {
         return (a = a * b);
     }
 
-    inline quat& operator*=(quat& a, float b)
+    inline Quaterion& operator*=(Quaterion& a, float b)
     {
         return (a = a * b);
     }
 
-    inline quat& operator/=(quat& a, const quat& b)
+    inline Quaterion& operator/=(Quaterion& a, const Quaterion& b)
     {
         return (a = a / b);
     }
 
-    inline quat& operator/=(quat& a, float b)
+    inline Quaterion& operator/=(Quaterion& a, float b)
     {
         return (a = a + b);
     }
 
-    inline bool operator==(const quat& a, const quat& b)
+    inline bool operator==(const Quaterion& a, const Quaterion& b)
     {
         return a.x == b.x && a.y == b.y && a.z == b.z && a.w == b.w;
     }
 
-    inline bool operator!=(const quat& a, const quat& b)
+    inline bool operator!=(const Quaterion& a, const Quaterion& b)
     {
         return a.x != b.x || a.y != b.y || a.z != b.z || a.w != b.w;
     }
 
-    inline bool operator==(const float4x4& a, const float4x4& b)
+    inline bool operator==(const Matrix4& a, const Matrix4& b)
     {
         return a[0] == b[0] && a[1] == b[1] && a[2] == b[2] && a[3] == b[3];
     }
 
-    inline bool operator!=(const float4x4& a, const float4x4& b)
+    inline bool operator!=(const Matrix4& a, const Matrix4& b)
     {
         return a[0] == b[0] || a[1] == b[1] || a[2] == b[2] || a[3] == b[3];
     }
 
-    inline float4x4 operator-(const float4x4& m)
+    inline Matrix4 operator-(const Matrix4& m)
     {
-        float4x4 result;
+        Matrix4 result;
         result[0] = -m[0];
         result[1] = -m[1];
         result[2] = -m[2];
@@ -1017,12 +1017,12 @@ inline namespace Mojo
         return result;
     }
 
-    inline const float4x4& operator+(const float4x4& m)
+    inline const Matrix4& operator+(const Matrix4& m)
     {
         return m;
     }
 
-    inline float4x4& operator--(float4x4& m)
+    inline Matrix4& operator--(Matrix4& m)
     {
         --m[0];
         --m[1];
@@ -1031,7 +1031,7 @@ inline namespace Mojo
         return m;
     }
 
-    inline float4x4& operator++(float4x4& m)
+    inline Matrix4& operator++(Matrix4& m)
     {
         ++m[0];
         ++m[1];
@@ -1040,7 +1040,7 @@ inline namespace Mojo
         return m;
     }
 
-    inline const float4x4& operator--(float4x4& m, int)
+    inline const Matrix4& operator--(Matrix4& m, int)
     {
         m[0]--;
         m[1]--;
@@ -1049,7 +1049,7 @@ inline namespace Mojo
         return m;
     }
 
-    inline const float4x4& operator++(float4x4& m, int)
+    inline const Matrix4& operator++(Matrix4& m, int)
     {
         m[0]++;
         m[1]++;
@@ -1058,9 +1058,9 @@ inline namespace Mojo
         return m;
     }
 
-    inline float4x4 operator+(const float4x4& a, const float4x4& b)
+    inline Matrix4 operator+(const Matrix4& a, const Matrix4& b)
     {
-        float4x4 result;
+        Matrix4 result;
         result[0] = a[0] + b[0];
         result[1] = a[1] + b[1];
         result[2] = a[2] + b[2];
@@ -1068,9 +1068,9 @@ inline namespace Mojo
         return result;
     }
 
-    inline float4x4 operator+(const float4x4& a, float b)
+    inline Matrix4 operator+(const Matrix4& a, float b)
     {
-        float4x4 result;
+        Matrix4 result;
         result[0] = a[0] + b;
         result[1] = a[1] + b;
         result[2] = a[2] + b;
@@ -1078,9 +1078,9 @@ inline namespace Mojo
         return result;
     }
 
-    inline float4x4 operator+(float a, const float4x4& b)
+    inline Matrix4 operator+(float a, const Matrix4& b)
     {
-        float4x4 result;
+        Matrix4 result;
         result[0] = a + b[0];
         result[1] = a + b[1];
         result[2] = a + b[2];
@@ -1088,9 +1088,9 @@ inline namespace Mojo
         return result;
     }
 
-    inline float4x4 operator-(const float4x4& a, const float4x4& b)
+    inline Matrix4 operator-(const Matrix4& a, const Matrix4& b)
     {
-        float4x4 result;
+        Matrix4 result;
         result[0] = a[0] - b[0];
         result[1] = a[1] - b[1];
         result[2] = a[2] - b[2];
@@ -1098,9 +1098,9 @@ inline namespace Mojo
         return result;
     }
 
-    inline float4x4 operator-(const float4x4& a, float b)
+    inline Matrix4 operator-(const Matrix4& a, float b)
     {
-        float4x4 result;
+        Matrix4 result;
         result[0] = a[0] - b;
         result[1] = a[1] - b;
         result[2] = a[2] - b;
@@ -1108,9 +1108,9 @@ inline namespace Mojo
         return result;
     }
 
-    inline float4x4 operator-(float a, const float4x4& b)
+    inline Matrix4 operator-(float a, const Matrix4& b)
     {
-        float4x4 result;
+        Matrix4 result;
         result[0] = a - b[0];
         result[1] = a - b[1];
         result[2] = a - b[2];
@@ -1118,9 +1118,9 @@ inline namespace Mojo
         return result;
     }
 
-    inline float4x4 operator*(const float4x4& a, float b)
+    inline Matrix4 operator*(const Matrix4& a, float b)
     {
-        float4x4 result;
+        Matrix4 result;
         result[0] = a[0] * b;
         result[1] = a[1] * b;
         result[2] = a[2] * b;
@@ -1128,9 +1128,9 @@ inline namespace Mojo
         return result;
     }
 
-    inline float4x4 operator*(float a, const float4x4& b)
+    inline Matrix4 operator*(float a, const Matrix4& b)
     {
-        float4x4 result;
+        Matrix4 result;
         result[0] = a * b[0];
         result[1] = a * b[1];
         result[2] = a * b[2];
@@ -1138,9 +1138,9 @@ inline namespace Mojo
         return result;
     }
 
-    inline float4x4 operator*(const float4x4& a, const float4x4& b)
+    inline Matrix4 operator*(const Matrix4& a, const Matrix4& b)
     {
-        float4x4 result;
+        Matrix4 result;
         result[0] = a[0] * b[0];
         result[1] = a[1] * b[1];
         result[2] = a[2] * b[2];
@@ -1148,9 +1148,9 @@ inline namespace Mojo
         return result;
     }
 
-    inline float4x4 operator/(const float4x4& a, const float4x4& b)
+    inline Matrix4 operator/(const Matrix4& a, const Matrix4& b)
     {
-        float4x4 result;
+        Matrix4 result;
         result[0] = a[0] / b[0];
         result[1] = a[1] / b[1];
         result[2] = a[2] / b[2];
@@ -1158,9 +1158,9 @@ inline namespace Mojo
         return result;
     }
 
-    inline float4x4 operator/(const float4x4& a, float b)
+    inline Matrix4 operator/(const Matrix4& a, float b)
     {
-        float4x4 result;
+        Matrix4 result;
         result[0] = a[0] / b;
         result[1] = a[1] / b;
         result[2] = a[2] / b;
@@ -1168,9 +1168,9 @@ inline namespace Mojo
         return result;
     }
 
-    inline float4x4 operator/(float a, const float4x4& b)
+    inline Matrix4 operator/(float a, const Matrix4& b)
     {
-        float4x4 result;
+        Matrix4 result;
         result[0] = a / b[0];
         result[1] = a / b[1];
         result[2] = a / b[2];
@@ -1178,295 +1178,295 @@ inline namespace Mojo
         return result;
     }
 
-    inline float4x4& operator+=(float4x4& a, const float4x4& b)
+    inline Matrix4& operator+=(Matrix4& a, const Matrix4& b)
     {
         return (a = a + b);
     }
 
-    inline float4x4& operator+=(float4x4& a, float b)
+    inline Matrix4& operator+=(Matrix4& a, float b)
     {
         return (a = a + b);
     }
 
-    inline float4x4& operator-=(float4x4& a, const float4x4& b)
+    inline Matrix4& operator-=(Matrix4& a, const Matrix4& b)
     {
         return (a = a - b);
     }
 
-    inline float4x4& operator-=(float4x4& a, float b)
+    inline Matrix4& operator-=(Matrix4& a, float b)
     {
         return (a = a - b);
     }
 
-    inline float4x4& operator*=(float4x4& a, const float4x4& b)
+    inline Matrix4& operator*=(Matrix4& a, const Matrix4& b)
     {
         return (a = a * b);
     }
 
-    inline float4x4& operator*=(float4x4& a, float b)
+    inline Matrix4& operator*=(Matrix4& a, float b)
     {
         return (a = a * b);
     }
 
-    inline float4x4& operator/=(float4x4& a, const float4x4& b)
+    inline Matrix4& operator/=(Matrix4& a, const Matrix4& b)
     {
         return (a = a / b);
     }
 
-    inline float4x4& operator/=(float4x4& a, float b)
+    inline Matrix4& operator/=(Matrix4& a, float b)
     {
         return (a = a + b);
     }
 
     // Computes sign of 'x'
-    inline float2 sign(const float2& v)
+    inline Vector2 sign(const Vector2& v)
     {
-        return float2(signf(v.x), signf(v.y));
+        return Vector2(signf(v.x), signf(v.y));
     }
 
     /* Computes absolute value
      */
-    inline float2 abs(const float2& v)
+    inline Vector2 abs(const Vector2& v)
     {
-        return float2(fabsf(v.x), fabsf(v.y));
+        return Vector2(fabsf(v.x), fabsf(v.y));
     }
 
     /* Computes cosine
      */
-    inline float2 cos(const float2& v)
+    inline Vector2 cos(const Vector2& v)
     {
-        return float2(cosf(v.x), cosf(v.y));
+        return Vector2(cosf(v.x), cosf(v.y));
     }
 
     /* Computes sine
      */
-    inline float2 sin(const float2& v)
+    inline Vector2 sin(const Vector2& v)
     {
-        return float2(sinf(v.x), sinf(v.y));
+        return Vector2(sinf(v.x), sinf(v.y));
     }
 
     /* Computes tangent
      */
-    inline float2 tan(const float2& v)
+    inline Vector2 tan(const Vector2& v)
     {
-        return float2(tanf(v.x), tanf(v.y));
+        return Vector2(tanf(v.x), tanf(v.y));
     }
 
     /* Computes hyperbolic cosine
      */
-    inline float2 cosh(const float2& v)
+    inline Vector2 cosh(const Vector2& v)
     {
-        return float2(coshf(v.x), coshf(v.y));
+        return Vector2(coshf(v.x), coshf(v.y));
     }
 
     /* Computes hyperbolic sine
      */
-    inline float2 sinh(const float2& v)
+    inline Vector2 sinh(const Vector2& v)
     {
-        return float2(sinhf(v.x), sinhf(v.y));
+        return Vector2(sinhf(v.x), sinhf(v.y));
     }
 
     /* Computes hyperbolic tangent
      */
-    inline float2 tanh(const float2& v)
+    inline Vector2 tanh(const Vector2& v)
     {
-        return float2(tanhf(v.x), tanhf(v.y));
+        return Vector2(tanhf(v.x), tanhf(v.y));
     }
 
     /* Computes inverse cosine
      */
-    inline float2 acos(const float2& v)
+    inline Vector2 acos(const Vector2& v)
     {
-        return float2(acosf(v.x), acosf(v.y));
+        return Vector2(acosf(v.x), acosf(v.y));
     }
 
     /* Computes inverse sine
      */
-    inline float2 asin(const float2& v)
+    inline Vector2 asin(const Vector2& v)
     {
-        return float2(asinf(v.x), asinf(v.y));
+        return Vector2(asinf(v.x), asinf(v.y));
     }
 
     /* Computes inverse tangent
      */
-    inline float2 atan(const float2& v)
+    inline Vector2 atan(const Vector2& v)
     {
-        return float2(atanf(v.x), atanf(v.y));
+        return Vector2(atanf(v.x), atanf(v.y));
     }
 
     /* Computes inverse tangent with 2 args
      */
-    inline float2 atan2(const float2& a, const float2& b)
+    inline Vector2 atan2(const Vector2& a, const Vector2& b)
     {
-        return float2(atan2f(a.x, b.x), atan2f(a.y, b.y));
+        return Vector2(atan2f(a.x, b.x), atan2f(a.y, b.y));
     }
 
     /* Computes Euler number raised to the power 'x'
      */
-    inline float2 exp(const float2& v)
+    inline Vector2 exp(const Vector2& v)
     {
-        return float2(expf(v.x), expf(v.y));
+        return Vector2(expf(v.x), expf(v.y));
     }
 
     /* Computes 2 raised to the power 'x'
      */
-    inline float2 exp2(const float2& v)
+    inline Vector2 exp2(const Vector2& v)
     {
-        return float2(exp2f(v.x), exp2f(v.y));
+        return Vector2(exp2f(v.x), exp2f(v.y));
     }
 
     /* Computes the base Euler number logarithm
      */
-    inline float2 log(const float2& v)
+    inline Vector2 log(const Vector2& v)
     {
-        return float2(logf(v.x), logf(v.y));
+        return Vector2(logf(v.x), logf(v.y));
     }
 
     /* Computes the base 2 logarithm
      */
-    inline float2 log2(const float2& v)
+    inline Vector2 log2(const Vector2& v)
     {
-        return float2(log2f(v.x), log2f(v.y));
+        return Vector2(log2f(v.x), log2f(v.y));
     }
 
     /* Computes the base 10 logarithm
      */
-    inline float2 log10(const float2& v)
+    inline Vector2 log10(const Vector2& v)
     {
-        return float2(log10f(v.x), log10f(v.y));
+        return Vector2(log10f(v.x), log10f(v.y));
     }
 
     /* Computes the value of base raised to the power exponent
      */
-    inline float2 pow(const float2& a, const float2& b)
+    inline Vector2 pow(const Vector2& a, const Vector2& b)
     {
-        return float2(powf(a.x, b.x), powf(a.y, b.y));
+        return Vector2(powf(a.x, b.x), powf(a.y, b.y));
     }
 
     /* Get the fractal part of floating point
      */
-    inline float2 frac(const float2& v)
+    inline Vector2 frac(const Vector2& v)
     {
-        return float2(fracf(v.x), fracf(v.y));
+        return Vector2(fracf(v.x), fracf(v.y));
     }
 
     /* Computes the floating-point remainder of the division operation x/y
      */
-    inline float2 fmod(const float2& a, const float2& b)
+    inline Vector2 fmod(const Vector2& a, const Vector2& b)
     {
-        return float2(fmodf(a.x, b.x), fmodf(a.y, b.y));
+        return Vector2(fmodf(a.x, b.x), fmodf(a.y, b.y));
     }
 
     /* Computes the smallest integer value not less than 'x'
      */
-    inline float2 ceil(const float2& v)
+    inline Vector2 ceil(const Vector2& v)
     {
-        return float2(ceilf(v.x), ceilf(v.y));
+        return Vector2(ceilf(v.x), ceilf(v.y));
     }
 
     /* Computes the largest integer value not greater than 'x'
      */
-    inline float2 floor(const float2& v)
+    inline Vector2 floor(const Vector2& v)
     {
-        return float2(floorf(v.x), floorf(v.y));
+        return Vector2(floorf(v.x), floorf(v.y));
     }
 
     /* Computes the nearest integer value
      */
-    inline float2 round(const float2& v)
+    inline Vector2 round(const Vector2& v)
     {
-        return float2(roundf(v.x), roundf(v.y));
+        return Vector2(roundf(v.x), roundf(v.y));
     }
 
     /* Computes the nearest integer not greater in magnitude than 'x'
      */
-    inline float2 trunc(const float2& v)
+    inline Vector2 trunc(const Vector2& v)
     {
-        return float2(truncf(v.x), truncf(v.y));
+        return Vector2(truncf(v.x), truncf(v.y));
     }
 
     /* Get the smaller value
      */
-    inline float2 min(const float2& a, const float2& b)
+    inline Vector2 min(const Vector2& a, const Vector2& b)
     {
-        return float2(minf(a.x, b.x), minf(a.y, b.y));
+        return Vector2(minf(a.x, b.x), minf(a.y, b.y));
     }
 
     /* Get the larger value
      */
-    inline float2 max(const float2& a, const float2& b)
+    inline Vector2 max(const Vector2& a, const Vector2& b)
     {
-        return float2(maxf(a.x, b.x), maxf(a.y, b.y));
+        return Vector2(maxf(a.x, b.x), maxf(a.y, b.y));
     }
 
     /* Clamps the 'x' value to the [min, max].
      */
-    inline float2 clamp(const float2& v, const float2& min, const float2& max)
+    inline Vector2 clamp(const Vector2& v, const Vector2& min, const Vector2& max)
     {
-        return float2(clampf(v.x, min.x, max.x), clampf(v.y, min.y, max.y));
+        return Vector2(clampf(v.x, min.x, max.x), clampf(v.y, min.y, max.y));
     }
 
     /* Clamps the specified value within the range of 0 to 1
      */
-    inline float2 saturate(const float2& v)
+    inline Vector2 saturate(const Vector2& v)
     {
-        return float2(saturatef(v.x), saturatef(v.y));
+        return Vector2(saturatef(v.x), saturatef(v.y));
     }
 
     /* Compares two values, returning 0 or 1 based on which value is greater.
      */
-    inline float2 step(const float2& a, const float2& b)
+    inline Vector2 step(const Vector2& a, const Vector2& b)
     {
-        return float2(stepf(a.x, b.x), stepf(a.y, b.y));
+        return Vector2(stepf(a.x, b.x), stepf(a.y, b.y));
     }
 
     /* Performs a linear interpolation.
      */
-    inline float2 lerp(const float2& a, const float2& b, const float2& t)
+    inline Vector2 lerp(const Vector2& a, const Vector2& b, const Vector2& t)
     {
-        return float2(lerpf(a.x, b.x, t.x), lerpf(a.y, b.y, t.y));
+        return Vector2(lerpf(a.x, b.x, t.x), lerpf(a.y, b.y, t.y));
     }
 
     /* Performs a linear interpolation.
      */
-    inline float2 lerp(const float2& a, const float2& b, float t)
+    inline Vector2 lerp(const Vector2& a, const Vector2& b, float t)
     {
-        return float2(lerpf(a.x, b.x, t), lerpf(a.y, b.y, t));
+        return Vector2(lerpf(a.x, b.x, t), lerpf(a.y, b.y, t));
     }
 
     /* Compute a smooth Hermite interpolation
      */
-    inline float2 smoothstep(const float2& a, const float2& b, const float2& t)
+    inline Vector2 smoothstep(const Vector2& a, const Vector2& b, const Vector2& t)
     {
-        return float2(smoothstepf(a.x, b.x, t.x), smoothstepf(a.y, b.y, t.y));
+        return Vector2(smoothstepf(a.x, b.x, t.x), smoothstepf(a.y, b.y, t.y));
     }
 
     /* Computes square root of 'x'.
      */
-    inline float2 sqrt(const float2& v)
+    inline Vector2 sqrt(const Vector2& v)
     {
-        return float2(sqrtf(v.x), sqrtf(v.y));
+        return Vector2(sqrtf(v.x), sqrtf(v.y));
     }
 
     /* Computes inverse square root of 'x'.
      */
-    inline float2 rsqrt(const float2& v)
+    inline Vector2 rsqrt(const Vector2& v)
     {
-        return float2(rsqrtf(v.x), rsqrtf(v.y));
+        return Vector2(rsqrtf(v.x), rsqrtf(v.y));
     }
 
     /* Computes fast inverse square root of 'x'.
      */
-    inline float2 fsqrt(const float2& v)
+    inline Vector2 fsqrt(const Vector2& v)
     {
-        return float2(fsqrtf(v.x), fsqrtf(v.y));
+        return Vector2(fsqrtf(v.x), fsqrtf(v.y));
     }
 
     /* Computes fast inverse square root of 'x'.
      */
-    inline float2 frsqrt(const float2& v)
+    inline Vector2 frsqrt(const Vector2& v)
     {
-        return float2(frsqrtf(v.x), frsqrtf(v.y));
+        return Vector2(frsqrtf(v.x), frsqrtf(v.y));
     }
 
     //
@@ -1475,48 +1475,48 @@ inline namespace Mojo
 
     /* Compute dot product of two vectors
      */
-    inline float dot(const float2& a, const float2& b)
+    inline float dot(const Vector2& a, const Vector2& b)
     {
         return a.x * b.x + a.y * b.y;
     }
 
     /* Compute squared length of vector
      */
-    inline float lensqr(const float2& v)
+    inline float lensqr(const Vector2& v)
     {
         return dot(v, v);
     }
 
     /* Compute length of vector
      */
-    inline float length(const float2& v)
+    inline float length(const Vector2& v)
     {
         return sqrtf(lensqr(v));
     }
 
     /* Compute distance from 'a' to b
      */
-    inline float distance(const float2& a, const float2& b)
+    inline float distance(const Vector2& a, const Vector2& b)
     {
         return length(a - b);
     }
 
     /* Compute squared distance from 'a' to b
      */
-    inline float distsqr(const float2& a, const float2& b)
+    inline float distsqr(const Vector2& a, const Vector2& b)
     {
         return lensqr(a - b);
     }
 
     /* Compute normalized vector
      */
-    inline float2 normalize(const float2& v)
+    inline Vector2 normalize(const Vector2& v)
     {
         const float lsqr = lensqr(v);
         if (lsqr > 0.0f)
         {
             const float f = rsqrtf(lsqr);
-            return float2(v.x * f, v.y * f);
+            return Vector2(v.x * f, v.y * f);
         }
         else
         {
@@ -1526,264 +1526,264 @@ inline namespace Mojo
 
     /* Compute reflection vector
      */
-    inline float2 reflect(const float2& v, const float2& n)
+    inline Vector2 reflect(const Vector2& v, const Vector2& n)
     {
         return v - 2.0f * dot(v, n) * n;
     }
 
     /* Compute refraction vector
      */
-    inline float2 refract(const float2& v, const float2& n, float eta)
+    inline Vector2 refract(const Vector2& v, const Vector2& n, float eta)
     {
         const float k = 1.0f - eta * eta * (1.0f - dot(v, n) * dot(v, n));
         return k < 0.0f
-            ? float2(0.0f)
+            ? Vector2(0.0f)
             : eta * v - (eta * dot(v, n) + sqrtf(k)) * v;
     }
 
     /* Compute faceforward vector
      */
-    inline float2 faceforward(const float2& n, const float2& i, const float2& nref)
+    inline Vector2 faceforward(const Vector2& n, const Vector2& i, const Vector2& nref)
     {
         return dot(i, nref) < 0.0f ? n : -n;
     }
     /* Computes sign of 'x'
  */
-    inline float3 sign(const float3& v)
+    inline Vector3 sign(const Vector3& v)
     {
-        return float3(signf(v.x), signf(v.y), signf(v.z));
+        return Vector3(signf(v.x), signf(v.y), signf(v.z));
     }
 
     /* Computes absolute value
      */
-    inline float3 abs(const float3& v)
+    inline Vector3 abs(const Vector3& v)
     {
-        return float3(fabsf(v.x), fabsf(v.y), fabsf(v.z));
+        return Vector3(fabsf(v.x), fabsf(v.y), fabsf(v.z));
     }
 
     /* Computes cosine
      */
-    inline float3 cos(const float3& v)
+    inline Vector3 cos(const Vector3& v)
     {
-        return float3(cosf(v.x), cosf(v.y), cosf(v.z));
+        return Vector3(cosf(v.x), cosf(v.y), cosf(v.z));
     }
 
     /* Computes sine
      */
-    inline float3 sin(const float3& v)
+    inline Vector3 sin(const Vector3& v)
     {
-        return float3(sinf(v.x), sinf(v.y), sinf(v.z));
+        return Vector3(sinf(v.x), sinf(v.y), sinf(v.z));
     }
 
     /* Computes tangent
      */
-    inline float3 tan(const float3& v)
+    inline Vector3 tan(const Vector3& v)
     {
-        return float3(tanf(v.x), tanf(v.y), tanf(v.z));
+        return Vector3(tanf(v.x), tanf(v.y), tanf(v.z));
     }
 
     /* Computes hyperbolic cosine
      */
-    inline float3 cosh(const float3& v)
+    inline Vector3 cosh(const Vector3& v)
     {
-        return float3(coshf(v.x), coshf(v.y), coshf(v.z));
+        return Vector3(coshf(v.x), coshf(v.y), coshf(v.z));
     }
 
     /* Computes hyperbolic sine
      */
-    inline float3 sinh(const float3& v)
+    inline Vector3 sinh(const Vector3& v)
     {
-        return float3(sinhf(v.x), sinhf(v.y), sinhf(v.z));
+        return Vector3(sinhf(v.x), sinhf(v.y), sinhf(v.z));
     }
 
     /* Computes hyperbolic tangent
      */
-    inline float3 tanh(const float3& v)
+    inline Vector3 tanh(const Vector3& v)
     {
-        return float3(tanhf(v.x), tanhf(v.y), tanhf(v.z));
+        return Vector3(tanhf(v.x), tanhf(v.y), tanhf(v.z));
     }
 
     /* Computes inverse cosine
      */
-    inline float3 acos(const float3& v)
+    inline Vector3 acos(const Vector3& v)
     {
-        return float3(acosf(v.x), acosf(v.y), acosf(v.z));
+        return Vector3(acosf(v.x), acosf(v.y), acosf(v.z));
     }
 
     /* Computes inverse sine
      */
-    inline float3 asin(const float3& v)
+    inline Vector3 asin(const Vector3& v)
     {
-        return float3(asinf(v.x), asinf(v.y), asinf(v.z));
+        return Vector3(asinf(v.x), asinf(v.y), asinf(v.z));
     }
 
     /* Computes inverse tangent
      */
-    inline float3 atan(const float3& v)
+    inline Vector3 atan(const Vector3& v)
     {
-        return float3(atanf(v.x),
+        return Vector3(atanf(v.x),
             atanf(v.y),
             asinf(v.z));
     }
 
     /* Computes inverse tangent with 2 args
      */
-    inline float3 atan2(const float3& a, const float3& b)
+    inline Vector3 atan2(const Vector3& a, const Vector3& b)
     {
-        return float3(atan2f(a.x, b.x),
+        return Vector3(atan2f(a.x, b.x),
             atan2f(a.y, b.y),
             atan2f(a.z, b.z));
     }
 
     /* Computes Euler number raised to the power 'x'
      */
-    inline float3 exp(const float3& v)
+    inline Vector3 exp(const Vector3& v)
     {
-        return float3(expf(v.x),
+        return Vector3(expf(v.x),
             expf(v.y),
             expf(v.z));
     }
 
     /* Computes 2 raised to the power 'x'
      */
-    inline float3 exp2(const float3& v)
+    inline Vector3 exp2(const Vector3& v)
     {
-        return float3(exp2f(v.x),
+        return Vector3(exp2f(v.x),
             exp2f(v.y),
             exp2f(v.z));
     }
 
     /* Computes the base Euler number logarithm
      */
-    inline float3 log(const float3& v)
+    inline Vector3 log(const Vector3& v)
     {
-        return float3(logf(v.x),
+        return Vector3(logf(v.x),
             logf(v.y),
             logf(v.z));
     }
 
     /* Computes the base 2 logarithm
      */
-    inline float3 log2(const float3& v)
+    inline Vector3 log2(const Vector3& v)
     {
-        return float3(log2f(v.x),
+        return Vector3(log2f(v.x),
             log2f(v.y),
             log2f(v.z));
     }
 
     /* Computes the base 10 logarithm
      */
-    inline float3 log10(const float3& v)
+    inline Vector3 log10(const Vector3& v)
     {
-        return float3(log10f(v.x),
+        return Vector3(log10f(v.x),
             log10f(v.y),
             log10f(v.z));
     }
 
     /* Computes the value of base raised to the power exponent
      */
-    inline float3 pow(const float3& a, const float3& b)
+    inline Vector3 pow(const Vector3& a, const Vector3& b)
     {
-        return float3(powf(a.x, b.x),
+        return Vector3(powf(a.x, b.x),
             powf(a.y, b.y),
             powf(a.z, b.z));
     }
 
     /* Get the fractal part of floating point
      */
-    inline float3 frac(const float3& v)
+    inline Vector3 frac(const Vector3& v)
     {
-        return float3(fracf(v.x),
+        return Vector3(fracf(v.x),
             fracf(v.y),
             fracf(v.z));
     }
 
     /* Computes the floating-point remainder of the division operation x/y
      */
-    inline float3 fmod(const float3& a, const float3& b)
+    inline Vector3 fmod(const Vector3& a, const Vector3& b)
     {
-        return float3(fmodf(a.x, b.x),
+        return Vector3(fmodf(a.x, b.x),
             fmodf(a.y, b.y),
             fmodf(a.z, b.z));
     }
 
     /* Computes the smallest integer value not less than 'x'
      */
-    inline float3 ceil(const float3& v)
+    inline Vector3 ceil(const Vector3& v)
     {
-        return float3(ceilf(v.x),
+        return Vector3(ceilf(v.x),
             ceilf(v.y),
             ceilf(v.z));
     }
 
     /* Computes the largest integer value not greater than 'x'
      */
-    inline float3 floor(const float3& v)
+    inline Vector3 floor(const Vector3& v)
     {
-        return float3(floorf(v.x),
+        return Vector3(floorf(v.x),
             floorf(v.y),
             floorf(v.z));
     }
 
     /* Computes the nearest integer value
      */
-    inline float3 round(const float3& v)
+    inline Vector3 round(const Vector3& v)
     {
-        return float3(roundf(v.x),
+        return Vector3(roundf(v.x),
             roundf(v.y),
             roundf(v.z));
     }
 
     /* Computes the nearest integer not greater in magnitude than 'x'
      */
-    inline float3 trunc(const float3& v)
+    inline Vector3 trunc(const Vector3& v)
     {
-        return float3(truncf(v.x),
+        return Vector3(truncf(v.x),
             truncf(v.y),
             truncf(v.z));
     }
 
     /* Get the smaller value
      */
-    inline float3 min(const float3& a, const float3& b)
+    inline Vector3 min(const Vector3& a, const Vector3& b)
     {
-        return float3(minf(a.x, b.x),
+        return Vector3(minf(a.x, b.x),
             minf(a.y, b.y),
             minf(a.z, b.z));
     }
 
     /* Get the larger value
      */
-    inline float3 max(const float3& a, const float3& b)
+    inline Vector3 max(const Vector3& a, const Vector3& b)
     {
-        return float3(maxf(a.x, b.x),
+        return Vector3(maxf(a.x, b.x),
             maxf(a.y, b.y),
             maxf(a.z, b.z));
     }
 
     /* Clamps the 'x' value to the [min, max].
      */
-    inline float3 clamp(const float3& v, const float3& min, const float3& max)
+    inline Vector3 clamp(const Vector3& v, const Vector3& min, const Vector3& max)
     {
-        return float3(clampf(v.x, min.x, max.x),
+        return Vector3(clampf(v.x, min.x, max.x),
             clampf(v.y, min.y, max.y),
             clampf(v.z, min.z, max.z));
     }
 
     /* Clamps the specified value within the range of 0 to 1
      */
-    inline float3 saturate(const float3& v)
+    inline Vector3 saturate(const Vector3& v)
     {
-        return float3(saturatef(v.x),
+        return Vector3(saturatef(v.x),
             saturatef(v.y),
             saturatef(v.z));
     }
 
     /* Compares two values, returning 0 or 1 based on which value is greater.
      */
-    inline float3 step(const float3& a, const float3& b)
+    inline Vector3 step(const Vector3& a, const Vector3& b)
     {
-        return float3(
+        return Vector3(
             stepf(a.x, b.x),
             stepf(a.y, b.y),
             stepf(a.z, b.z)
@@ -1792,63 +1792,63 @@ inline namespace Mojo
 
     /* Performs a linear interpolation.
      */
-    inline float3 lerp(const float3& a, const float3& b, const float3& t)
+    inline Vector3 lerp(const Vector3& a, const Vector3& b, const Vector3& t)
     {
-        return float3(lerpf(a.x, b.x, t.x),
+        return Vector3(lerpf(a.x, b.x, t.x),
             lerpf(a.y, b.y, t.y),
             lerpf(a.z, b.z, t.z));
     }
 
     /* Performs a linear interpolation.
      */
-    inline float3 lerp(const float3& a, const float3& b, float t)
+    inline Vector3 lerp(const Vector3& a, const Vector3& b, float t)
     {
-        return float3(lerpf(a.x, b.x, t),
+        return Vector3(lerpf(a.x, b.x, t),
             lerpf(a.y, b.y, t),
             lerpf(a.z, b.z, t));
     }
 
     /* Compute a smooth Hermite interpolation
      */
-    inline float3 smoothstep(const float3& a, const float3& b, const float3& t)
+    inline Vector3 smoothstep(const Vector3& a, const Vector3& b, const Vector3& t)
     {
-        return float3(smoothstepf(a.x, b.x, t.x),
+        return Vector3(smoothstepf(a.x, b.x, t.x),
             smoothstepf(a.y, b.y, t.y),
             smoothstepf(a.z, b.z, t.z));
     }
 
     /* Computes square root of 'x'.
      */
-    inline float3 sqrt(const float3& v)
+    inline Vector3 sqrt(const Vector3& v)
     {
-        return float3(sqrtf(v.x),
+        return Vector3(sqrtf(v.x),
             sqrtf(v.y),
             sqrtf(v.z));
     }
 
     /* Computes inverse square root of 'x'.
      */
-    inline float3 rsqrt(const float3& v)
+    inline Vector3 rsqrt(const Vector3& v)
     {
-        return float3(rsqrtf(v.x),
+        return Vector3(rsqrtf(v.x),
             rsqrtf(v.y),
             rsqrtf(v.z));
     }
 
     /* Computes fast inverse square root of 'x'.
      */
-    inline float3 fsqrt(const float3& v)
+    inline Vector3 fsqrt(const Vector3& v)
     {
-        return float3(fsqrtf(v.x),
+        return Vector3(fsqrtf(v.x),
             fsqrtf(v.y),
             fsqrtf(v.z));
     }
 
     /* Computes fast inverse square root of 'x'.
      */
-    inline float3 frsqrt(const float3& v)
+    inline Vector3 frsqrt(const Vector3& v)
     {
-        return float3(frsqrtf(v.x),
+        return Vector3(frsqrtf(v.x),
             frsqrtf(v.y),
             frsqrtf(v.z));
     }
@@ -1859,9 +1859,9 @@ inline namespace Mojo
 
     /* Compute cross product of two vectors
      */
-    inline float3 cross(const float3& a, const float3& b)
+    inline Vector3 cross(const Vector3& a, const Vector3& b)
     {
-        return float3(
+        return Vector3(
             a.y * b.z - a.z * b.y,
             a.z * b.x - a.x * b.z,
             a.x * b.y - a.y * b.x
@@ -1870,48 +1870,48 @@ inline namespace Mojo
 
     /* Compute dot product of two vectors
      */
-    inline float dot(const float3& a, const float3& b)
+    inline float dot(const Vector3& a, const Vector3& b)
     {
         return a.x * b.x + a.y * b.y + a.z * b.z;
     }
 
     /* Compute squared length of vector
      */
-    inline float lensqr(const float3& v)
+    inline float lensqr(const Vector3& v)
     {
         return dot(v, v);
     }
 
     /* Compute length of vector
      */
-    inline float length(const float3& v)
+    inline float length(const Vector3& v)
     {
         return sqrtf(lensqr(v));
     }
 
     /* Compute distance from 'a' to b
      */
-    inline float distance(const float3& a, const float3& b)
+    inline float distance(const Vector3& a, const Vector3& b)
     {
         return length(a - b);
     }
 
     /* Compute squared distance from 'a' to b
      */
-    inline float distsqr(const float3& a, const float3& b)
+    inline float distsqr(const Vector3& a, const Vector3& b)
     {
         return lensqr(a - b);
     }
 
     /* Compute normalized vector
      */
-    inline float3 normalize(const float3& v)
+    inline Vector3 normalize(const Vector3& v)
     {
         const float lsqr = lensqr(v);
         if (lsqr > 0.0f)
         {
             const float f = rsqrtf(lsqr);
-            return float3(v.x * f, v.y * f, v.z * f);
+            return Vector3(v.x * f, v.y * f, v.z * f);
         }
         else
         {
@@ -1921,33 +1921,33 @@ inline namespace Mojo
 
     /* Compute reflection vector
      */
-    inline float3 reflect(const float3& v, const float3& n)
+    inline Vector3 reflect(const Vector3& v, const Vector3& n)
     {
         return v - 2.0f * dot(v, n) * n;
     }
 
     /* Compute refraction vector
      */
-    inline float3 refract(const float3& v, const float3& n, float eta)
+    inline Vector3 refract(const Vector3& v, const Vector3& n, float eta)
     {
         const float k = 1.0f - eta * eta * (1.0f - dot(v, n) * dot(v, n));
         return k < 0.0f
-            ? float3(0.0f)
+            ? Vector3(0.0f)
             : eta * v - (eta * dot(v, n) + sqrtf(k)) * n;
     }
 
     /* Compute faceforward vector
      */
-    inline float3 faceforward(const float3& n, const float3& i, const float3& nref)
+    inline Vector3 faceforward(const Vector3& n, const Vector3& i, const Vector3& nref)
     {
         return dot(i, nref) < 0.0f ? n : -n;
     }
 
     /* Computes sign of 'x'
  */
-    inline float4 sign(const float4& v)
+    inline Vector4 sign(const Vector4& v)
     {
-        return float4(signf(v.x),
+        return Vector4(signf(v.x),
             signf(v.y),
             signf(v.z),
             signf(v.w));
@@ -1955,9 +1955,9 @@ inline namespace Mojo
 
     /* Computes absolute value
      */
-    inline float4 abs(const float4& v)
+    inline Vector4 abs(const Vector4& v)
     {
-        return float4(fabsf(v.x),
+        return Vector4(fabsf(v.x),
             fabsf(v.y),
             fabsf(v.z),
             fabsf(v.w));
@@ -1965,9 +1965,9 @@ inline namespace Mojo
 
     /* Computes cosine
      */
-    inline float4 cos(const float4& v)
+    inline Vector4 cos(const Vector4& v)
     {
-        return float4(cosf(v.x),
+        return Vector4(cosf(v.x),
             cosf(v.y),
             cosf(v.z),
             cosf(v.w));
@@ -1975,9 +1975,9 @@ inline namespace Mojo
 
     /* Computes sine
      */
-    inline float4 sin(const float4& v)
+    inline Vector4 sin(const Vector4& v)
     {
-        return float4(sinf(v.x),
+        return Vector4(sinf(v.x),
             sinf(v.y),
             sinf(v.z),
             sinf(v.w));
@@ -1985,9 +1985,9 @@ inline namespace Mojo
 
     /* Computes tangent
      */
-    inline float4 tan(const float4& v)
+    inline Vector4 tan(const Vector4& v)
     {
-        return float4(tanf(v.x),
+        return Vector4(tanf(v.x),
             tanf(v.y),
             tanf(v.z),
             tanf(v.w));
@@ -1995,9 +1995,9 @@ inline namespace Mojo
 
     /* Computes hyperbolic cosine
      */
-    inline float4 cosh(const float4& v)
+    inline Vector4 cosh(const Vector4& v)
     {
-        return float4(coshf(v.x),
+        return Vector4(coshf(v.x),
             coshf(v.y),
             coshf(v.z),
             coshf(v.w));
@@ -2005,9 +2005,9 @@ inline namespace Mojo
 
     /* Computes hyperbolic sine
      */
-    inline float4 sinh(const float4& v)
+    inline Vector4 sinh(const Vector4& v)
     {
-        return float4(sinhf(v.x),
+        return Vector4(sinhf(v.x),
             sinhf(v.y),
             sinhf(v.z),
             sinhf(v.w));
@@ -2015,9 +2015,9 @@ inline namespace Mojo
 
     /* Computes hyperbolic tangent
      */
-    inline float4 tanh(const float4& v)
+    inline Vector4 tanh(const Vector4& v)
     {
-        return float4(tanhf(v.x),
+        return Vector4(tanhf(v.x),
             tanhf(v.y),
             tanhf(v.z),
             tanhf(v.w));
@@ -2025,9 +2025,9 @@ inline namespace Mojo
 
     /* Computes inverse cosine
      */
-    inline float4 acos(const float4& v)
+    inline Vector4 acos(const Vector4& v)
     {
-        return float4(acosf(v.x),
+        return Vector4(acosf(v.x),
             acosf(v.y),
             acosf(v.z),
             acosf(v.w));
@@ -2035,9 +2035,9 @@ inline namespace Mojo
 
     /* Computes inverse sine
      */
-    inline float4 asin(const float4& v)
+    inline Vector4 asin(const Vector4& v)
     {
-        return float4(asinf(v.x),
+        return Vector4(asinf(v.x),
             asinf(v.y),
             asinf(v.z),
             asinf(v.w));
@@ -2045,9 +2045,9 @@ inline namespace Mojo
 
     /* Computes inverse tangent
      */
-    inline float4 atan(const float4& v)
+    inline Vector4 atan(const Vector4& v)
     {
-        return float4(atanf(v.x),
+        return Vector4(atanf(v.x),
             atanf(v.y),
             atanf(v.z),
             atanf(v.w));
@@ -2055,51 +2055,51 @@ inline namespace Mojo
 
     /* Computes inverse tangent with 2 args
      */
-    inline float4 atan2(const float4& a, const float4& b)
+    inline Vector4 atan2(const Vector4& a, const Vector4& b)
     {
-        return float4(atan2f(a.x, b.x), atan2f(a.y, b.y), atan2f(a.z, b.z), atan2f(a.w, b.w));
+        return Vector4(atan2f(a.x, b.x), atan2f(a.y, b.y), atan2f(a.z, b.z), atan2f(a.w, b.w));
     }
 
     /* Computes Euler number raised to the power 'x'
      */
-    inline float4 exp(const float4& v)
+    inline Vector4 exp(const Vector4& v)
     {
-        return float4(expf(v.x), expf(v.y), expf(v.z), expf(v.w));
+        return Vector4(expf(v.x), expf(v.y), expf(v.z), expf(v.w));
     }
 
     /* Computes 2 raised to the power 'x'
      */
-    inline float4 exp2(const float4& v)
+    inline Vector4 exp2(const Vector4& v)
     {
-        return float4(exp2f(v.x), exp2f(v.y), exp2f(v.z), exp2f(v.w));
+        return Vector4(exp2f(v.x), exp2f(v.y), exp2f(v.z), exp2f(v.w));
     }
 
     /* Computes the base Euler number logarithm
      */
-    inline float4 log(const float4& v)
+    inline Vector4 log(const Vector4& v)
     {
-        return float4(logf(v.x), logf(v.y), logf(v.z), logf(v.w));
+        return Vector4(logf(v.x), logf(v.y), logf(v.z), logf(v.w));
     }
 
     /* Computes the base 2 logarithm
      */
-    inline float4 log2(const float4& v)
+    inline Vector4 log2(const Vector4& v)
     {
-        return float4(log2f(v.x), log2f(v.y), log2f(v.z), log2f(v.w));
+        return Vector4(log2f(v.x), log2f(v.y), log2f(v.z), log2f(v.w));
     }
 
     /* Computes the base 10 logarithm
      */
-    inline float4 log10(const float4& v)
+    inline Vector4 log10(const Vector4& v)
     {
-        return float4(log10f(v.x), log10f(v.y), log10f(v.z), log10f(v.w));
+        return Vector4(log10f(v.x), log10f(v.y), log10f(v.z), log10f(v.w));
     }
 
     /* Computes the value of base raised to the power exponent
      */
-    inline float4 pow(const float4& a, const float4& b)
+    inline Vector4 pow(const Vector4& a, const Vector4& b)
     {
-        return float4(
+        return Vector4(
             powf(a.x, b.x),
             powf(a.y, b.y),
             powf(a.z, b.z),
@@ -2108,9 +2108,9 @@ inline namespace Mojo
 
     /* Get the fractal part of floating point
      */
-    inline float4 frac(const float4& v)
+    inline Vector4 frac(const Vector4& v)
     {
-        return float4(
+        return Vector4(
             fracf(v.x),
             fracf(v.y),
             fracf(v.z),
@@ -2119,9 +2119,9 @@ inline namespace Mojo
 
     /* Computes the floating-point remainder of the division operation x/y
      */
-    inline float4 fmod(const float4& a, const float4& b)
+    inline Vector4 fmod(const Vector4& a, const Vector4& b)
     {
-        return float4(
+        return Vector4(
             fmodf(a.x, b.x),
             fmodf(a.y, b.y),
             fmodf(a.z, b.z),
@@ -2130,9 +2130,9 @@ inline namespace Mojo
 
     /* Computes the smallest integer value not less than 'x'
      */
-    inline float4 ceil(const float4& v)
+    inline Vector4 ceil(const Vector4& v)
     {
-        return float4(
+        return Vector4(
             ceilf(v.x),
             ceilf(v.y),
             ceilf(v.z),
@@ -2141,9 +2141,9 @@ inline namespace Mojo
 
     /* Computes the largest integer value not greater than 'x'
      */
-    inline float4 floor(const float4& v)
+    inline Vector4 floor(const Vector4& v)
     {
-        return float4(
+        return Vector4(
             floorf(v.x),
             floorf(v.y),
             floorf(v.z),
@@ -2152,9 +2152,9 @@ inline namespace Mojo
 
     /* Computes the nearest integer value
      */
-    inline float4 round(const float4& v)
+    inline Vector4 round(const Vector4& v)
     {
-        return float4(
+        return Vector4(
             roundf(v.x),
             roundf(v.y),
             roundf(v.z),
@@ -2163,9 +2163,9 @@ inline namespace Mojo
 
     /* Computes the nearest integer not greater in magnitude than 'x'
      */
-    inline float4 trunc(const float4& v)
+    inline Vector4 trunc(const Vector4& v)
     {
-        return float4(
+        return Vector4(
             truncf(v.x),
             truncf(v.y),
             truncf(v.z),
@@ -2174,9 +2174,9 @@ inline namespace Mojo
 
     /* Get the smaller value
      */
-    inline float4 min(const float4& a, const float4& b)
+    inline Vector4 min(const Vector4& a, const Vector4& b)
     {
-        return float4(
+        return Vector4(
             minf(a.x, b.x),
             minf(a.y, b.y),
             minf(a.z, b.z),
@@ -2185,9 +2185,9 @@ inline namespace Mojo
 
     /* Get the larger value
      */
-    inline float4 max(const float4& a, const float4& b)
+    inline Vector4 max(const Vector4& a, const Vector4& b)
     {
-        return float4(
+        return Vector4(
             maxf(a.x, b.x),
             maxf(a.y, b.y),
             maxf(a.z, b.z),
@@ -2196,9 +2196,9 @@ inline namespace Mojo
 
     /* Clamps the 'x' value to the [min, max].
      */
-    inline float4 clamp(const float4& v, const float4& min, const float4& max)
+    inline Vector4 clamp(const Vector4& v, const Vector4& min, const Vector4& max)
     {
-        return float4(
+        return Vector4(
             clampf(v.x, min.x, max.x),
             clampf(v.y, min.y, max.y),
             clampf(v.z, min.z, max.z),
@@ -2207,9 +2207,9 @@ inline namespace Mojo
 
     /* Clamps the specified value within the range of 0 to 1
      */
-    inline float4 saturate(const float4& v)
+    inline Vector4 saturate(const Vector4& v)
     {
-        return float4(
+        return Vector4(
             saturatef(v.x),
             saturatef(v.y),
             saturatef(v.z),
@@ -2218,9 +2218,9 @@ inline namespace Mojo
 
     /* Compares two values, returning 0 or 1 based on which value is greater.
      */
-    inline float4 step(const float4& a, const float4& b)
+    inline Vector4 step(const Vector4& a, const Vector4& b)
     {
-        return float4(
+        return Vector4(
             stepf(a.x, b.x),
             stepf(a.y, b.y),
             stepf(a.z, b.z),
@@ -2229,9 +2229,9 @@ inline namespace Mojo
 
     /* Performs a linear interpolation.
      */
-    inline float4 lerp(const float4& a, const float4& b, const float4& t)
+    inline Vector4 lerp(const Vector4& a, const Vector4& b, const Vector4& t)
     {
-        return float4(
+        return Vector4(
             lerpf(a.x, b.x, t.x),
             lerpf(a.y, b.y, t.y),
             lerpf(a.z, b.z, t.z),
@@ -2240,9 +2240,9 @@ inline namespace Mojo
 
     /* Performs a linear interpolation.
      */
-    inline float4 lerp(const float4& a, const float4& b, float t)
+    inline Vector4 lerp(const Vector4& a, const Vector4& b, float t)
     {
-        return float4(
+        return Vector4(
             lerpf(a.x, b.x, t),
             lerpf(a.y, b.y, t),
             lerpf(a.z, b.z, t),
@@ -2251,9 +2251,9 @@ inline namespace Mojo
 
     /* Compute a smooth Hermite interpolation
      */
-    inline float4 smoothstep(const float4& a, const float4& b, const float4& t)
+    inline Vector4 smoothstep(const Vector4& a, const Vector4& b, const Vector4& t)
     {
-        return float4(
+        return Vector4(
             smoothstepf(a.x, b.x, t.x),
             smoothstepf(a.y, b.y, t.y),
             smoothstepf(a.z, b.z, t.z),
@@ -2262,30 +2262,30 @@ inline namespace Mojo
 
     /* Computes square root of 'x'.
      */
-    inline float4 sqrt(const float4& v)
+    inline Vector4 sqrt(const Vector4& v)
     {
-        return float4(sqrtf(v.x), sqrtf(v.y), sqrtf(v.z), sqrtf(v.w));
+        return Vector4(sqrtf(v.x), sqrtf(v.y), sqrtf(v.z), sqrtf(v.w));
     }
 
     /* Computes inverse square root of 'x'.
      */
-    inline float4 rsqrt(const float4& v)
+    inline Vector4 rsqrt(const Vector4& v)
     {
-        return float4(rsqrtf(v.x), rsqrtf(v.y), rsqrtf(v.z), rsqrtf(v.w));
+        return Vector4(rsqrtf(v.x), rsqrtf(v.y), rsqrtf(v.z), rsqrtf(v.w));
     }
 
     /* Computes fast inverse square root of 'x'.
      */
-    inline float4 fsqrt(const float4& v)
+    inline Vector4 fsqrt(const Vector4& v)
     {
-        return float4(fsqrtf(v.x), fsqrtf(v.y), fsqrtf(v.z), fsqrtf(v.w));
+        return Vector4(fsqrtf(v.x), fsqrtf(v.y), fsqrtf(v.z), fsqrtf(v.w));
     }
 
     /* Computes fast inverse square root of 'x'.
      */
-    inline float4 frsqrt(const float4& v)
+    inline Vector4 frsqrt(const Vector4& v)
     {
-        return float4(frsqrtf(v.x), frsqrtf(v.y), frsqrtf(v.z), frsqrtf(v.w));
+        return Vector4(frsqrtf(v.x), frsqrtf(v.y), frsqrtf(v.z), frsqrtf(v.w));
     }
 
     //
@@ -2294,48 +2294,48 @@ inline namespace Mojo
 
     /* Compute dot product of two vectors
      */
-    inline float dot(const float4& a, const float4& b)
+    inline float dot(const Vector4& a, const Vector4& b)
     {
         return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
     }
 
     /* Compute squared length of vector
      */
-    inline float lensqr(const float4& v)
+    inline float lensqr(const Vector4& v)
     {
         return dot(v, v);
     }
 
     /* Compute length of vector
      */
-    inline float length(const float4& v)
+    inline float length(const Vector4& v)
     {
         return sqrtf(lensqr(v));
     }
 
     /* Compute distance from 'a' to b
      */
-    inline float distance(const float4& a, const float4& b)
+    inline float distance(const Vector4& a, const Vector4& b)
     {
         return length(a - b);
     }
 
     /* Compute squared distance from 'a' to b
      */
-    inline float distsqr(const float4& a, const float4& b)
+    inline float distsqr(const Vector4& a, const Vector4& b)
     {
         return lensqr(a - b);
     }
 
     /* Compute normalized vector
      */
-    inline float4 normalize(const float4& v)
+    inline Vector4 normalize(const Vector4& v)
     {
         const float lsqr = lensqr(v);
         if (lsqr > 0.0f)
         {
             const float f = rsqrtf(lsqr);
-            return float4(v.x * f, v.y * f, v.z * f, v.w * f);
+            return Vector4(v.x * f, v.y * f, v.z * f, v.w * f);
         }
         else
         {
@@ -2345,24 +2345,24 @@ inline namespace Mojo
 
     /* Compute reflection vector
      */
-    inline float4 reflect(const float4& v, const float4& n)
+    inline Vector4 reflect(const Vector4& v, const Vector4& n)
     {
         return v - 2.0f * dot(v, n) * n;
     }
 
     /* Compute refraction vector
      */
-    inline float4 refract(const float4& v, const float4& n, float eta)
+    inline Vector4 refract(const Vector4& v, const Vector4& n, float eta)
     {
         const float k = 1.0f - eta * eta * (1.0f - dot(v, n) * dot(v, n));
         return k < 0.0f
-            ? float4(0.0f)
+            ? Vector4(0.0f)
             : eta * v - (eta * dot(v, n) + sqrtf(k)) * n;
     }
 
     /* Compute faceforward vector
      */
-    inline float4 faceforward(const float4& n, const float4& i, const float4& nref)
+    inline Vector4 faceforward(const Vector4& n, const Vector4& i, const Vector4& nref)
     {
         return dot(i, nref) < 0.0f ? n : -n;
     }
@@ -2373,38 +2373,38 @@ inline namespace Mojo
 
     /* Quaternion multiplication
      */
-    inline quat mul(const quat& a, const quat& b)
+    inline Quaterion mul(const Quaterion& a, const Quaterion& b)
     {
-        const float3 a3 = float3(a.x, a.y, a.z);
-        const float3 b3 = float3(b.x, b.y, b.z);
+        const Vector3 a3 = Vector3(a.x, a.y, a.z);
+        const Vector3 b3 = Vector3(b.x, b.y, b.z);
 
-        float3 v = a3 * b.w + b3 * a.w + cross(a3, b3);
+        Vector3 v = a3 * b.w + b3 * a.w + cross(a3, b3);
         float  w = a.w * b.w - dot(a3, b3);
-        return quat(v.x, v.y, v.z, w);
+        return Quaterion(v.x, v.y, v.z, w);
     }
 
-    inline quat inverse(const quat& q)
+    inline Quaterion inverse(const Quaterion& q)
     {
-        return quat(q.x, q.y, q.z, -q.w);
+        return Quaterion(q.x, q.y, q.z, -q.w);
     }
 
-    inline quat conj(const quat& q)
+    inline Quaterion conj(const Quaterion& q)
     {
-        return quat(-q.x, -q.y, -q.z, q.w);
+        return Quaterion(-q.x, -q.y, -q.z, q.w);
     }
 
     //
     // @region: Quaternion
     //
 
-    inline float4 mul(const float4x4& a, const float4& b)
+    inline Vector4 mul(const Matrix4& a, const Vector4& b)
     {
-        const float4 c0 = float4(a[0][0], a[1][0], a[2][0], a[3][0]);
-        const float4 c1 = float4(a[0][1], a[1][1], a[2][1], a[3][1]);
-        const float4 c2 = float4(a[0][2], a[1][2], a[2][2], a[3][2]);
-        const float4 c3 = float4(a[0][3], a[1][3], a[2][3], a[3][3]);
+        const Vector4 c0 = Vector4(a[0][0], a[1][0], a[2][0], a[3][0]);
+        const Vector4 c1 = Vector4(a[0][1], a[1][1], a[2][1], a[3][1]);
+        const Vector4 c2 = Vector4(a[0][2], a[1][2], a[2][2], a[3][2]);
+        const Vector4 c3 = Vector4(a[0][3], a[1][3], a[2][3], a[3][3]);
 
-        return float4(
+        return Vector4(
             dot(c0, b),
             dot(c1, b),
             dot(c2, b),
@@ -2412,9 +2412,9 @@ inline namespace Mojo
         );
     }
 
-    inline float4 mul(const float4& a, const float4x4& b)
+    inline Vector4 mul(const Vector4& a, const Matrix4& b)
     {
-        return float4(
+        return Vector4(
             dot(a, b[0]),
             dot(a, b[1]),
             dot(a, b[2]),
@@ -2422,27 +2422,27 @@ inline namespace Mojo
         );
     }
 
-    inline float3 mul(const float4x4& a, const float3& b)
+    inline Vector3 mul(const Matrix4& a, const Vector3& b)
     {
-        const float4 b0 = float4(b.x, b.y, b.z, 1.0f);
-        const float4 b1 = mul(a, b0);
+        const Vector4 b0 = Vector4(b.x, b.y, b.z, 1.0f);
+        const Vector4 b1 = mul(a, b0);
 
         const float iw = 1.0f / b1.w;
-        return float3(b1.x * iw, b1.y * iw, b1.z * iw);
+        return Vector3(b1.x * iw, b1.y * iw, b1.z * iw);
     }
 
-    inline float3 mul(const float3& a, const float4x4& b)
+    inline Vector3 mul(const Vector3& a, const Matrix4& b)
     {
-        const float4 a0 = float4(a.x, a.y, a.z, 1.0f);
-        const float4 a1 = mul(a0, b);
+        const Vector4 a0 = Vector4(a.x, a.y, a.z, 1.0f);
+        const Vector4 a1 = mul(a0, b);
 
         const float iw = 1.0f / a1.w;
-        return float3(a1.x * iw, a1.y * iw, a1.z * iw);
+        return Vector3(a1.x * iw, a1.y * iw, a1.z * iw);
     }
 
-    inline float4x4 mul(const float4x4& a, const float4x4& b)
+    inline Matrix4 mul(const Matrix4& a, const Matrix4& b)
     {
-        float4x4 result;
+        Matrix4 result;
         result[0] = mul(a, b[0]);
         result[1] = mul(a, b[1]);
         result[2] = mul(a, b[2]);
@@ -2452,112 +2452,112 @@ inline namespace Mojo
 
     namespace Math
     {
-        inline float4 ToAxisAngle(const quat& q)
+        inline Vector4 ToAxisAngle(const Quaterion& q)
         {
-            float4 c = float4(q);
+            Vector4 c = Vector4(q);
             if (c.w != 0.0f)
             {
                 c = normalize(c);
             }
 
-            float3 axis;
+            Vector3 axis;
             const float den = sqrtf(1.0f - c.w * c.w);
             if (den > 0.0001f)
             {
-                axis = float3(c.x, c.y, c.z) / den;
+                axis = Vector3(c.x, c.y, c.z) / den;
             }
             else
             {
-                axis = float3(1, 0, 0);
+                axis = Vector3(1, 0, 0);
             }
 
             float angle = 2.0f * cosf(c.w);
-            return float4(axis, angle);
+            return Vector4(axis, angle);
         }
 
-        inline float4x4 Transform(const float2& position, float rotation, const float2& scale)
+        inline Matrix4 Transform(const Vector2& position, float rotation, const Vector2& scale)
         {
             return mul(mul(Math::Translation(position), Math::RotationZ(rotation)), Math::Scalation(scale));
         }
 
-        inline float4x4 Transform(const float3& position, const quat& rotation, const float3& scale)
+        inline Matrix4 Transform(const Vector3& position, const Quaterion& rotation, const Vector3& scale)
         {
             return mul(mul(Math::Translation(position), Math::Rotation(rotation)), Math::Scalation(scale));
         }
 
-        inline float4x4 Ortho(float l, float r, float b, float t, float n, float f)
+        inline Matrix4 Ortho(float l, float r, float b, float t, float n, float f)
         {
             const float x = 1.0f / (r - l);
             const float y = 1.0f / (t - b);
             const float z = 1.0f / (f - n);
 
-            float4x4 result;
-            result[0] = float4(2.0f * x, 0, 0, 0);
-            result[1] = float4(0, 2.0f * y, 0, 0);
-            result[2] = float4(0, 0, 2.0f * z, 0);
-            result[3] = float4(-x * (l + r), -y * (b + t), -z * (n + f), 1.0f);
+            Matrix4 result;
+            result[0] = Vector4(2.0f * x, 0, 0, 0);
+            result[1] = Vector4(0, 2.0f * y, 0, 0);
+            result[2] = Vector4(0, 0, 2.0f * z, 0);
+            result[3] = Vector4(-x * (l + r), -y * (b + t), -z * (n + f), 1.0f);
             return result;
         }
 
-        inline float4x4 Frustum(float l, float r, float b, float t, float n, float f)
+        inline Matrix4 Frustum(float l, float r, float b, float t, float n, float f)
         {
             const float x = 1.0f / (r - l);
             const float y = 1.0f / (t - b);
             const float z = 1.0f / (f - n);
 
-            float4x4 result;
-            result[0] = float4(2.0f * x, 0, 0, 0);
-            result[1] = float4(0, 2.0f * y, 0, 0);
-            result[2] = float4(x * (l + r), y * (b + t), z * (n + f), 1.0f);
-            result[3] = float4(0, 0, 2.0f * z, 0);
+            Matrix4 result;
+            result[0] = Vector4(2.0f * x, 0, 0, 0);
+            result[1] = Vector4(0, 2.0f * y, 0, 0);
+            result[2] = Vector4(x * (l + r), y * (b + t), z * (n + f), 1.0f);
+            result[3] = Vector4(0, 0, 2.0f * z, 0);
             return result;
         }
 
-        inline float4x4 Perspective(float fov, float aspect, float znear, float zfar)
+        inline Matrix4 Perspective(float fov, float aspect, float znear, float zfar)
         {
             const float a = 1.0f / tanf(fov * 0.5f);
             const float b = zfar / (znear - zfar);
 
-            float4x4 result;
-            result[0] = float4(a / aspect, 0, 0, 0);
-            result[1] = float4(0, a, 0, 0);
-            result[2] = float4(0, 0, b, -1);
-            result[3] = float4(0, 0, znear * b, 0);
+            Matrix4 result;
+            result[0] = Vector4(a / aspect, 0, 0, 0);
+            result[1] = Vector4(0, a, 0, 0);
+            result[2] = Vector4(0, 0, b, -1);
+            result[3] = Vector4(0, 0, znear * b, 0);
             return result;
         }
 
-        inline float4x4 Lookat(const float3& eye, const float3& target, const float3& up)
+        inline Matrix4 Lookat(const Vector3& eye, const Vector3& target, const Vector3& up)
         {
-            const float3 z = normalize(eye - target);
-            const float3 x = normalize(cross(up, z));
-            const float3 y = normalize(cross(z, x));
+            const Vector3 z = normalize(eye - target);
+            const Vector3 x = normalize(cross(up, z));
+            const Vector3 y = normalize(cross(z, x));
 
-            float4x4 result;
-            result[0] = float4(x.x, y.x, z.x, 0);
-            result[1] = float4(x.y, y.y, z.y, 0);
-            result[2] = float4(x.z, y.z, z.z, 0);
-            result[3] = float4(-dot(x, eye), -dot(y, eye), -dot(z, eye), 1.0f);
+            Matrix4 result;
+            result[0] = Vector4(x.x, y.x, z.x, 0);
+            result[1] = Vector4(x.y, y.y, z.y, 0);
+            result[2] = Vector4(x.z, y.z, z.z, 0);
+            result[3] = Vector4(-dot(x, eye), -dot(y, eye), -dot(z, eye), 1.0f);
             return result;
         }
 
-        inline float4x4 Scalation(float s)
+        inline Matrix4 Scalation(float s)
         {
             return Scalation(s, s, s);
         }
 
-        inline float4x4 Scalation(const float2& v)
+        inline Matrix4 Scalation(const Vector2& v)
         {
             return Scalation(v.x, v.y);
         }
 
-        inline float4x4 Scalation(const float3& v)
+        inline Matrix4 Scalation(const Vector3& v)
         {
             return Scalation(v.x, v.y, v.z);
         }
 
-        inline float4x4 Scalation(float x, float y, float z)
+        inline Matrix4 Scalation(float x, float y, float z)
         {
-            return float4x4(
+            return Matrix4(
                 x, 0, 0, 0,
                 0, y, 0, 0,
                 0, 0, z, 0,
@@ -2565,19 +2565,19 @@ inline namespace Mojo
             );
         }
 
-        inline float4x4 Translation(const float2& v)
+        inline Matrix4 Translation(const Vector2& v)
         {
             return Translation(v.x, v.y);
         }
 
-        inline float4x4 Translation(const float3& v)
+        inline Matrix4 Translation(const Vector3& v)
         {
             return Translation(v.x, v.y, v.z);
         }
 
-        inline float4x4 Translation(float x, float y, float z)
+        inline Matrix4 Translation(float x, float y, float z)
         {
-            return float4x4(
+            return Matrix4(
                 1, 0, 0, 0,
                 0, 1, 0, 0,
                 0, 0, 1, 0,
@@ -2585,47 +2585,47 @@ inline namespace Mojo
             );
         }
 
-        inline float4x4 Rotation(const float3& axis, float angle)
+        inline Matrix4 Rotation(const Vector3& axis, float angle)
         {
             return Rotation(axis.x, axis.y, axis.z, angle);
         }
 
-        inline float4x4 Rotation(float x, float y, float z, float angle)
+        inline Matrix4 Rotation(float x, float y, float z, float angle)
         {
             const float c = cosf(-angle);
             const float s = sinf(-angle);
             const float t = 1.0f - c;
 
-            float4x4 result;
+            Matrix4 result;
             /* Row 1 */
-            result[0] = float4(t * x * x + c,
+            result[0] = Vector4(t * x * x + c,
                 t * x * y - s * z,
                 t * x * z + s * y,
                 0.0f);
 
             /* Row 2 */
-            result[1] = float4(t * x * y + s * z,
+            result[1] = Vector4(t * x * y + s * z,
                 t * y * y + c,
                 t * y * z - s * x,
                 0.0f);
 
             /* Row 3 */
-            result[2] = float4(t * x * z - s * y,
+            result[2] = Vector4(t * x * z - s * y,
                 t * y * z + s * x,
                 t * z * z + c,
                 0.0f);
 
             /* Row 4 */
-            result[3] = float4(0, 0, 0, 1.0f);
+            result[3] = Vector4(0, 0, 0, 1.0f);
             return result;
         }
 
-        inline float4x4 RotationX(float angle)
+        inline Matrix4 RotationX(float angle)
         {
             const float s = sinf(angle);
             const float c = cosf(angle);
 
-            return float4x4(
+            return Matrix4(
                 1, 0, 0, 0,
                 0, c, s, 0,
                 0, -s, c, 0,
@@ -2633,12 +2633,12 @@ inline namespace Mojo
             );
         }
 
-        inline float4x4 RotationY(float angle)
+        inline Matrix4 RotationY(float angle)
         {
             const float s = sinf(angle);
             const float c = cosf(angle);
 
-            return float4x4(
+            return Matrix4(
                 c, 0, s, 0,
                 0, 1, 0, 0,
                 -s, 0, c, 0,
@@ -2646,12 +2646,12 @@ inline namespace Mojo
             );
         }
 
-        inline float4x4 RotationZ(float angle)
+        inline Matrix4 RotationZ(float angle)
         {
             const float s = sinf(angle);
             const float c = cosf(angle);
 
-            return float4x4(
+            return Matrix4(
                 c, s, 0, 0,
                 -s, c, 0, 0,
                 0, 0, 1, 0,
@@ -2659,17 +2659,17 @@ inline namespace Mojo
             );
         }
 
-        inline float4x4 Rotation(const quat& quaternion)
+        inline Matrix4 Rotation(const Quaterion& quaternion)
         {
-            float4 axisangle = ToAxisAngle(quaternion);
+            Vector4 axisangle = ToAxisAngle(quaternion);
             return Rotation(axisangle.x, axisangle.y, axisangle.z, axisangle.w);
         }
 
-        inline void Decompose(const float4x4& m, float3* scalation, quat* quaternion, float3* translation)
+        inline void Decompose(const Matrix4& m, Vector3* scalation, Quaterion* quaternion, Vector3* translation)
         {
             if (translation)
             {
-                *translation = float3(m[3][0], m[3][1], m[3][2]);
+                *translation = Vector3(m[3][0], m[3][1], m[3][2]);
             }
 
             if (!scalation && !quaternion)
@@ -2677,9 +2677,9 @@ inline namespace Mojo
                 return;
             }
 
-            float3 xaxis(m[0][0], m[0][1], m[0][2]);
-            float3 yaxis(m[1][0], m[1][1], m[1][2]);
-            float3 zaxis(m[2][0], m[2][1], m[2][2]);
+            Vector3 xaxis(m[0][0], m[0][1], m[0][2]);
+            Vector3 yaxis(m[1][0], m[1][1], m[1][2]);
+            Vector3 zaxis(m[2][0], m[2][1], m[2][2]);
 
             float scale_x = length(xaxis);
             float scale_y = length(yaxis);
@@ -2700,7 +2700,7 @@ inline namespace Mojo
 
             if (scalation)
             {
-                *scalation = float3(scale_x, scale_y, scale_z);
+                *scalation = Vector3(scale_x, scale_y, scale_z);
             }
 
             if (!quaternion)
@@ -2768,20 +2768,20 @@ inline namespace Mojo
             }
         }
 
-        inline void Decompose(const float4x4& m, float3* scalation, float3* axis, float* angle, float3* translation)
+        inline void Decompose(const Matrix4& m, Vector3* scalation, Vector3* axis, float* angle, Vector3* translation)
         {
             if (axis || angle)
             {
-                quat quat;
-                Decompose(m, scalation, &quat, translation);
+                Quaterion Quaterion;
+                Decompose(m, scalation, &Quaterion, translation);
 
-                float4 axisangle = ToAxisAngle(quat);
-                *axis = float3(axisangle);
+                Vector4 axisangle = ToAxisAngle(Quaterion);
+                *axis = Vector3(axisangle);
                 *angle = axisangle.w;
             }
             else
             {
-                Decompose(m, scalation, (quat*)0, translation);
+                Decompose(m, scalation, (Quaterion*)0, translation);
             }
         }
     }

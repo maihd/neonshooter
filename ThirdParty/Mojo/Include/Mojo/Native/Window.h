@@ -2,9 +2,9 @@
 
 inline namespace Mojo
 {
-    namespace WindowFlag
+    namespace __WindowFlag
     {
-        enum
+        enum Type
         {
             None       = 0,
             Visible    = 1 << 0,
@@ -15,10 +15,11 @@ inline namespace Mojo
             Default = Visible,
         };
     }
+    using WindowFlag = __WindowFlag::Type;
 
     namespace Window
     {
-        bool Setup(const char* title, int width, int height, int flags = WindowFlag::Default);
+        bool Setup(const char* title, int width, int height, WindowFlag flags = WindowFlag::Default);
         void Shutdown(void);
 
         // Process all coming events

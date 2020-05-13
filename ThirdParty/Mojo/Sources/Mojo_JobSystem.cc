@@ -111,8 +111,8 @@ namespace Mojo
 
         //static Coroutine*           _coroutinePools;
 
-        static AtomicI32         _currentCounter;
-        static AtomicI32         _finishedCounter;
+        static AtomicI32            _currentCounter;
+        static AtomicI32            _finishedCounter;
 
         static Allocator*           allocator;
     }

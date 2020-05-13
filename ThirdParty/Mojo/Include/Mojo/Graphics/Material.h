@@ -33,10 +33,10 @@ inline namespace Mojo
             float       asFloat;
             double      asDouble;
 
-            float2      asFloat2;
-            float3      asFloat3;
-            float4      asFloat4;
-            float4x4    asFloat4x4;   
+            Vector2      asFloat2;
+            Vector3      asFloat3;
+            Vector4      asFloat4;
+            Matrix4    asFloat4x4;   
         };
 
         inline UniformValue(void)
@@ -62,10 +62,10 @@ inline namespace Mojo
 
         void SetFloat(const char* name, float value);
 
-        void SetVector2(const char* name, const float2& value);
-        void SetVector3(const char* name, const float3& value);
-        void SetVector4(const char* name, const float4& value);
+        void SetVector2(const char* name, const Vector2& value);
+        void SetVector3(const char* name, const Vector3& value);
+        void SetVector4(const char* name, const Vector4& value);
 
-        void SetMatrix4(const char* name, const float4x4& value);
+        void SetMatrix4(const char* name, const Matrix4& value);
     };
 }
