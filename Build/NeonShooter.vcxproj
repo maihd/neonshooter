@@ -154,8 +154,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\Sources\Game.cpp" />
-    <ClCompile Include="..\Sources\Main.cpp" />
+    <ClCompile Include="..\Sources\Game.cc" />
+    <ClCompile Include="..\Sources\Main.cc" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Mojo.vcxproj">
