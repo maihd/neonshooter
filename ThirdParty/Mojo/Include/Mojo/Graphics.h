@@ -196,7 +196,7 @@ inline namespace Mojo
         void SetColor(float r, float g, float b, float a = 1.0f);
 
         Vector4 GetColor(void);
-        void    GetColor(float* r, float* g, float* b, float* a = 0);
+        void    GetColor(float* r, float* g, float* b, float* a = nullptr);
 
         void Arc(DrawMode mode, float x, float y, float radius, float angle, int segments = 30);
         void Circle(DrawMode mode, float x, float y, float radius, int segments = 30);

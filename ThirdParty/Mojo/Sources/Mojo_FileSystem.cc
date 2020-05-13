@@ -1,6 +1,7 @@
 #include <Mojo/FileSystem.h>
 #include <Mojo/Core/Array.h>
 #include <Mojo/Core/Thread.h>
+#include <Mojo/Core/String.h>
 
 #define VC_EXTRALEAN
 #define WIN32_LEAN_AND_MEAN
@@ -70,7 +71,7 @@ namespace Mojo
     namespace
     {
         static AsyncFilePool<128> _asyncFilePool;
-        static Array<const char*> _searchPaths;
+        static Array<String>      _searchPaths;
     }
 
     struct OsFile : File
@@ -154,7 +155,7 @@ namespace Mojo
         {
             for (int i = 0, n = _searchPaths.count; i < n; i++)
             {
-                if (_stricmp(_searchPaths[i], path) == 0)
+                if (_stricmp(_searchPaths[i].GetCString(), path) == 0)
                 {
                     _searchPaths.Erase(i);
                     break;
@@ -184,7 +185,7 @@ namespace Mojo
                         const char* originPath = path;
                         for (int i = 0, n = _searchPaths.count; i < n; i++)
                         {
-                            const char* searchPath = _searchPaths[i];
+                            const char* searchPath = _searchPaths[i].GetCString();
 
                             ::sprintf(pathBuffer, "%s/%s", searchPath, originPath);
                             if (FileSystem::Exists(pathBuffer, false))
@@ -213,7 +214,7 @@ namespace Mojo
                     const char* originPath = path;
                     for (int i = 0, n = _searchPaths.count; i < n; i++)
                     {
-                        const char* searchPath = _searchPaths[i];
+                        const char* searchPath = _searchPaths[i].GetCString();
 
                         ::sprintf(pathBuffer, "%s/%s", searchPath, originPath);
                         if (FileSystem::Exists(pathBuffer, false))

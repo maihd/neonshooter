@@ -90,7 +90,7 @@ namespace Mojo
         Graphics::BindVertexBuffer(_spriteVertexBuffer);
 
         _spriteVertexBuffer.SetData(_vertices.elements, _vertices.count * sizeof(Vertex), BufferUsage::StreamDraw);
-        _spriteIndexBuffer.SetData(_indices.elements, _indices.count * sizeof(unsigned short), BufferUsage::StreamDraw);
+        _spriteIndexBuffer.SetData(_indices.elements, _indices.count * sizeof(U16), BufferUsage::StreamDraw);
 
         int offset = 0;
         for (int i = 0, n = _drawCmds.count; i < n; i++)
