@@ -1,0 +1,3 @@
+[submodule "ThirdParty/MaiLib"]
+	path = ThirdParty/MaiLib
+	url = https://github.com/maihd/mailib
