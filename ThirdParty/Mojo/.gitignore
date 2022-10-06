@@ -1,9 +1,0 @@
-.vs
-.vscode
-.DS_Store
-
-/Build/x64
-/Build/obj
-/Build/bin
-/Build/Debug
-/Build/Release

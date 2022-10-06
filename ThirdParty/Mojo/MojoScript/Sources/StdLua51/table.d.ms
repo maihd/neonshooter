@@ -1,9 +1,0 @@
---[[
-MojoScript description file for table manipulation
-]]
-
-concat : ({string}|{number}|{string|number}, string?, number?, number?) -> (string)
-insert : ({any}, any, any) -> ()
-maxn : ({}) -> (number)
-remove : ({any}, number?) -> (any)
-sort : ({any}, nil|(any, any) -> (boolean)) -> ()

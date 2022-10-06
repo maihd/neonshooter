@@ -1,6 +1,0 @@
-require "examples.issues.issue66.colorpoint"
-
-interface Point3D
-  p: ColorPoint
-  z: number
-end

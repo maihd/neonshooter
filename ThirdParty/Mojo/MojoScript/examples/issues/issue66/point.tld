@@ -1,3 +1,0 @@
-interface Point
-  x, y: number
-end

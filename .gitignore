@@ -2,14 +2,4 @@
 .vscode
 .DS_Store
 
-/Build/x64
-/Build/obj
-/Build/bin
-/Build/Debug
-/Build/Release
-
-/ThirdParty/Mojo/Build/x64
-/ThirdParty/Mojo/Build/obj
-/ThirdParty/Mojo/Build/bin
-/ThirdParty/Mojo/Build/Debug
-/ThirdParty/Mojo/Build/Release
+/Projects
