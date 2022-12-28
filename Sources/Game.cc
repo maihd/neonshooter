@@ -179,7 +179,7 @@ Texture LoadTexture(const char* path)
     return texture; 
 }
 
-namespace Color
+namespace ColorUtils
 {
     Vector4 HSV(float h, float s, float v)
     {
@@ -460,8 +460,8 @@ namespace World
 
         float hue1 = rand() % 101 / 100.0f * 6.0f;
         float hue2 = Math::Mod(hue1 + (rand() % 101 / 100.0f * 2.0f), 6.0f);
-        Vector4 color1 = Color::HSV(hue1, 0.5f, 1);
-        Vector4 color2 = Color::HSV(hue2, 0.5f, 1);
+        Vector4 color1 = ColorUtils::HSV(hue1, 0.5f, 1);
+        Vector4 color2 = ColorUtils::HSV(hue2, 0.5f, 1);
 
         for (int i = 0; i < 120; i++)
         {
@@ -485,8 +485,8 @@ namespace World
 
         float hue1 = rand() % 101 / 100.0f * 6.0f;
         float hue2 = Math::Mod(hue1 + (rand() % 101 / 100.0f * 2.0f), 6.0f);
-        Vector4 color1 = Color::HSV(hue1, 0.5f, 1);
-        Vector4 color2 = Color::HSV(hue2, 0.5f, 1);
+        Vector4 color1 = ColorUtils::HSV(hue1, 0.5f, 1);
+        Vector4 color2 = ColorUtils::HSV(hue2, 0.5f, 1);
 
         for (int i = 0; i < 120; i++)
         {
@@ -510,8 +510,8 @@ namespace World
 
         float hue1 = rand() % 101 / 100.0f * 6.0f;
         float hue2 = Math::Mod(hue1 + (rand() % 101 / 100.0f * 2.0f), 6.0f);
-        Vector4 color1 = Color::HSV(hue1, 0.5f, 1);
-        Vector4 color2 = Color::HSV(hue2, 0.5f, 1);
+        Vector4 color1 = ColorUtils::HSV(hue1, 0.5f, 1);
+        Vector4 color2 = ColorUtils::HSV(hue2, 0.5f, 1);
 
         for (int i = 0; i < 120; i++)
         {
@@ -542,8 +542,8 @@ namespace World
 
         float hue1 = rand() % 101 / 100.0f * 6.0f;
         float hue2 = Math::Mod(hue1 + (rand() % 101 / 100.0f * 2.0f), 6.0f);
-        Vector4 color1 = Color::HSV(hue1, 0.5f, 1);
-        Vector4 color2 = Color::HSV(hue2, 0.5f, 1);
+        Vector4 color1 = ColorUtils::HSV(hue1, 0.5f, 1);
+        Vector4 color2 = ColorUtils::HSV(hue2, 0.5f, 1);
 
         for (int i = 0; i < 1200; i++)
         {
@@ -798,8 +798,8 @@ namespace World
 
                     float hue1 = rand() % 101 / 100.0f * 6.0f;
                     float hue2 = Math::Mod(hue1 + (rand() % 101 / 100.0f * 2.0f), 6.0f);
-                    Vector4 color1 = Color::HSV(hue1, 0.5f, 1);
-                    Vector4 color2 = Color::HSV(hue2, 0.5f, 1);
+                    Vector4 color1 = ColorUtils::HSV(hue1, 0.5f, 1);
+                    Vector4 color2 = ColorUtils::HSV(hue2, 0.5f, 1);
 
                     for (int i = 0; i < 120.0f; i++)
                     {
