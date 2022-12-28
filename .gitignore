@@ -2,11 +2,16 @@
 .vscode
 .DS_Store
 
+/recovery
+/BeefSpace_User.toml
+
 /Build/x64
 /Build/obj
 /Build/bin
 /Build/Debug
 /Build/Release
+/Build/Debug_Win64
+/Build/Release_Win64
 
 /ThirdParty/Mojo/Build/x64
 /ThirdParty/Mojo/Build/obj
