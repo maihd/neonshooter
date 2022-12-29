@@ -1,5 +1,5 @@
 FileVersion = 1
-Projects = {NeonShooter = {Path = "."}}
+Projects = {NeonShooter = {Path = "."}, Mojo = {Path = "ThirdParty/Mojo"}, SDL2 = {Path = "ThirdParty/SDL2"}}
 
 [Workspace]
 StartupProject = "NeonShooter"

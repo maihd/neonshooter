@@ -1,0 +1,7 @@
+FileVersion = 1
+Dependencies = {corlib = "*", SDL2 = "*"}
+
+[Project]
+Name = "Mojo"
+TargetType = "BeefLib"
+StartupObject = "Mojo.Program"

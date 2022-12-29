@@ -1,4 +1,5 @@
 FileVersion = 1
+Dependencies = {corlib = "*", Mojo = "*", SDL2 = "*"}
 
 [Project]
 Name = "NeonShooter"
