@@ -1,6 +1,7 @@
 namespace NeonShooter;
 
 using System;
+using Mojo;
 
 class Program
 {
@@ -17,11 +18,27 @@ class Program
 		Console.WriteLine("NeonShooter - Win32 - OpenGL - OpenAL - v1.0\n");
 		Console.WriteLine("============================================\n");
 
+		WindowFlags winFlags = WindowFlags.Visible;
+		if (!Window.Setup("Neon Shooter", 1280, 720, winFlags))
+		{
+		    return;
+		}
+		defer
+		{
+			Window.Shutdown();
+		}
+
 		var game = new Game();
 		game.Init();
 
 		while (true)
 		{
+			if (!Window.PollEvents())
+			{
+			    // Handle quit event
+			    break;
+			}
+
 			const float dt = 0.0f;
 			game.Update(dt);
 			game.Render();
