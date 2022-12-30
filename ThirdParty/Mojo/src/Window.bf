@@ -10,17 +10,18 @@ public static class Window
 
 	static WindowFlags			_windowFlags;
 
-	public static bool Setup(StringView title, int32 width, int32 height, WindowFlags flags)
+	public static Result<void, StringView> Setup(StringView title, int32 width, int32 height, WindowFlags flags)
 	{
-		if (SDL.Init(.Video) != 0)
+		let sdlErrorCode = SDL.Init(.Video);
+		if (sdlErrorCode != 0)
 		{
 			Console.Error.WriteLine("[Error] SDL_Init: {0}", SDL.GetError());
-			return false;
+			return .Err(.(SDL.GetError()));
 		}
 
 		if (_mainWindow != null)
 		{
-			return true;
+			return .Ok;
 		}
 
 		var sdlFlags = SDL.WindowFlags.OpenGL;
@@ -52,13 +53,13 @@ public static class Window
 		let window = SDL.CreateWindow(title.Ptr, .Centered, .Centered, width, height, sdlFlags);
 		if (window == null)
 		{
-			return false;
+			return .Err(.(SDL.GetError()));
 		}
 
 		_mainWindow = window;
 		_windowFlags = flags;
 
-		return true;
+		return .Ok;
 	}
 
 	public static void Shutdown()

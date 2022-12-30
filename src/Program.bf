@@ -19,8 +19,9 @@ class Program
 		Console.WriteLine("============================================\n");
 
 		WindowFlags winFlags = WindowFlags.Visible;
-		if (!Window.Setup("Neon Shooter", 1280, 720, winFlags))
+		if (Window.Setup("Neon Shooter", 1280, 720, winFlags) case .Err(let error))
 		{
+			Console.Error.WriteLine("[Error] Setup window failure: {0}", error);
 		    return;
 		}
 		defer
