@@ -5,8 +5,8 @@ using SDL2;
 
 public static class Window
 {
-	static SDL.Window*			_mainWindow;
-	static SDL.SDL_GLContext*	_mainContext;
+	internal static SDL.Window*			_mainWindow;
+	internal static SDL.SDL_GLContext	_mainContext;
 
 	static WindowFlags			_windowFlags;
 
@@ -47,6 +47,7 @@ public static class Window
 		default:
 		}
 
+		// @note: maybe redundant?
 		SDL.GL_SetAttribute(.GL_MULTISAMPLEBUFFERS, 0);
 		SDL.GL_SetAttribute(.GL_MULTISAMPLESAMPLES, 0);
 

@@ -29,22 +29,35 @@ class Program
 			Window.Shutdown();
 		}
 
-		var game = new Game();
+		GraphicsSettings graphicsSettings = .();
+		if (Graphics.Setup(graphicsSettings) case .Err(let error))
+		{
+			Console.Error.WriteLine("[Error] Setup graphics context failure: {0}", error);
+			return;
+		}
+		defer
+		{
+			Graphics.Shutdown();
+		}
+
+		let game = new Game();
+		defer delete game;
 		game.Init();
 
-		while (true)
+		MainLoop: while (true)
 		{
 			if (!Window.PollEvents())
 			{
 			    // Handle quit event
-			    break;
+			    break MainLoop;
 			}
 
 			const float dt = 0.0f;
 			game.Update(dt);
+
+			Graphics.Clear();
 			game.Render();
+			Graphics.Present();
 		}
-		
-		Console.Read();
 	}
 }

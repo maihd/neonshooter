@@ -1,0 +1,5 @@
+namespace Mojo;
+
+class VertexBuffer
+{
+}
