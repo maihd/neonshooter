@@ -6,7 +6,7 @@ Porting versions (git branching)
 --------------------------------
 - Written in C++ with custom game engine called [Mojo Engine](https://github.com/maihd/neonshooter/tree/mojo) (Missing features)
 - Written in Beef with custom game engine called [Mojo Engine](https://github.com/maihd/neonshooter/tree/mojo-beef) (WIP)
-- Written C with [Raylib](https://github.com/maihd/neonshooter/tree/raylib)(Missing menus and HUD)
+- Written C with [Raylib](https://github.com/maihd/neonshooter/tree/raylib) (Missing menus and HUD)
 
 Meta
 ----
