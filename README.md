@@ -28,6 +28,12 @@ Build instructions
 - Generate Visual Studio project with premake5, only tested with VS2017.
 - Open project in Build/ with Visual Studio and run.
 
+Dependencies
+------------
+- Raylib v2.5
+- RayGui v2.7
+- MaiLibC (Core library only use with maihd/raylib-games)
+
 Meta
 ----
 - License: NO
