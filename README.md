@@ -7,6 +7,7 @@ Features
 - Main gameplay
 - Particle effects
 - Space grid (bugging)
+- Bloom shading (bugging)
 - Sound (WIP)
 
 Gameplay input
