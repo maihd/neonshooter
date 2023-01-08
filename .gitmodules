@@ -1,6 +1,0 @@
-[submodule "ThirdParty/MaiLib"]
-	path = ThirdParty/MaiLib
-	url = https://github.com/maihd/mailib
-[submodule "ThirdParty/vectormath"]
-	path = ThirdParty/vectormath
-	url = https://github.com/maihd/vectormath
