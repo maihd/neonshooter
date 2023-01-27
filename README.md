@@ -21,7 +21,7 @@ Platforms
 ---------
 - Windows
 - Mobile (planning)
-- Asm.js/WASM (planning)
+- Asm.js/WASM
 
 Build instructions
 ------------------
