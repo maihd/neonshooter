@@ -89,7 +89,7 @@ const char* GetAssetPath(const char* target)
 #ifdef RELEASE
 #   define ASSET_PATH "Assets"
 #else
-#   define ASSET_PATH "../Assets"
+#   define ASSET_PATH "../../Assets"
 #endif
 
     const char* finalPath = TextFormat("%s/%s", ASSET_PATH, target);

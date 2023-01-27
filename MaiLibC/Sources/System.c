@@ -5,7 +5,7 @@
 #include <stdarg.h>
 
 #ifndef NDEBUG
-__declspec(noreturn)
+NORETURN
 void SystemErrorDebug(const char* func, const char* file, int line, const char* message, ...)
 {
     int ret;
@@ -18,7 +18,7 @@ void SystemErrorDebug(const char* func, const char* file, int line, const char* 
     va_end(vargs);
 
     fputc('\n', stderr);
-    return ret;
+    (void)ret;
 
     exit(1);
 }
@@ -35,10 +35,10 @@ void SystemPrintAssert(const char* test, const char* func, const char* file, int
     va_end(vargs);
 
     fputc('\n', stderr);
-    return ret;
+    (void)ret;
 }
 #else
-__declspec(noreturn)
+NORETURN
 void SystemError(const char* message, ...)
 {
     int ret;

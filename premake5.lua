@@ -1,13 +1,17 @@
+-- require "vstool"
+require "emscripten"
+
 local ROOT_DIR = path.getabsolute(".")
 local BUILD_DIR = path.join(ROOT_DIR, "Build")
+local LOCATION_DIR = path.join(BUILD_DIR, _ACTION)
 local THIRDPARTY_DIR = path.join(ROOT_DIR, "ThirdParty")
 
 workspace "NeonShooter"
 do
     language "C++"
-    location (BUILD_DIR)
+    location (LOCATION_DIR)
 
-    platforms { "x32", "x64" }
+    platforms { "x32", "x64", "wasm32" }
     configurations { "Debug", "Release" }
 
     --cdialect "c99"
@@ -29,6 +33,16 @@ do
     do
         defines {
             "RELEASE"
+        }
+    end
+
+    filter { "platforms:wasm32" }
+    do
+        toolset "emcc"
+        -- system "emscripten"
+        -- architecture "wasm32"
+        defines {
+            "PLATFORM_WEB"
         }
     end
 
@@ -83,8 +97,6 @@ do
 
     links {
         "MaiLibC",
-        "raylib_static",
-        "winmm",
     }
 
     includedirs {
@@ -106,14 +118,39 @@ do
         "PLATFORM_DESKTOP"
     }
 
-    filter { "platforms:x32" }
+    filter { "platforms:x32", "action:vs*" }
     do
         libdirs { path.join(ROOT_DIR, "ThirdParty/Library/Win32") }
     end
 
-    filter { "platforms:x64" }
+    filter { "platforms:x64", "action:vs*" }
     do
         libdirs { path.join(ROOT_DIR, "ThirdParty/Library/Win64") }
+    end
+
+    filter { "platforms:wasm32" }
+    do
+        links {
+            "raylib"
+        }
+
+        targetextension ".html"
+
+        linkoptions { 
+            "--preload-file " .. path.getrelative(LOCATION_DIR, path.join(ROOT_DIR, "Assets")),
+            "-s USE_GLFW=3",
+            "-s ASYNCIFY"
+        }
+
+        libdirs { path.join(ROOT_DIR, "ThirdParty/Library/wasm32") }
+    end
+
+    filter { "action:vs*" }
+    do
+        links {
+            "raylib_static",
+            "winmm"
+        }
     end
 
     filter {}

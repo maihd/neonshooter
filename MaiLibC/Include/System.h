@@ -1,9 +1,15 @@
 #pragma once
 
+#ifdef _MSC_VER
+#define NORETURN __declspec(noreturn)
+#else
+#define NORETURN __attribute__((noreturn))
+#endif
+
 #ifndef NDEBUG
 #define SystemError(message, ...) SystemErrorDebug(__FUNCTION__, __FILE__, __LINE__, message, ##__VA_ARGS__)
 
-__declspec(noreturn)
+NORETURN
 void SystemErrorDebug(const char* func, const char* file, int line, const char* message, ...);
 
 void SystemPrintAssert(const char* test, const char* func, const char* file, int line, const char* message, ...);
@@ -29,6 +35,6 @@ void SystemPrintAssert(const char* test, const char* func, const char* file, int
 #else // ELSE OF NDEBUG
 #define SystemAssert(test, message, ...) ((void)0)
 
-__declspec(noreturn)
+NORETURN
 void SystemError(const char* message, ...);
 #endif

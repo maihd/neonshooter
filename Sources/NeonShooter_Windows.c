@@ -1,4 +1,4 @@
-#if RELEASE
+#if RELEASE && defined(_MSC_VER)
 extern int mainFunction();
 
 #include <Windows.h>

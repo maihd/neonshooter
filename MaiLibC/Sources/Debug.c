@@ -15,5 +15,5 @@ void DebugPrintWithSource(const char* func, const char* file, int line, const ch
     va_end(vargs);
 
     fputc('\n', stderr);
-    return ret;
+    (void)ret;
 }

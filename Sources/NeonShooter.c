@@ -12,6 +12,10 @@
 #include "NeonShooter_GameAudio.h"
 #include "NeonShooter_ParticleSystem.h"
 
+#if __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
+
 static float clampf(float value, float min, float max)
 {
     const float res = value < min ? min : value;
@@ -30,15 +34,48 @@ int GetFrameCount(void)
     return frameCount;
 }
 
-#ifdef RELEASE
+const int SCREEN_WIDTH  = 1280;
+const int SCREEN_HEIGHT = 720;
+
+static World            world;
+
+static Shader           bloomShader;
+static RenderTexture    framebuffer;
+
+static void Init(void);
+static void Close(void);
+
+static void RunOneFrame(void);
+
+#if defined(RELEASE) && defined(_MSC_VER)
 int mainFunction()
 #else
 int main()
 #endif
 {
-    const int SCREEN_WIDTH = 1280;
-    const int SCREEN_HEIGHT = 720;
+    // Init app
+    Init();
 
+    // App main loop
+#ifndef __EMSCRIPTEN__
+    while (!WindowShouldClose())
+    {
+        RunOneFrame();
+    }
+#else
+    emscripten_set_main_loop(RunOneFrame, 60, 1);
+#endif
+
+    // Close app
+#ifndef __EMSCRIPTEN__
+    Close();
+#endif
+
+    return 0;
+}
+
+void Init(void)
+{
     srand((uint32_t)(time(0)));
     
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Neon shooter");
@@ -50,13 +87,50 @@ int main()
 
     GameAudioInit();
     InitCacheTextures();
-    InitParticles(); 
+    InitParticles();
 
-    World world = WorldNew();
-    Vector2 aim;
-    bool fire;
+    world = WorldNew();
 
-#if 1
+#ifdef __EMSCRIPTEN__
+    const char* bloomShaderSource = 
+        "#version 100\n"
+
+        "precision mediump int;\n"
+        "precision mediump float;\n"
+
+        "varying vec2 fragTexCoord;\n"
+        "varying vec4 fragColor;\n"
+
+        "uniform sampler2D texture0;\n"
+        "uniform vec2 texSize;\n"
+
+        "void main() {\n"
+        "float weight[5];\n"
+        "weight[0] = 0.227027;\n"
+        "weight[1] = 0.1945946;\n"
+        "weight[2] = 0.1216216;\n"
+        "weight[3] = 0.054054;\n"
+        "weight[4] = 0.016216;\n"
+
+        "float size = max(texSize.x, texSize.y);\n"
+
+        "vec2 texOffset = 1.0 / vec2(size, size);\n"
+        "vec3 result = texture2D(texture0, fragTexCoord).rgb * weight[0];\n"
+
+        "for(int i = 1; i < 5; ++i) {\n"
+        "float f = float(i);"
+        "result += texture2D(texture0, fragTexCoord + vec2(texOffset.x * f, 0.0)).rgb * weight[i];\n"
+        "result += texture2D(texture0, fragTexCoord - vec2(texOffset.x * f, 0.0)).rgb * weight[i];\n"
+        "result += texture2D(texture0, fragTexCoord + vec2(0.0, texOffset.y * f)).rgb * weight[i];\n"
+        "result += texture2D(texture0, fragTexCoord - vec2(0.0, texOffset.y * f)).rgb * weight[i];\n"
+        "}\n"
+
+        "result = texture2D(texture0, fragTexCoord).rgb + result;\n"
+        "result = vec3(1.0) - exp(-result * 0.5);\n"
+        "result = pow(result, vec3(1.0 / 2.2));\n"
+        "gl_FragColor = vec4(result, 1.0);\n"
+        "}";
+#elif 1
     const char* bloomShaderSource =
         "#version 330 core\n"
 
@@ -131,21 +205,37 @@ int main()
         "}";
 #endif
 
-    Shader bloomShader = LoadShaderFromMemory(NULL, bloomShaderSource);
-    RenderTexture framebuffer = LoadRenderTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
+    bloomShader = LoadShaderFromMemory(NULL, bloomShaderSource);
+    framebuffer = LoadRenderTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
+}
 
-    float   timer    = 0.0f;
-    float   timeStep = 1.0f / 60.0f;
+void Close(void)
+{
+    WorldFree(&world);
+    ReleaseParticles();
 
-    int     fpsCount    = 0;
-    int     fpsValue    = 0;
-    float   fpsTimer    = 0.0f;
-    float   fpsInterval = 1.0f;
+    GameAudioRelease();
+    ClearCacheTextures();
+    CloseWindow();
+}
 
-    float   axisVertical   = 0.0f;
-    float   axisHorizontal = 0.0f;
+void RunOneFrame(void)
+{
+    static float    timer           = 0.0f;
+    static float    timeStep        = 1.0f / 60.0f;
 
-    while (!WindowShouldClose())
+    static int      fpsCount        = 0;
+    static int      fpsValue        = 0;
+    static float    fpsTimer        = 0.0f;
+    static float    fpsInterval     = 1.0f;
+
+    static float    axisVertical    = 0.0f;
+    static float    axisHorizontal  = 0.0f;
+
+    static Vector2  aim             = { 0.0f, 0.0f };
+    static bool     fire            = false;
+
+    //while (!WindowShouldClose())
     {
         frameCount++;
 
@@ -295,6 +385,13 @@ int main()
             EndTextureMode();
 
             BeginShaderMode(bloomShader);
+
+#ifdef __EMSCRIPTEN__
+            int texSizeLocation = GetShaderLocation(bloomShader, "texSize");
+            Vector2 texSize = { (float)SCREEN_WIDTH, (float)SCREEN_HEIGHT }; 
+            SetShaderValue(bloomShader, texSizeLocation, &texSize, SHADER_UNIFORM_VEC2);
+#endif
+
             DrawTextureRec(framebuffer.texture, (Rectangle){ 0, 0, SCREEN_WIDTH, -SCREEN_HEIGHT }, (Vector2){ 0, 0 }, WHITE);
             EndShaderMode();
 
@@ -303,12 +400,4 @@ int main()
         }
         EndDrawing();
     }
-
-    WorldFree(&world);
-    ReleaseParticles();
-
-    GameAudioRelease();
-    ClearCacheTextures();
-    CloseWindow();
-    return 0;
 }

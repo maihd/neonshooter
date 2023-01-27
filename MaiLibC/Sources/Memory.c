@@ -72,7 +72,9 @@ static void* SysFreeListAcquire(SysFreeList* freeList)
         const size_t allocSize = 64 * 1024;
         const size_t itemsPerBatch = allocSize / itemSize;
 
-#if defined(__unix__)
+#if defined(__EMSCRIPTEN__)
+        void* allocBatch = malloc(allocSize);
+#elif defined(__unix__)
         void* allocBatch = vmalloc(allocSize);
 #elif defined(_WIN32)
         void* allocBatch = VirtualAlloc(NULL, (SIZE_T)allocSize, MEM_COMMIT, PAGE_READWRITE);
