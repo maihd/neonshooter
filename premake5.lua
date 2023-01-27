@@ -93,12 +93,12 @@ do
     }
 
     files {
-        path.join(ROOT_DIR, projectPath, "*.h"),
-        path.join(ROOT_DIR, projectPath, "**/*.h"),
-        path.join(ROOT_DIR, projectPath, "*.c"),
-        path.join(ROOT_DIR, projectPath, "**/*.c"),
-        path.join(ROOT_DIR, projectPath, "*.cpp"),
-        path.join(ROOT_DIR, projectPath, "**/*.cpp"),
+        path.join(ROOT_DIR, "Sources", "*.h"),
+        path.join(ROOT_DIR, "Sources", "**/*.h"),
+        path.join(ROOT_DIR, "Sources", "*.c"),
+        path.join(ROOT_DIR, "Sources", "**/*.c"),
+        path.join(ROOT_DIR, "Sources", "*.cpp"),
+        path.join(ROOT_DIR, "Sources", "**/*.cpp"),
     }
 
     defines {

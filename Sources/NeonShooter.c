@@ -131,7 +131,7 @@ int main()
         "}";
 #endif
 
-    Shader bloomShader = { 0 };//LoadShaderCode(NULL, bloomShaderSource);
+    Shader bloomShader = LoadShaderFromMemory(NULL, bloomShaderSource);
     RenderTexture framebuffer = LoadRenderTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
 
     float   timer    = 0.0f;
@@ -276,8 +276,8 @@ int main()
         {
             ClearBackground(BLACK);
             
-            //BeginTextureMode(framebuffer);
-            //ClearBackground(BLACK);
+            BeginTextureMode(framebuffer);
+            ClearBackground(BLACK);
 
             Camera2D camera = {
                 (Vector2){ GetScreenWidth() * 0.5f, GetScreenHeight() * 0.5f },
@@ -292,7 +292,7 @@ int main()
             }
             EndMode2D();
 
-            //EndTextureMode();
+            EndTextureMode();
 
             BeginShaderMode(bloomShader);
             DrawTextureRec(framebuffer.texture, (Rectangle){ 0, 0, SCREEN_WIDTH, -SCREEN_HEIGHT }, (Vector2){ 0, 0 }, WHITE);
