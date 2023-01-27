@@ -31,8 +31,8 @@ Build instructions
 
 Dependencies
 ------------
-- Raylib v2.5
-- RayGui v2.7
+- Raylib v4.2
+- RayGui v3.2
 - MaiLibC (Core library only use with maihd/raylib-games)
 
 Meta
