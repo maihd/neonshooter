@@ -86,10 +86,10 @@ void ClearCacheTextures(void)
 
 const char* GetAssetPath(const char* target)
 {
-#ifdef RELEASE
+#if (defined(RELEASE) || defined(__unix__))
 #   define ASSET_PATH "Assets"
 #else
-#   define ASSET_PATH "../../Assets"
+#   define ASSET_PATH "../../Assets" // Only on Visual Studio C++
 #endif
 
     const char* finalPath = TextFormat("%s/%s", ASSET_PATH, target);

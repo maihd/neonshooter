@@ -1,5 +1,5 @@
 -- require "vstool"
-require "emscripten"
+-- require "emscripten"
 
 local ROOT_DIR = path.getabsolute(".")
 local BUILD_DIR = path.join(ROOT_DIR, "Build")
@@ -38,7 +38,7 @@ do
 
     filter { "platforms:wasm32" }
     do
-        toolset "emcc"
+        -- toolset "emcc"
         -- system "emscripten"
         -- architecture "wasm32"
         defines {
@@ -126,6 +126,24 @@ do
     filter { "platforms:x64", "action:vs*" }
     do
         libdirs { path.join(ROOT_DIR, "ThirdParty/Library/Win64") }
+    end
+
+    filter { "platforms:x32", "action:gmake" }
+    do
+        links {
+            "raylib"
+        }
+        
+        libdirs { path.join(ROOT_DIR, "ThirdParty/Library/Linux32") }
+    end
+
+    filter { "platforms:x64", "action:gmake" }
+    do
+        links {
+            "raylib"
+        }
+
+        libdirs { path.join(ROOT_DIR, "ThirdParty/Library/Linux64") }
     end
 
     filter { "platforms:wasm32" }

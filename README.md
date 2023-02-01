@@ -20,14 +20,31 @@ Gameplay input
 Platforms
 ---------
 - Windows
+- Linux
 - Mobile (planning)
 - Asm.js/WASM
 
 Build instructions
 ------------------
-- Please note: Windows only.
-- Generate Visual Studio project with premake5, only tested with VS2017.
-- Open project in Build/ with Visual Studio and run.
+- Windows
+    - Generate Visual Studio project with premake5, only tested with VS2017.
+    - Open project in Build/ with Visual Studio and run.
+
+- Linux
+    ```bash
+        ./premake5 gmake
+
+        cd Build/gmake
+
+        # Select build config: debug_x32, debug_x64, release_x32, release_x64
+        make config=<build_config> CC=<compiler>
+
+        mv bin/<platform>/<configuration>/NeonShooter ../../
+        
+        cd ../../
+
+        ./NeonShooter
+    ```
 
 Dependencies
 ------------
