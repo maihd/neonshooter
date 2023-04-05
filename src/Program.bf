@@ -15,8 +15,8 @@ class Program
 
 	public static void Main()
 	{
-		Console.WriteLine("NeonShooter - Win32 - OpenGL - OpenAL - v1.0\n");
-		Console.WriteLine("============================================\n");
+		Console.WriteLine("NeonShooter - Win32 - OpenGL - OpenAL - v1.0");
+		Console.WriteLine("============================================");
 
 		WindowFlags winFlags = WindowFlags.Visible;
 		if (Window.Setup("Neon Shooter", 1280, 720, winFlags) case .Err(let error))
