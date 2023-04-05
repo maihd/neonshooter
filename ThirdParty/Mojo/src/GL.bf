@@ -1857,8 +1857,13 @@ namespace OpenGL
         public function void VertexAttribP4uivFn(uint index, uint type, uint8 normalized, uint32* value);
         public static VertexAttribP4uivFn VertexAttribP4uiv;
 
-        public static void LoadProcs(GetProcAddressFunc getProcAddress)
+        public static Result<void> LoadProcs(GetProcAddressFunc getProcAddress)
 		{
+			if (getProcAddress == null)
+			{
+				return .Err;
+			}
+
             CullFace = (CullFaceFn) getProcAddress("glCullFace");
             FrontFace = (FrontFaceFn) getProcAddress("glFrontFace");
             Hint = (HintFn) getProcAddress("glHint");
@@ -2203,6 +2208,8 @@ namespace OpenGL
             VertexAttribP3uiv = (VertexAttribP3uivFn) getProcAddress("glVertexAttribP3uiv");
             VertexAttribP4ui = (VertexAttribP4uiFn) getProcAddress("glVertexAttribP4ui");
             VertexAttribP4uiv = (VertexAttribP4uivFn) getProcAddress("glVertexAttribP4uiv");
+
+			return .Ok;
         }
     }
 }

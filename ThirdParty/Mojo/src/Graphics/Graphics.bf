@@ -72,7 +72,10 @@ public static class Graphics
 		{
 			return .Err(.(SDL.GetError()));
 		}
-		GL.LoadProcs((procname) => SDL.SDL_GL_GetProcAddress(procname.Ptr));
+		if (GL.LoadProcs((procname) => SDL.SDL_GL_GetProcAddress(procname.Ptr)) case .Err)
+		{
+			return .Err("Load OpenGL functions failed!");
+		}
 
 		// Apply GPU performance
 		if (settings.HighPerformance)
