@@ -20,7 +20,7 @@ internal static class GLUtils
 	        return GL.REPEAT;
 
 	    case .MirrorClamp:
-	        return GL.CLAMP_TO_EDGE;
+	        return GL.CLAMP_TO_EDGE; // Hack
 
 	    case .MirrorRepeat:
 	        return GL.MIRRORED_REPEAT;
