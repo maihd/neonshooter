@@ -135,7 +135,7 @@ class Shader
 
 	// Graphics default parameters
 
-	/*public bool SetTransform(Matrix4 matrix)
+	public bool SetTransform(Matrix4 matrix)
 	{
 		return false;
 	}
@@ -148,7 +148,7 @@ class Shader
 	public bool SetMainColor(Vector4 color)
 	{
 		return false;
-	}*/
+	}
 
 	public bool SetMainTexture(Texture texture)
 	{
