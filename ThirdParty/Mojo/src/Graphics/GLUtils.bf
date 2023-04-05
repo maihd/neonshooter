@@ -6,7 +6,7 @@ internal static class GLUtils
 {
 	public static void HandleError()
 	{
-	    GL.glGetError();
+	    GL.GetError();
 	}
 
 	public static uint32 ConvertTextureWrap(TextureWrap wrap)
@@ -14,16 +14,16 @@ internal static class GLUtils
 	    switch (wrap)
 	    {
 	    case .Clamp:
-	        return GL.GL_CLAMP_TO_EDGE;
+	        return GL.CLAMP_TO_EDGE;
 
 	    case .Repeat:
-	        return GL.GL_REPEAT;
+	        return GL.REPEAT;
 
 	    case .MirrorClamp:
-	        return GL.GL_CLAMP_TO_EDGE;
+	        return GL.CLAMP_TO_EDGE;
 
 	    case .MirrorRepeat:
-	        return GL.GL_MIRRORED_REPEAT;
+	        return GL.MIRRORED_REPEAT;
 
 		default:
 			return 0;
@@ -35,10 +35,10 @@ internal static class GLUtils
 	    switch (filter)
 	    {
 	    case .Linear:
-	        return GL.GL_LINEAR;
+	        return GL.LINEAR;
 
 	    case .Nearest:
-	        return GL.GL_NEAREST;
+	        return GL.NEAREST;
 
 		default:
 			return 0;
@@ -50,10 +50,10 @@ internal static class GLUtils
 	    switch (format)
 	    {
 	    case .RGB:
-	        return GL.GL_RGB;
+	        return GL.RGB;
 
 	    case .RGBA:
-	        return GL.GL_RGBA;
+	        return GL.RGBA;
 
 	    //case PixelFormat::Depth24Stencil8:
 	    //    return GL_DEPTH24_STENCIL8;

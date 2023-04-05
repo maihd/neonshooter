@@ -72,7 +72,7 @@ public static class Graphics
 		{
 			return .Err(.(SDL.GetError()));
 		}
-		GL.Init((procname) => SDL.SDL_GL_GetProcAddress(procname.Ptr));
+		GL.LoadProcs((procname) => SDL.SDL_GL_GetProcAddress(procname.Ptr));
 
 		// Apply GPU performance
 		if (settings.HighPerformance)
@@ -97,8 +97,8 @@ public static class Graphics
 
 	public static void Clear(float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f)
 	{
-		GL.glClearColor(r, g, b, a);
-		GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT | GL.GL_STENCIL_BUFFER_BIT);
+		GL.ClearColor(r, g, b, a);
+		GL.Clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT | GL.STENCIL_BUFFER_BIT);
 	}
 
 	public static void Present()

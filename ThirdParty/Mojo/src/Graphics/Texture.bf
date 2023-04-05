@@ -67,14 +67,14 @@ public class Texture
 			wrap = value;
 
 			int32 bindingTexture;
-			GL.glGetIntegerv(GL.GL_TEXTURE_2D, out bindingTexture);
+			GL.GetIntegerv(GL.TEXTURE_2D, out bindingTexture);
 
 			uint32 wrapValue = GLUtils.ConvertTextureWrap(value);
 
-			GL.glBindTexture(GL.GL_TEXTURE_2D, handle);
-			GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, wrapValue);
-			GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, wrapValue);
-			GL.glBindTexture(GL.GL_TEXTURE_2D, (.)bindingTexture);
+			GL.BindTexture(GL.TEXTURE_2D, handle);
+			GL.TexParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, wrapValue);
+			GL.TexParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, wrapValue);
+			GL.BindTexture(GL.TEXTURE_2D, (.)bindingTexture);
 		}
 	}
 
@@ -86,16 +86,16 @@ public class Texture
 			filter = value;
 
 			int32 bindingTexture;
-			GL.glGetIntegerv(GL.GL_TEXTURE_2D, out bindingTexture);
+			GL.GetIntegerv(GL.TEXTURE_2D, out bindingTexture);
 
 			uint32 filterValue = GLUtils.ConvertTextureFilter(value);
 	
-			GL.glBindTexture(GL.GL_TEXTURE_2D, handle);
-			GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, filterValue);
-			GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, filterValue);
-			GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
-			GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
-			GL.glBindTexture(GL.GL_TEXTURE_2D, (.)bindingTexture);
+			GL.BindTexture(GL.TEXTURE_2D, handle);
+			GL.TexParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, filterValue);
+			GL.TexParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, filterValue);
+			GL.TexParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR);
+			GL.TexParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR);
+			GL.BindTexture(GL.TEXTURE_2D, (.)bindingTexture);
 		}
 	}
 
@@ -104,21 +104,21 @@ public class Texture
 	public static Result<Texture> Create()
 	{
 		uint32 handle = 0;
-		GL.glGenTextures(1, &handle);
+		GL.GenTextures(1, &handle);
 		if (handle == 0)
 		{
 			return .Err;
 		}
 
 		int32 bindingTexture;
-		GL.glGetIntegerv(GL.GL_TEXTURE_2D, out bindingTexture);
+		GL.GetIntegerv(GL.TEXTURE_2D, out bindingTexture);
 
-		GL.glBindTexture(GL.GL_TEXTURE_2D, handle);
-		GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT);
-		GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT);
-		GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
-		GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
-		GL.glBindTexture(GL.GL_TEXTURE_2D, (.)bindingTexture);
+		GL.BindTexture(GL.TEXTURE_2D, handle);
+		GL.TexParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.REPEAT);
+		GL.TexParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.REPEAT);
+		GL.TexParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR);
+		GL.TexParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR);
+		GL.BindTexture(GL.TEXTURE_2D, (.)bindingTexture);
 
 		Texture texture = new Texture() {
 			handle 	= handle,
@@ -133,7 +133,7 @@ public class Texture
 	{
 		if (texture != null)
 		{
-			GL.glDeleteTextures(1, &texture.handle);
+			GL.DeleteTextures(1, &texture.handle);
 			delete texture;
 		}
 	}
