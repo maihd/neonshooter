@@ -858,10 +858,10 @@ namespace OpenGL
         public function void TexParameterivFn(uint target, uint pname, int32* paramss);
         public static TexParameterivFn TexParameteriv;
 
-        public function void TexImage1DFn(uint target, int level, int internalformat, int width, int border, uint format, uint type, void* pixels);
+        public function void TexImage1DFn(uint target, int level, uint internalformat, int width, int border, uint format, uint type, void* pixels);
         public static TexImage1DFn TexImage1D;
 
-        public function void TexImage2DFn(uint target, int level, int internalformat, int width, int height, int border, uint format, uint type, void* pixels);
+        public function void TexImage2DFn(uint target, int level, uint internalformat, int width, int height, int border, uint format, uint type, void* pixels);
         public static TexImage2DFn TexImage2D;
 
         public function void DrawBufferFn(uint buf);

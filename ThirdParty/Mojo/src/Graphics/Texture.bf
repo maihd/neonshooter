@@ -75,6 +75,8 @@ public class Texture
 			GL.TexParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, wrapValue);
 			GL.TexParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, wrapValue);
 			GL.BindTexture(GL.TEXTURE_2D, (.)bindingTexture);
+
+			HandleError();
 		}
 	}
 
@@ -96,6 +98,8 @@ public class Texture
 			GL.TexParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR);
 			GL.TexParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR);
 			GL.BindTexture(GL.TEXTURE_2D, (.)bindingTexture);
+
+			HandleError();
 		}
 	}
 
@@ -142,6 +146,87 @@ public class Texture
 
 	public void UpdatePixels(int32 width, int32 height, PixelFormat format, void* pixels, PixelFormat targetFormat = .RGBA)
 	{
+		if (width <= 0 || height <= 0)
+		{
+		    return;
+		}
 
+		this.width  = width;
+		this.height = height;
+		this.format = targetFormat;
+		
+		int32 bindingTexture;
+		GL.GetIntegerv(GL.TEXTURE_2D, out bindingTexture);
+
+		GL.BindTexture(GL.TEXTURE_2D, handle);
+		GL.TexImage2D(GL.TEXTURE_2D, 0, ConvertPixelFormat(targetFormat), width, height, 0, ConvertPixelFormat(format), GL.UNSIGNED_BYTE, pixels);
+		GL.BindTexture(GL.TEXTURE_2D, (.)bindingTexture);
+
+		HandleError();
+	}
+
+	// Utils
+
+	[Inline]
+	private static void HandleError()
+	{
+	    GL.GetError();
+	}
+
+	[Inline]
+	private static uint ConvertTextureWrap(TextureWrap wrap)
+	{
+	    switch (wrap)
+	    {
+	    case .Clamp:
+	        return GL.CLAMP_TO_EDGE;
+
+	    case .Repeat:
+	        return GL.REPEAT;
+
+	    case .MirrorClamp:
+	        return GL.CLAMP_TO_EDGE; // HACKS
+
+	    case .MirrorRepeat:
+	        return GL.MIRRORED_REPEAT;
+
+		default:
+			return 0;
+	    }
+	}
+
+	[Inline]
+	private static uint ConvertTextureFilter(TextureFilter filter)
+	{
+	    switch (filter)
+	    {
+	    case .Linear:
+	        return GL.LINEAR;
+
+	    case .Nearest:
+	        return GL.NEAREST;
+
+		default:
+			return 0;
+	    }
+	}
+
+	[Inline]
+	private static uint ConvertPixelFormat(PixelFormat format)
+	{
+	    switch (format)
+	    {
+	    case .RGB:
+	        return GL.RGB;
+
+	    case .RGBA:
+	        return GL.RGBA;
+
+	    //case PixelFormat::Depth24Stencil8:
+	    //    return GL_DEPTH24_STENCIL8;
+
+		default:
+			return 0;
+	    }
 	}
 }
