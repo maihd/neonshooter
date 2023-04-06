@@ -1188,13 +1188,13 @@ namespace Mojo
         public function int GetAttribLocationFn(uint program, char8* name);
         public static GetAttribLocationFn GetAttribLocation;
 
-        public function void GetProgramivFn(uint program, uint pname, int32* paramss);
+        public function void GetProgramivFn(uint program, uint pname, out int32 paramss);
         public static GetProgramivFn GetProgramiv;
 
         public function void GetProgramInfoLogFn(uint program, int bufSize, int32* length, char8* infoLog);
         public static GetProgramInfoLogFn GetProgramInfoLog;
 
-        public function void GetShaderivFn(uint shader, uint pname, int32* paramss);
+        public function void GetShaderivFn(uint shader, uint pname, out int32 paramss);
         public static GetShaderivFn GetShaderiv;
 
         public function void GetShaderInfoLogFn(uint shader, int bufSize, int32* length, char8* infoLog);

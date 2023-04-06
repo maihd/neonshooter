@@ -69,107 +69,185 @@ class Shader
 			}
 		""";
 
-	// Main functions
+	// Type structure
 
 	Handle handle = 0;
 
+	public this()
+	{
+	}
+
+	public this(StringView? vertexSource = null, StringView? pixelsSource = null)
+	{
+		Create(vertexSource, pixelsSource);
+	}
+
+	public ~this()
+	{
+		if (handle != 0)
+		{
+			Destroy();
+		}
+	}
+
+	// Main functions
+
 	public int FindAttribute(StringView name)
 	{
-		return 0;
+		return GL.GetAttribLocation(handle, name.Ptr);
 	}
 
 	public int FindUniform(StringView name)
 	{
-		return 0;
+		return GL.GetUniformLocation(handle, name.Ptr);
 	}
 
 	public bool SetFloat(int location, float x)
 	{
-		return false;
+		if (location < 0)
+		{
+		    return false;
+		}
+
+		GL.Uniform1f(location, x);
+		//glProgramUniform1f(handle, location, x);
+		return true;
 	}
 
 	public bool SetFloat(StringView name, float x)
 	{
-		return false;
+		return SetFloat(FindUniform(name), x);
 	}
 
 	public bool SetFloat2(int location, float x, float y)
 	{
-		return false;
+		if (location < 0)
+		{
+		    return false;
+		}
+
+		GL.Uniform2f(location, x, y);
+		//glProgramUniform2f(handle, location, x, y);
+		return true;
 	}
 
 	public bool SetFloat2(StringView name, float x, float y)
 	{
-		return false;
+		return SetFloat2(FindUniform(name), x, y);
 	}
 
 	public bool SetVector3(int location, float x, float y, float z)
 	{
-		return false;
+		if (location < 0)
+		{
+		    return false;
+		}
+
+		GL.Uniform3f(location, x, y, z);
+		//glProgramUniform3f(handle, location, x, y, z);
+		return true;
 	}
 
 	public bool SetVector3(StringView name, float x, float y, float z)
 	{
-		return false;
+		return SetVector3(FindUniform(name), x, y, z);
 	}
 
 	public bool SetVector4(int location, float x, float y, float z, float w)
 	{
-		return false;
+		if (location < 0)
+		{
+		    return false;
+		}
+
+		GL.Uniform4f(location, x, y, z, w);
+		//glProgramUniform4f(handle, location, x, y, z, w);
+		return true;
 	}
 
 	public bool SetVector4(StringView name, float x, float y, float z, float w)
 	{
-		return false;
+		return SetVector4(FindUniform(name), x, y, z, w);
 	}
 
 	public bool SetMatrix4(int location, float* value, bool transpose = false)
 	{
-		return false;
+		if (location < 0)
+		{
+		    return false;
+		}
+
+		GL.UniformMatrix4fv(location, 1, transpose ? 1 : 0, value);
+		//glProgramUniformMatrix4fv(handle, location, 1, transpose, value);
+		return true;
 	}
 
 	public bool SetMatrix4(String name, float* value, bool transpose = false)
 	{
-		return false;
+		return SetMatrix4(FindUniform(name), value, transpose);
 	}
 
 	// Graphics default parameters
 
-	public bool SetTransform(Matrix4 matrix)
+	public bool SetTransform(ref Matrix4 matrix)
 	{
-		return false;
+        return SetMatrix4("TransformMatrix", (float*)&matrix, false);
 	}
 
-	public bool SetProjection(Matrix4 matrix)
+	public bool SetProjection(ref Matrix4 matrix)
 	{
-		return false;
+		return SetMatrix4("ProjectionMatrix", (float*)&matrix, false);
 	}
 
 	public bool SetMainColor(Vector4 color)
 	{
-		return false;
+		return SetVector4("MainColor", color.x, color.y, color.z, color.w);
 	}
 
 	public bool SetMainTexture(Texture texture)
 	{
-		return false;
+		return true;
 	}
 
 	//-------------------------------------------------
-	// Create and destroy shaders
+	// Create and destroy
 	//-------------------------------------------------
 
-	static Shader Create(StringView? vertexSource = null, StringView? pixelsSource = null)
+	public bool Create(StringView? inVertexSource = null, StringView? inPixelsSource = null)
 	{
-		return null;
+		let vertexSource = inVertexSource != null ? inVertexSource?.Ptr : DefaultVertexSource;
+		let pixelsSource = inPixelsSource != null ? inPixelsSource?.Ptr : DefaultPixelsSource;
+
+		let vshader = GLUtils.CreateGLShader(GL.VERTEX_SHADER, vertexSource);
+		if (vshader == 0)
+		{
+		    return false;
+		}
+
+		let fshader = GLUtils.CreateGLShader(GL.FRAGMENT_SHADER, pixelsSource);
+		if (fshader == 0)
+		{
+		    return false;
+		}
+
+		let program = GLUtils.CreateGLProgram(vshader, fshader);
+		if (program == 0)
+		{
+			return false;
+		}
+
+		handle = (.)program;
+		return true;
 	}
 
-	static void   Destroy(Shader shader)
+	public bool CreateEffect(StringView pixelsSource, StringView? vertexSource = DefaultEffectVertexSource)
 	{
+		return Create(vertexSource, pixelsSource);
 	}
 
-	static Shader CreateEffect(StringView pixelsSource)
+	public void Destroy()
 	{
-		return null;
+		GL.DeleteProgram(handle);
+		handle = 0;
 	}
 }

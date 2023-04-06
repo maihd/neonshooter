@@ -1,5 +1,7 @@
 namespace Mojo;
 
+using System;
+
 internal static class GLUtils
 {
 	public static void HandleError()
@@ -60,4 +62,65 @@ internal static class GLUtils
 			return 0;
 	    }
 	}
+
+	public static uint CreateGLShader(uint type, char8* src)
+    {
+        let shader = GL.CreateShader(type);
+        if (shader == 0)
+        {
+			HandleError();
+            return 0;
+        }
+
+        GL.ShaderSource(shader, 1, &src, null);
+        GL.CompileShader(shader);
+
+        int32 status;
+        GL.GetShaderiv(shader, GL.COMPILE_STATUS, out status);
+        if (status == 0)
+        {
+            String errorLog = scope String(1024);
+            GL.GetShaderInfoLog(shader, errorLog.Length, null, errorLog.Ptr);
+
+            GL.DeleteShader(shader);
+            return 0;
+        }
+        else
+        {
+            return shader;
+        }
+    }
+
+    public static uint CreateGLProgram(uint vshader, uint fshader)
+    {
+        if (vshader == 0 || fshader == 0)
+        {
+            return 0;
+        }
+
+        let program = GL.CreateProgram();
+        if (program == 0)
+        {
+			HandleError();
+            return 0;
+        }
+
+        GL.AttachShader(program, vshader);
+        GL.AttachShader(program, fshader);
+        GL.LinkProgram(program);
+
+        int32 status;
+        GL.GetProgramiv(program, GL.LINK_STATUS, out status);
+        if (status == 0)
+        {
+            String errorLog = scope String(1024);
+            GL.GetProgramInfoLog(program, errorLog.Length, null, errorLog.Ptr);
+            GL.DeleteProgram(program);
+            return 0;
+        }
+        else
+        {
+            return program;
+        }
+    }
 }
