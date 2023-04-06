@@ -39,9 +39,24 @@ class Program
 		defer delete game;
 		game.Init();
 
+		var ticks 		= System.PerformanceCounter();
+		var frequency 	= System.PerformanceFrequency();
+		var limitTicks 	= frequency / 60;
+
 		// Main loop
 		MainLoop: while (true)
 		{
+			var delta = System.PerformanceCounter() - ticks;
+			if (delta < limitTicks)
+			{
+			    let sleepSeconds = (double)(limitTicks - delta) / frequency;
+			    var sleepMicroSeconds = (int64)(sleepSeconds * 1000 * 1000);
+			    System.MicroSleep(sleepMicroSeconds);
+
+			    delta = limitTicks;
+			}
+			ticks += delta;
+
 			if (!Window.PollEvents())
 			{
 			    // Handle quit event
@@ -50,8 +65,8 @@ class Program
 
 			Update:
 			{
-				const float dt = 0.0f;
-				game.Update(dt);
+				let deltaTime = (float)((double)delta / frequency);
+				game.Update(deltaTime);
 			}
 			
 			Render:
