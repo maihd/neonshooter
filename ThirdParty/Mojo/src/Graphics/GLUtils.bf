@@ -1,7 +1,5 @@
 namespace Mojo;
 
-using OpenGL;
-
 internal static class GLUtils
 {
 	public static void HandleError()

@@ -2,7 +2,6 @@ namespace Mojo;
 
 using SDL2;
 using System;
-using OpenGL;
 using internal Mojo;
 
 public struct GraphicsSettings

@@ -1,8 +1,8 @@
 using System;
 
-namespace OpenGL
+namespace Mojo
 {
-    internal class GL
+    public class GL
 	{
         public function void* GetProcAddressFunc(StringView procname);
 

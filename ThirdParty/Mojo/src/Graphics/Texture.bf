@@ -1,7 +1,6 @@
 namespace Mojo;
 
 using System;
-using OpenGL;
 
 public enum TextureFilter
 {
