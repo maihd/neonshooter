@@ -378,4 +378,20 @@ extension Math
 	{
 	    return Dot(i, nref) < 0.0f ? n : -n;
 	}
+
+	/* Compute angle of vector, a.k.a direction of vector
+	 */
+	[Inline]
+ 	public static float Angle(Vector2 v)
+	{
+	    return Atan2(v.y, v.x);
+	}
+
+	/* Compute angle of two vector
+	 */
+	[Inline]
+ 	public static float Angle(Vector2 a, Vector2 b)
+	{
+	    return Angle(b - a);
+	}
 }
