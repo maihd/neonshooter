@@ -215,8 +215,8 @@ class Shader
 
 	public bool Create(StringView? inVertexSource = null, StringView? inPixelsSource = null)
 	{
-		let vertexSource = inVertexSource != null ? inVertexSource?.Ptr : DefaultVertexSource;
-		let pixelsSource = inPixelsSource != null ? inPixelsSource?.Ptr : DefaultPixelsSource;
+		let vertexSource = inVertexSource != null ? inVertexSource.Value : DefaultVertexSource;
+		let pixelsSource = inPixelsSource != null ? inPixelsSource.Value : DefaultPixelsSource;
 
 		let vshader = GLUtils.CreateGLShader(GL.VERTEX_SHADER, vertexSource);
 		if (vshader == 0)

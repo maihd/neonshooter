@@ -5,12 +5,13 @@ using System;
 
 public static class System
 {
+	[CallingConvention(.Stdcall)]
     function int32 NtDelayExecutionFN(int alerted, int64* time);
 
-	[LinkName("GetModuleHandleA")]
+	[LinkName("GetModuleHandleA"), CallingConvention(.Stdcall)]
 	static extern void* GetModuleHandle(char8* name);
 	
-	[LinkName("GetProcAddress")]
+	[LinkName("GetProcAddress"), CallingConvention(.Stdcall)]
 	static extern void* GetProcAddress(void* module, char8* name);
 
 	public static int32 CpuCount()

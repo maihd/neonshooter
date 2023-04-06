@@ -63,7 +63,7 @@ internal static class GLUtils
 	    }
 	}
 
-	public static uint CreateGLShader(uint type, char8* src)
+	public static uint CreateGLShader(uint type, StringView src)
     {
         let shader = GL.CreateShader(type);
         if (shader == 0)
@@ -72,7 +72,10 @@ internal static class GLUtils
             return 0;
         }
 
-        GL.ShaderSource(shader, 1, &src, null);
+		let srcCstr = src.Ptr;
+		let srcLength = (int32)src.Length;
+
+        GL.ShaderSource(shader, 1, &srcCstr, &srcLength);
         GL.CompileShader(shader);
 
         int32 status;
