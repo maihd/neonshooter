@@ -14,12 +14,12 @@ static float lerpf(float start, float end, float amount)
     return start + amount * (end - start);
 }
 
-const static int gGamePadIndex = 0;
+const static int gGamepadIndex = 0;
 static bool gShooting = false;
 
 bool Input_IsUsingGamepad(void)
 {
-    return IsGamepadAvailable(gGamePadIndex);
+    return IsGamepadAvailable(gGamepadIndex);
 }
 
 bool Input_IsShooting(void)
@@ -29,18 +29,24 @@ bool Input_IsShooting(void)
 
 bool Input_IsBombPressed(void)
 {
-    return false;
+    if (Input_IsUsingGamepad())
+    {
+        return IsGamepadButtonDown(gGamepadIndex, GAMEPAD_BUTTON_LEFT_TRIGGER_1)
+            || IsGamepadButtonDown(gGamepadIndex, GAMEPAD_BUTTON_RIGHT_TRIGGER_1);
+    }
+
+    return IsKeyDown(KEY_SPACE);
 }
 
 Vector2 Input_GetAimDirection(Vector2 playerPosition)
 {
     Vector2 aim;
-    if (Input_IsUsingGamepad(gGamePadIndex))
+    if (Input_IsUsingGamepad(gGamepadIndex))
     {
-        float axis_right_x = GetGamepadAxisMovement(0, GAMEPAD_AXIS_RIGHT_X);
-        float axis_right_y = GetGamepadAxisMovement(0, GAMEPAD_AXIS_RIGHT_Y);
-        float x = fabsf(axis_right_x) > 0.1f ? axis_right_x : 0.0f;
-        float y = fabsf(axis_right_y) > 0.1f ? axis_right_y : 0.0f;
+        float axisRightX = GetGamepadAxisMovement(0, GAMEPAD_AXIS_RIGHT_X);
+        float axisRightY = GetGamepadAxisMovement(0, GAMEPAD_AXIS_RIGHT_Y);
+        float x = fabsf(axisRightX) > 0.1f ? axisRightX : 0.0f;
+        float y = fabsf(axisRightY) > 0.1f ? axisRightY : 0.0f;
         if (Vector2Length((Vector2){ x, y }) < 0.01f)
         {
             aim = (Vector2){0, 0};
@@ -86,10 +92,10 @@ Vector2 Input_GetMoveDirection(void)
 
     // Moving by controller
 
-    if (Input_IsUsingGamepad(gGamePadIndex))
+    if (Input_IsUsingGamepad(gGamepadIndex))
     {
-        float axisLeftX = GetGamepadAxisMovement(gGamePadIndex, GAMEPAD_AXIS_LEFT_X);
-        float axisLeftY = GetGamepadAxisMovement(gGamePadIndex, GAMEPAD_AXIS_LEFT_Y);
+        float axisLeftX = GetGamepadAxisMovement(gGamepadIndex, GAMEPAD_AXIS_LEFT_X);
+        float axisLeftY = GetGamepadAxisMovement(gGamepadIndex, GAMEPAD_AXIS_LEFT_Y);
         axisVertical = lerpf(axisVertical, fabsf(axisLeftY) > 0.05f ? axisLeftY : 0.0f, LERP_RATE);
         axisHorizontal = lerpf(axisHorizontal, fabsf(axisLeftX) > 0.05f ? axisLeftX : 0.0f, LERP_RATE);
     }
