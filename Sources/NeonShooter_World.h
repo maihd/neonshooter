@@ -7,78 +7,78 @@
 
 typedef struct Entity
 {
-    bool    active;
+    bool        active;
 
-    float   scale;
-    float   rotation;
-    Vector2 position;
+    float       scale;
+    float       rotation;
+    Vector2     position;
 
-    Vector2 velocity;
-    float   movespeed;
+    Vector2     velocity;
+    float       movespeed;
 
-    Color   color;
-    float   radius;
+    Color       color;
+    float       radius;
 
-    Texture texture;
+    Texture     texture;
 } Entity;
 
 FreeListStruct(Entity);
 
 typedef struct PointMass
 {
-    Vector2 position;
-    Vector2 velocity;
-    Vector2 acceleration;
-    float invMass;
-    float damping;
+    Vector2     position;
+    Vector2     velocity;
+    Vector2     acceleration;
+    float       invMass;
+    float       damping;
 } PointMass;
 
 typedef struct Spring
 {
-    PointMass* p0;
-    PointMass* p1;
+    PointMass*  p0;
+    PointMass*  p1;
 
-    float targetLength;
-    float stiffness;
-    float damping;
-    float force;
+    float       targetLength;
+    float       stiffness;
+    float       damping;
+    float       force;
 } Spring;
 
 typedef struct WarpGrid
 {
-    int cols;
-    int rows; 
+    int                 cols;
+    int                 rows; 
 
-    Array(Spring)    springs;
+    Array(Spring)       springs;
 
-    Array(PointMass) points;
-    Array(PointMass) fixedPoints;
+    Array(PointMass)    points;
+    Array(PointMass)    fixedPoints;
 } WarpGrid;
 
 typedef struct World
 {
     WarpGrid grid;
 
-    Entity          player;
+    Entity              player;
 
-    FreeList(Entity)   bullets;
-    FreeList(Entity)   seekers;
-    FreeList(Entity)   wanderers;
-    FreeList(Entity)   blackHoles;
+    FreeList(Entity)    bullets;
+    FreeList(Entity)    seekers;
+    FreeList(Entity)    wanderers;
+    FreeList(Entity)    blackHoles;
 
-    int             seekerSpawnRate;
-    int             wandererSpawnRate;
-    int             blackHoleSpawnRate;
+    int                 seekerSpawnRate;
+    int                 wandererSpawnRate;
+    int                 blackHoleSpawnRate;
 
-    bool            oldFire;
-    float           fireTimer;
-    float           fireInterval;
+    bool                oldFire;
+    float               fireTimer;
+    float               fireInterval;
 
-    float           spawnTimer;
-    float           spawnInterval;
+    float               spawnTimer;
+    float               spawnInterval;
 
-    bool            lock;
-    float           gameOverTimer;
+    bool                lock;
+    float               gameOverTimer;
 } World;
 
 World   WorldNew(void);
