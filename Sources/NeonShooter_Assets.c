@@ -88,8 +88,10 @@ const char* GetAssetPath(const char* target)
 {
 #ifdef RELEASE
 #   define ASSET_PATH "Assets"
+#elif defined(PLATFORM_WEB)
+#   define ASSET_PATH "../../Assets" // Dont know why have this
 #else
-#   define ASSET_PATH "../../Assets"
+#   define ASSET_PATH "../Assets"
 #endif
 
     const char* finalPath = TextFormat("%s/%s", ASSET_PATH, target);

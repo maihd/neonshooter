@@ -136,6 +136,10 @@ do
 
         targetextension ".html"
 
+        define {
+            "PLATFORM_WEB"
+        }
+
         linkoptions { 
             "--preload-file " .. path.getrelative(LOCATION_DIR, path.join(ROOT_DIR, "Assets")),
             "-s USE_GLFW=3",
