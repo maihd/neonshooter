@@ -136,7 +136,7 @@ do
 
         targetextension ".html"
 
-        define {
+        defines {
             "PLATFORM_WEB"
         }
 
