@@ -14,11 +14,23 @@ class Program : RaylibApp
 		app.Run();
 	}
 
+	public override void Init()
+	{
+		base.Init();
+	}
+
+	public override void Close()
+	{
+		base.Close();
+	}
+
+	public override void Update(float dt)
+	{
+
+	}
+
 	public override void Draw()
 	{
-		ClearBackground(.(52, 52, 52, 255));
-
-		let text = "Hello from Beef! Hope you have a good day!";
-		DrawText(text, 100, 100, 20, .RAYWHITE);
+		ClearBackground(.BLACK);
 	}
 }
