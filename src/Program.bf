@@ -1,129 +1,150 @@
 namespace NeonShooter;
 
-using Raylib;
+using System;
+using NeonShooter.Entity;
 
-class Program : RaylibApp
+class Program : Raylib.RaylibApp
 {
-	const int SCREEN_WIDTH  = 1280;
-	const int SCREEN_HEIGHT = 720;
-	
-	int  	 frameCount		 = 0;
+	var isPause = false;
+	var noBloomEffect = false;
 
-	float    timer           = 0.0f;
-	float    timeStep        = 1.0f / 60.0f;
-
-	int      fpsCount        = 0;
-	int      fpsValue        = 0;
-	float    fpsTimer        = 0.0f;
-	float    fpsInterval     = 1.0f;
-
-	World 				world;
-	
-
-	Shader           	bloomShader;
-	RenderTexture    	framebuffer;
-
-	public static void Main()
+	static void Main()
 	{
-		Self app = scope .();
+		let program = scope Program()
+			{
+				title = "NeonShooter",
+				width = 1280,
+				height = 720,
+				config = .FLAG_VSYNC_HINT
+			};
 
- 		app.title = "NeonShooter";
-		app.width = SCREEN_WIDTH;
-		app.height = SCREEN_HEIGHT;
-		app.Run();
+		program.Run();
 	}
 
-	public override void Init()
+	protected override void Init()
 	{
-		base.Init();
+		Raylib.HideCursor();
 
-		SetConfigFlags(.FLAG_VSYNC_HINT);
+		Art.Load();
+		Audios.Load();
+		GameRoot.Init();
 
-		Assets.InitCacheTextures();
+		BloomComponent.Load();
+		PixelizerComponent.Load();
 
-		GameAudio.Init();
-		//GameInput.Init();
+		EntityManager.Init();
+		EntityManager.AddEntity(PlayerShip.Instance);
 
-		bloomShader = LoadShaderFromMemory(null, Shaders.BloomShaderSource);
-		framebuffer = LoadRenderTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
+		EnemySpawner.Init();
 
-		world = new World();
-
-		GameAudio.PlayMusic();
+		//Raylib.ToggleFullscreen();
 	}
 
-	public override void Close()
+	protected override void Close()
 	{
-		delete world;
+		EnemySpawner.Deinit();
 
-		//GameInput.Release();
-		GameAudio.Release();
+		PlayerShip.DestroyInstance();
+		EntityManager.Deinit();
 
-		Assets.ClearCacheTextures();
-		base.Close();
+		PixelizerComponent.Unload();
+		BloomComponent.Unload();
+		
+		GameRoot.Deinit();
+		Audios.Unload();
+		Art.Unload();
 	}
 
-	public override void Update(float dt)
+	protected override void Update(float dt)
 	{
-		frameCount++;
+		GameRoot.Update();
+		Audios.Update();
 
-		GameAudio.Update();
+		Input.Update();
 
-		float deltaTime = GetFrameTime();
-
-		fpsTimer += deltaTime;
-		if (fpsTimer >= fpsInterval)
+		if (Raylib.IsKeyPressed(.KEY_GRAVE))
 		{
-		    fpsTimer -= fpsInterval;
-
-		    fpsValue = (int)(fpsCount / fpsInterval);
-		    fpsCount = 0;
+			isPause = !isPause;
 		}
 
-		timer += deltaTime;
-		while (timer >= timeStep)
+		if (Raylib.IsKeyPressed(.KEY_SPACE))
 		{
-		    fpsCount++;
+			noBloomEffect = !noBloomEffect;
+		}
 
-		    timer -= timeStep;
+		if (Raylib.IsKeyPressed(.KEY_ENTER))
+		{
+			Raylib.ToggleFullscreen();
+		}
 
-		    Vector2 aimDirection = GameInput.GetAimDirection(world.player.position);
-		   	Vector2 moveDirection = GameInput.GetMoveDirection();
+		if (isPause)
+		{
+			return;
+		}
 
-		    world.Update(moveDirection.x, moveDirection.y, aimDirection, GameInput.IsShooting(), timeStep);
+		if (!PlayerStatus.IsGameOver)
+		{
+			EntityManager.Update(dt);
+			EnemySpawner.Update();
+		}
+		
+		PlayerStatus.Update();
+	}
 
-		    //UpdateParticles(&world, timeStep);
+	protected override void Draw()
+	{
+		Raylib.ClearBackground(.BLACK);
+
+		// Draw game world
+		
+		BloomComponent.Begin(.BLACK);
+
+		GameRoot.WarpGrid.Draw();
+
+		EntityManager.Draw();
+		GameRoot.Draw();
+
+		BloomComponent.End(noBloomEffect);
+		PixelizerComponent.Draw(BloomComponent.FinalResult, noBloomEffect);
+
+		// Draw ui
+
+		Raylib.DrawTextEx(Art.Font, scope $"Lives: {PlayerStatus.Lives}\0", .(5, 5), Art.Font.baseSize, 0.0f, .WHITE);
+		DrawRightAlignedString(scope $"Score: {PlayerStatus.Score}\0", 5);
+		DrawRightAlignedString(scope $"Multiplier: {PlayerStatus.Multiplier}\0", 35);
+
+		if (PlayerStatus.IsGameOver)
+		{
+			let text = scope $"""
+			Game Over
+
+			Your Score: {PlayerStatus.Score}
+
+			High Score: {PlayerStatus.HighScore}\0
+			""";
+
+			let textSize = Raylib.MeasureTextEx(Art.Font, text.Ptr, Art.Font.baseSize, 5.0f);
+			Raylib.DrawTextEx(Art.Font, text.Ptr, GameRoot.Size / 2 - textSize / 2, Art.Font.baseSize, 0.0f, .WHITE);
+		}
+
+		if (isPause)
+		{
+			Raylib.DrawRectangleRec(GameRoot.Viewport, .(0, 0, 0, 156));
+			Raylib.DrawText("GAME IS PAUSING", 6, 6, 64, .WHITE);
+			Raylib.DrawText("> For waiting code change", 6, 78, 64, .WHITE);
+			Raylib.DrawText("> from Hot Compiling", 6, 142, 64, .WHITE);
+		}
+
+		// draw the custom mouse cursor
+		if (Input.IsAimingWithMouse)
+		{
+			Raylib.DrawTextureV(Art.Pointer, Input.MousePosition, .WHITE);
 		}
 	}
 
-	public override void Draw()
+	private void DrawRightAlignedString(StringView text, float y)
 	{
-		ClearBackground(.BLACK);
-
-		BeginTextureMode(framebuffer);
-        ClearBackground(.BLACK);
-
-		Camera2D camera = .(
-			Vector2(GetScreenWidth() * 0.5f, GetScreenHeight() * 0.5f),
-		    Vector2(0, 0),
-		    0,
-		    0.5f
-		);
-		BeginMode2D(camera);
-		{
-		    world.Render();
-		    //DrawParticles();
-		}
-		EndMode2D();
-
-		EndTextureMode();
-
-		BeginShaderMode(bloomShader);
-
-		DrawTextureRec(framebuffer.texture, Rectangle(0, 0, SCREEN_WIDTH, -SCREEN_HEIGHT), Vector2(0, 0), .WHITE);
-		EndShaderMode();
-
-		DrawText(TextFormat("CPU FPS: %d", fpsValue), 0, 0, 18, .RAYWHITE);
-		DrawText(TextFormat("GPU FPS: %d", GetFPS()), 0, 24, 18, .RAYWHITE);
+		let textWidth = Raylib.MeasureTextEx(Art.Font, text.Ptr, Art.Font.baseSize, 0.0f).x;
+		Raylib.DrawTextEx(Art.Font, text.Ptr, .(GameRoot.Size.width - textWidth - 5, y), Art.Font.baseSize, 0.0f, .WHITE);
 	}
 }
