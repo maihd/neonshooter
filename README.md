@@ -1,6 +1,14 @@
 # NeonShooter
 Complete game of [Neon Shooter](https://code.tutsplus.com/series/cross-platform-vector-shooter-xna--gamedev-10559)
 
+
+## Bugs
+Fixing this for exercies:
+- Music crash on some devices
+- No replay when game over
+- No points update when killing enemies
+
+
 ## What's Next?
 We have the basic gameplay and effects implemented. It's up to you to turn it into a complete and polished game with your own flavour. Try adding some interesting new mechanics, some cool new effects, or a unique story. In case you aren't sure where to start, here are a few suggestions.
 
@@ -16,6 +24,7 @@ We have the basic gameplay and effects implemented. It's up to you to turn it in
 - Add a shop or leveling system and allow the player to earn upgrades.
 - More robust simulation (use deltaTime), timer and slow-motion effect.
 
+
 ## Acknowledges
 - Michael Hoffman
 - The sprites of Jacob Zinman-Jeanes
@@ -26,3 +35,7 @@ We have the basic gameplay and effects implemented. It's up to you to turn it in
 - [MiniCoro Beef Bindings](https://github.com/jazzbre/minicoro-beef)
 - [Raylib Beef Bindings](https://github.com/M0n7y5/raylib-beef)
 - [Linq for Beef](https://github.com/disarray2077/Beef.Linq)
+
+
+## Licenses
+No license, feel free to use and customizing.
