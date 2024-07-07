@@ -226,7 +226,7 @@ class WarpGrid
 				if (x > 1)
 				{
 					left = ToVec2(points[x - 1, y].position);
-					float thickness = (y % 3) == 1 ? 2f : 1f;
+					float thickness = (y % 6) == 1 ? 2f : 1f;
 					DrawLineEx(left, p, thickness, color);
 
 					/*
@@ -251,7 +251,7 @@ class WarpGrid
 				if (y > 1)
 				{
 					up = ToVec2(points[x, y - 1].position);
-					float thickness = (x % 3) == 1 ? 2f : 1f;
+					float thickness = (x % 6) == 1 ? 2f : 1f;
 					DrawLineEx(up, p, thickness, color);
 
 					/*
