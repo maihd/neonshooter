@@ -26,32 +26,6 @@ static class Audios
 	static float exponent = 1.0f;                 	// Audio exponentiation value
 	static float[400] averageVolume = default;   	// Average volume history
 
-	//------------------------------------------------------------------------------------
-	// Audio processing function
-	//------------------------------------------------------------------------------------
-	static void ProcessAudio(void *buffer, uint32 frames)
-	{
-	    float *samples = (float *)buffer;   // Samples internally stored as <float>s
-	    float average = 0.0f;               // Temporary average volume
-
-	    for (uint32 frame = 0; frame < frames; frame++)
-	    {
-	        float* left = &samples[frame * 2 + 0];
-			float* right = &samples[frame * 2 + 1];
-
-	        *left = Math.Pow(Math.Abs(*left), exponent) * ( (*left < 0.0f)? -1.0f : 1.0f );
-	        *right = Math.Pow(Math.Abs(*right), exponent) * ( (*right < 0.0f)? -1.0f : 1.0f );
-
-	        average += Math.Abs(*left) / frames;   // accumulating average volume
-	        average += Math.Abs(*right) / frames;
-	    }
-
-	    // Moving history to the left
-	    for (int i = 0; i < 399; i++) averageVolume[i] = averageVolume[i + 1];
-
-	    averageVolume[399] = average;         // Adding last average value
-	}
-
 	[CLink]
 	static extern void AttachAudioMixedProcessor(function void(void*, uint32) processor);
 
@@ -59,15 +33,9 @@ static class Audios
 	{
 		rand = new Random();
 
-		AttachAudioMixedProcessor(=> ProcessAudio);
-
-		SetMasterVolume(0.5f);
-
-		//Music = LoadMusicStream("Assets/Audios/Music.mp3\0");
-
-		var music = ref Music;
-		music.looping = true;
-		//PlayMusicStream(music);
+		Music = LoadMusicStream("Assets/Audios/Music.mp3");
+		Music.looping = true;
+		PlayMusicStream(Music);
 
 		// These linq expressions are just a fancy way loading all sounds of each category into an array.
 		explosions = Enumerable.Range(1, 8).Select((x) => LoadSound((scope $"Assets/Audios/explosion-0{x}.wav\0").Ptr)).ToList(..new .());
@@ -77,8 +45,8 @@ static class Audios
 
 	public static void Unload()
 	{
-		//StopMusicStream(Music);
-		//UnloadMusicStream(Music);
+		StopMusicStream(Music);
+		UnloadMusicStream(Music);
 
 		Music = default;
 
@@ -102,21 +70,27 @@ static class Audios
 
 	public static void Update()
 	{
-		//UpdateMusicStream(Music);
+		UpdateMusicStream(Music);
 	}
 
 	public static void PlayShot()
 	{
-		PlaySound(Shot);
+		let sound = Shot;
+		SetSoundVolume(sound, 0.5f);
+		PlaySound(sound);
 	}
 
 	public static void PlayExplosion()
 	{
-		PlaySound(Explosion);
+		let sound = Explosion;
+		SetSoundVolume(sound, 0.5f);
+		PlaySound(sound);
 	}
 
 	public static void PlaySpawn()
 	{
-		PlaySound(Spawn);
+		let sound = Spawn;
+		SetSoundVolume(sound, 0.5f);
+		PlaySound(sound);
 	}
 }

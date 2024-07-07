@@ -4,9 +4,10 @@ Complete game of [Neon Shooter](https://code.tutsplus.com/series/cross-platform-
 
 ## Bugs
 Fixing this for exercies:
-- Music crash on some devices
 - No replay when game over
 - No points update when killing enemies
+- Bloom effects does not have good visual
+- BlackHole radiant particles
 
 
 ## What's Next?

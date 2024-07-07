@@ -1,5 +1,5 @@
 FileVersion = 1
-Dependencies = {corlib = "*", Raylib = "*", "Beef.Linq" = "*", minicoro-beef = "*"}
+Dependencies = {corlib = "*", "Beef.Linq" = "*", minicoro-beef = "*", Raylib = "*"}
 
 [Project]
 Name = "NeonShooter"
