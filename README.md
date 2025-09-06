@@ -8,8 +8,13 @@ Porting versions (git branching)
 - Written in Beef with custom game engine called [Mojo Engine](https://github.com/maihd/neonshooter/tree/mojo-beef) (WIP)
 - Written in C with [Raylib](https://github.com/maihd/neonshooter/tree/raylib) (Missing menus and HUD)
 - Written in Lua with Love2D, enemy behaviour with synatic.lua (Planning)
+- Written in [Odin + SDL3 (GPU, TTF, Image)](https://github.com/maihd/neonshooter/tree/odin-sdl3)
+
+Current Branch
+--------------
+This branch is Odin + SDL3 (GPU, TTF, Image)
 
 Meta
 ----
 License: NO
-Copyright: 2020-2023 @ MaiHD
+Copyright: 2020-2025 @ MaiHD
