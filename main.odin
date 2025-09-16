@@ -22,8 +22,16 @@ main :: proc() {
 
     build_game_dll()
 
+    when ODIN_OS == .Windows {
+        game_api_file := "game.dll"
+    } else when ODIN_OS == .Darwin {
+        game_api_file := "game.dylib"
+    } else {
+        game_api_file := "game.so"
+    }
+
     game_api_version := 0
-    game_api, game_api_ok := load_game_api("game.dll", game_api_version)
+    game_api, game_api_ok := load_game_api(game_api_file, game_api_version)
     if !game_api_ok {
         fmt.println("Failed to load Game API")
         return

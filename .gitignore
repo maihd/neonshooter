@@ -2,6 +2,9 @@
 .vscode
 .DS_Store
 
+/*.so
+/*.dylib
+
 /*.lib
 /*.exe
 /*.exp
