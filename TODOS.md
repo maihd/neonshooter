@@ -4,5 +4,6 @@
 [x] Setup main.odin and running raylib
 [x] Hot reload: Windows, Mac, Linux
 [x] Assets
+[ ] Generate assets path constants for game source code
 [ ] Watch folder and auto build after folder game change: use dmon, bindings from C
 [ ] Player and movement
