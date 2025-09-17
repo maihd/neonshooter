@@ -24,7 +24,7 @@ main :: proc() {
     defer os.close(f)
 
     fmt.fprintf(f, "// Generated file. Donot editing.\n")
-    fmt.fprintf(f, "package game\n\n")
+    fmt.fprintf(f, "package neonshooter_game\n\n")
 
     gen_asset_path(f, asset_dir, exe_dir)
 }

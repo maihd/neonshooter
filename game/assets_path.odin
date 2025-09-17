@@ -1,5 +1,5 @@
 // Generated file. Donot editing.
-package game
+package neonshooter_game
 
 
 

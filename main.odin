@@ -8,12 +8,6 @@ import "core:os"
 import "core:dynlib"
 import rl "vendor:raylib"
 
-when ODIN_OS == .Windows {
-    GAME_DLL_PATH :: "game.dll"
-} else {
-    GAME_DLL_PATH :: "game.so"
-}
-
 main :: proc() {
     rl.SetConfigFlags({ .VSYNC_HINT })
 
@@ -55,9 +49,9 @@ main :: proc() {
             
             unload_game_api(game_api)
 
-            game_api.deinit()
+            memory := game_api.get_memory()
             game_api = new_api
-            game_api.init()
+            game_api.hot_reload(memory)
 
             game_api_version += 1
         }
@@ -81,9 +75,10 @@ build_game_dll :: proc() {
 Game_Api :: struct {
     init: proc(),
     deinit: proc(),
-    reload: proc(),
     update: proc(),
     render: proc(),
+    get_memory: proc() -> rawptr,
+    hot_reload: proc(memory: rawptr),
 
     lib: dynlib.Library,
     lib_path: string,
@@ -130,11 +125,15 @@ load_game_api :: proc(path: string, api_version: int) -> (Game_Api, bool) {
         deinit = cast(proc())(dynlib.symbol_address(lib, "game_deinit") or_else nil),
         update = cast(proc())(dynlib.symbol_address(lib, "game_update") or_else nil),
         render = cast(proc())(dynlib.symbol_address(lib, "game_render") or_else nil),
+        get_memory = cast(proc() -> rawptr)(dynlib.symbol_address(lib, "game_memory") or_else nil),
+        hot_reload = cast(proc(rawptr))(dynlib.symbol_address(lib, "game_hot_reload") or_else nil),
     }
 
-    if api.init == nil || api.deinit == nil || api.update == nil || api.render == nil{
+    if api.init == nil || api.deinit == nil || api.update == nil || api.render == nil \ 
+        || api.get_memory == nil \
+        || api.hot_reload == nil {
         dynlib.unload_library(api.lib)
-        fmt.println("Game library missing required precedures")
+        rl.TraceLog(.FATAL, "Game library missing required precedures")
         return {}, false
     }
 
