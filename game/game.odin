@@ -1,5 +1,6 @@
 package neonshooter_game
 
+import "base:runtime"
 import "core:fmt"
 import rl "vendor:raylib"
 
@@ -24,14 +25,18 @@ game_init :: proc() {
 
 @(export)
 game_deinit :: proc() {
-    free(game_state)
+    defer free(game_state)
+
+    if game_state != nil {
+        unload_texture(Assets_Art_Player_Png)
+    }
 }
 
 @(export)
 game_update :: proc() {
     dt := rl.GetFrameTime()
 
-    speed := f32(100)
+    speed := f32(300)
 
     if rl.IsKeyDown(.W) || rl.IsKeyDown(.UP) {
         game_state.player_pos.y -= speed * dt;
@@ -56,13 +61,17 @@ game_render :: proc() {
 }
 
 @(export)
-game_memory :: proc() -> rawptr {
-    return game_state
+game_memory :: proc() -> runtime.Raw_Any {
+    // fmt.printf("game_state: %p\n", game_state)
+    return runtime.Raw_Any { data = game_state, id = type_of(game_state) }
 }
 
 @(export)
-game_hot_reload :: proc(memory: rawptr) {
-    game_state = cast(^Game_State)memory
+game_hot_reload :: proc(memory: runtime.Raw_Any) {
+    // fmt.printf("raw_any.type: %v\n", memory.id)
+    // fmt.printf("raw_any.data: %v\n", memory.data)
+
+    game_state = transmute(^Game_State)memory.data
 
     if game_state == nil {
         game_init()

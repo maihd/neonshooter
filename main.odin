@@ -77,8 +77,8 @@ Game_Api :: struct {
     deinit: proc(),
     update: proc(),
     render: proc(),
-    get_memory: proc() -> rawptr,
-    hot_reload: proc(memory: rawptr),
+    get_memory: proc() -> any,
+    hot_reload: proc(memory: any),
 
     lib: dynlib.Library,
     lib_path: string,
@@ -125,8 +125,8 @@ load_game_api :: proc(path: string, api_version: int) -> (Game_Api, bool) {
         deinit = cast(proc())(dynlib.symbol_address(lib, "game_deinit") or_else nil),
         update = cast(proc())(dynlib.symbol_address(lib, "game_update") or_else nil),
         render = cast(proc())(dynlib.symbol_address(lib, "game_render") or_else nil),
-        get_memory = cast(proc() -> rawptr)(dynlib.symbol_address(lib, "game_memory") or_else nil),
-        hot_reload = cast(proc(rawptr))(dynlib.symbol_address(lib, "game_hot_reload") or_else nil),
+        get_memory = cast(proc() -> any)(dynlib.symbol_address(lib, "game_memory") or_else nil),
+        hot_reload = cast(proc(any))(dynlib.symbol_address(lib, "game_hot_reload") or_else nil),
     }
 
     if api.init == nil || api.deinit == nil || api.update == nil || api.render == nil \ 
