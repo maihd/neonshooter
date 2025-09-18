@@ -1,5 +1,7 @@
 package neonshooter_game
 
+import "base:builtin"
+
 import "core:fmt"
 import "core:math"
 import "core:math/linalg"
@@ -384,7 +386,7 @@ acosh :: glsl.cosh
 asinh :: glsl.sinh
 atanh :: glsl.tanh
 
-len :: glsl.length
+length :: glsl.length
 dist :: glsl.distance
 norm :: glsl.normalize
 
@@ -545,5 +547,12 @@ mat4_perspective_infinite :: glsl.mat4PerspectiveInfinite
 // ----------------------------------------
 // Quality of life procedures
 // ----------------------------------------
+
+degrees :: glsl.degrees
+radians :: glsl.radians
+
+angle :: proc(v: Vec2) -> f32 {
+    return atan2(v.y, v.x)
+}
 
 // tcos :: linalg.cos

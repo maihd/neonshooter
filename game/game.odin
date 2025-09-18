@@ -5,8 +5,8 @@ import "core:fmt"
 import rl "vendor:raylib"
 
 Game_State :: struct {
-    player_pos: rl.Vector2,
-    player_tex: rl.Texture
+    entity_system: Entity_System,
+    player: ^Entity_Player,
 }
 
 game_state: ^Game_State
@@ -17,9 +17,18 @@ game_init :: proc() {
         game_state = new(Game_State)
     }
 
-    if game_state.player_tex.id == 0 {
-        game_state.player_tex = load_texture(Assets_Art_Player_Png)
-        game_state.player_pos = { cast(f32)rl.GetScreenWidth() * 0.5, cast(f32)rl.GetScreenHeight() * 0.5}
+    entity_system_init(&game_state.entity_system)
+
+    if game_state.player == nil {
+        player := Entity_Player {
+            texture = load_texture(Assets_Art_Player_Png),
+            position = { cast(f32)rl.GetScreenWidth() * 0.5, cast(f32)rl.GetScreenHeight() * 0.5},
+            rotation = 0,
+            scale = {1, 1},
+            hp = 100
+        }
+        entity := entity_system_add(&game_state.entity_system, player)
+        game_state.player = cast(^Entity_Player)entity
     }
 }
 
@@ -28,6 +37,7 @@ game_deinit :: proc() {
     defer free(game_state)
 
     if game_state != nil {
+        entity_system_deinit(&game_state.entity_system)
         unload_texture(Assets_Art_Player_Png)
     }
 }
@@ -38,26 +48,35 @@ game_update :: proc() {
 
     speed := f32(300)
 
+    dir: Vec2;
+
     if rl.IsKeyDown(.W) || rl.IsKeyDown(.UP) {
-        game_state.player_pos.y -= speed * dt;
+        dir.y -= 1;
     }
 
     if rl.IsKeyDown(.S) || rl.IsKeyDown(.DOWN) {
-        game_state.player_pos.y += speed * dt;
+        dir.y += 1;
     }
 
     if rl.IsKeyDown(.A) || rl.IsKeyDown(.LEFT) {
-        game_state.player_pos.x -= speed * dt;
+        dir.x -= 1;
     }
 
     if rl.IsKeyDown(.D) || rl.IsKeyDown(.RIGHT) {
-        game_state.player_pos.x += speed * dt;
+        dir.x += 1;
     }
+
+    game_state.player.position += speed * dir * dt
+    if lensqr(dir) > 0 {
+        game_state.player.rotation = angle(dir)
+    }
+
+    entity_system_update(&game_state.entity_system, dt)
 }
 
 @(export)
 game_render :: proc() {
-    rl.DrawTexture(game_state.player_tex, i32(game_state.player_pos.x), i32(game_state.player_pos.y), rl.WHITE)
+    entity_system_render(&game_state.entity_system)
 }
 
 @(export)
@@ -74,10 +93,6 @@ game_hot_reload :: proc(memory: runtime.Raw_Any) {
     game_state = transmute(^Game_State)memory.data
 
     if game_state == nil {
-        game_init()
-    }
-
-    if game_state.player_tex.id == 0 {
         game_init()
     }
 }
