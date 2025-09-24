@@ -121,12 +121,12 @@ load_game_api :: proc(path: string, api_version: int) -> (Game_Api, bool) {
         dll_time = dll_time,
         api_version = api_version,
 
-        init = cast(proc())(dynlib.symbol_address(lib, "game_init") or_else nil),
-        deinit = cast(proc())(dynlib.symbol_address(lib, "game_deinit") or_else nil),
-        update = cast(proc())(dynlib.symbol_address(lib, "game_update") or_else nil),
-        render = cast(proc())(dynlib.symbol_address(lib, "game_render") or_else nil),
-        get_memory = cast(proc() -> any)(dynlib.symbol_address(lib, "game_memory") or_else nil),
-        hot_reload = cast(proc(any))(dynlib.symbol_address(lib, "game_hot_reload") or_else nil),
+        init = cast(proc "odin" ())(dynlib.symbol_address(lib, "game_init") or_else nil),
+        deinit = cast(proc "odin" ())(dynlib.symbol_address(lib, "game_deinit") or_else nil),
+        update = cast(proc "odin" ())(dynlib.symbol_address(lib, "game_update") or_else nil),
+        render = cast(proc "odin" ())(dynlib.symbol_address(lib, "game_render") or_else nil),
+        get_memory = cast(proc "odin" () -> any)(dynlib.symbol_address(lib, "game_memory") or_else nil),
+        hot_reload = cast(proc "odin" (any))(dynlib.symbol_address(lib, "game_hot_reload") or_else nil),
     }
 
     if api.init == nil || api.deinit == nil || api.update == nil || api.render == nil \ 

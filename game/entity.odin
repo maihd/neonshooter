@@ -21,8 +21,22 @@ Entity_Player :: struct {
 
 }
 
+// @entity
+Entity_Bullet :: struct {
+    using base: Entity_Base,
+
+    velocity: Vec2,
+}
+
 // @any_entity
 Entity :: union {
     Entity_Base,
     Entity_Player,
+    Entity_Bullet,
 }
+
+Entity_Handle :: bit_field u32 {
+    index: u32 | 24,
+    generation: u32 | 8,
+}
+#assert(size_of(Entity_Handle) == size_of(u32))
