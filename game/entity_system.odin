@@ -34,8 +34,7 @@ entity_system_deinit :: proc(entity_system: ^Entity_System) {
     }
 }
 
-entity_system_iter_by_type :: proc(entity_system: ^Entity_System, $T: typeid) -> Entity_Iterator(T)
-{
+entity_system_iter_by_type :: proc(entity_system: ^Entity_System, $T: typeid) -> Entity_Iterator(T) {
     return Entity_Iterator(T) {
         entities = entity_system.entities[:],
         current = 0,
@@ -43,6 +42,7 @@ entity_system_iter_by_type :: proc(entity_system: ^Entity_System, $T: typeid) ->
             if self.entities != nil && self.current < len(self.entities) {
                 for self.current < len(self.entities) {
                     defer self.current += 1
+
                     entity, ok := &self.entities[self.current].(T)
                     if ok {
                         return entity, true
@@ -62,6 +62,7 @@ entity_system_add :: proc(entity_system: ^Entity_System, entity: Entity) -> Enti
 
         next_entity := (cast(^^Entity)entity_system.free_entity)^
         entity_system.free_entity = next_entity
+        entity_ptr^ = entity
     } else {
         new_len, _ := append(&entity_system.entities, entity)
         entity_ptr = &entity_system.entities[new_len - 1]
@@ -82,6 +83,8 @@ entity_system_destroy :: proc(entity_system: ^Entity_System, entity: ^Entity) {
     if index < 0 || index >= len(entity_system.entities) {
         return
     }
+
+    entity^ = nil
 
     next_entity := cast(^^Entity)entity
     next_entity^ = entity_system.free_entity
