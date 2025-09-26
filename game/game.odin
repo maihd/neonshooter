@@ -25,12 +25,20 @@ game_init :: proc() {
 
     entity_system_init(&game_state.entity_system)
 
+    // Preload
+    load_texture(Assets_Art_Player_Png)
+    load_texture(Assets_Art_Bullet_Png)
+    load_texture(Assets_Art_Seeker_Png)
+    load_texture(Assets_Art_Wanderer_Png)
+
     if game_state.player == nil {
+        player_texture := load_texture(Assets_Art_Player_Png)
         player := Entity_Player {
-            texture = load_texture(Assets_Art_Player_Png),
+            texture = player_texture,
             position = { cast(f32)rl.GetScreenWidth() * 0.5, cast(f32)rl.GetScreenHeight() * 0.5},
             rotation = 0,
             scale = {1, 1},
+            radius = f32(player_texture.width),
             hp = 100
         }
         entity_handle := entity_system_add(&game_state.entity_system, player)
@@ -85,15 +93,31 @@ game_update :: proc() {
             game_state.fire_timer -= game_state.fire_rate
 
             bullet_dir := norm(rl.GetMousePosition() - game_state.player.position)
-            bullet := Entity_Bullet {
-                position = game_state.player.position + bullet_dir * 30,
+            bullet_vel := bullet_dir * 1000
+
+            bullet_dir_angle := angle(bullet_dir)
+            bullet_pos1 := game_state.player.position + vec2_from_angle(bullet_dir_angle - 0.15) * (game_state.player.radius + 10)
+            bullet_pos2 := game_state.player.position + vec2_from_angle(bullet_dir_angle + 0.15) * (game_state.player.radius + 10)
+
+            bullet1 := Entity_Bullet {
+                position = bullet_pos1,
                 texture = load_texture(Assets_Art_Bullet_Png),
-                rotation = 0,
+                rotation = bullet_dir_angle,
                 scale = vec2(1),
                 hp = 1,
-                velocity = bullet_dir * 1000
+                velocity = bullet_vel
             }
-            entity_system_add(&game_state.entity_system, bullet)
+            entity_system_add(&game_state.entity_system, bullet1)
+
+            bullet2 := Entity_Bullet {
+                position = bullet_pos2,
+                texture = load_texture(Assets_Art_Bullet_Png),
+                rotation = bullet_dir_angle,
+                scale = vec2(1),
+                hp = 1,
+                velocity = bullet_vel
+            }
+            entity_system_add(&game_state.entity_system, bullet2)
         }
     }
 

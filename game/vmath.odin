@@ -555,4 +555,9 @@ angle :: proc(v: Vec2) -> f32 {
     return atan2(v.y, v.x)
 }
 
+vec2_from_angle :: proc(angle_rads: f32, length: f32 = 1.0) -> Vec2 {
+	s, c := math.sincos(angle_rads)
+	return vec2(c, s) * length
+}
+
 // tcos :: linalg.cos

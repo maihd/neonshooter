@@ -23,6 +23,8 @@ entity_system_init :: proc(entity_system: ^Entity_System, allocator := context.a
     assert(entity_system != nil)
 
     entity_system.entities = make(type_of(entity_system.entities), allocator = allocator, loc = loc)
+    reserve(&entity_system.entities, 128)
+
     entity_system.free_entity = nil
     entity_system.allocator = allocator
 }
@@ -62,6 +64,7 @@ entity_system_add :: proc(entity_system: ^Entity_System, entity: Entity) -> Enti
 
         next_entity := (cast(^^Entity)entity_system.free_entity)^
         entity_system.free_entity = next_entity
+
         entity_ptr^ = entity
     } else {
         new_len, _ := append(&entity_system.entities, entity)
@@ -110,16 +113,26 @@ entity_system_update :: proc(entity_system: ^Entity_System, dt: f32) {
 
 entity_system_render :: proc(entity_system: ^Entity_System) {
     for i in 0..<len(entity_system.entities) {
+        if entity_system.entities[i] == nil {
+            continue
+        }
+
         entity_base := cast(^Entity_Base)&entity_system.entities[i]
         if entity_base.hp <= 0 {
             continue
         }
 
-        rl.DrawTextureEx(
-            texture = entity_base.texture, 
-            position = entity_base.position, 
-            rotation = degrees(entity_base.rotation), 
-            scale = lerp(entity_base.scale.x, entity_base.scale.y, 0.5), 
+        w := f32(entity_base.texture.width)
+        h := f32(entity_base.texture.height)
+        sx := f32(entity_base.scale.x)
+        sy := f32(entity_base.scale.y)
+        
+        rl.DrawTexturePro(
+            texture = entity_base.texture,
+            source = { 0, 0, w, h },
+            dest = { entity_base.position.x, entity_base.position.y, w * sx, h * sy },
+            origin = vec2(w, h) * 0.5,
+            rotation = degrees(entity_base.rotation),
             tint = rl.WHITE
         )
     }
