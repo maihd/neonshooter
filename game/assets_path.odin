@@ -39,7 +39,7 @@ Assets_Shaders_Bloom_Frag :: `assets/Shaders/Bloom.frag`
 
 Assets_Fonts_Nova_Square_Regular_Ttf :: `assets/Fonts/NovaSquare-Regular.ttf`
 
-load_all_textures :: proc() -> bool {
+load_all_textures :: proc() {
     _ = load_texture(Assets_Audios_Explosion_06_Wav)
     _ = load_texture(Assets_Audios_Explosion_07_Wav)
     _ = load_texture(Assets_Audios_Explosion_05_Wav)
@@ -62,7 +62,6 @@ load_all_textures :: proc() -> bool {
     _ = load_texture(Assets_Audios_Spawn_01_Wav)
     _ = load_texture(Assets_Audios_Shoot_04_Wav)
     _ = load_texture(Assets_Audios_Explosion_08_Wav)
-    _ = load_texture(Assets_Ds_Store)
     _ = load_texture(Assets_Art_Bullet_Png)
     _ = load_texture(Assets_Art_Black_Hole_Png)
     _ = load_texture(Assets_Art_Laser_Png)

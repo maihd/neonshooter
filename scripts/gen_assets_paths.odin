@@ -78,14 +78,14 @@ gen_asset_path :: proc(output: os.Handle, path: string, root: string) -> os.Erro
 }
 
 gen_load_all_assets_proc :: proc(output: os.Handle, path: string, root: string) -> os.Error {
-    if is_ignore(path) {
-        return nil
-    }
-
-    fmt.fprintf(output, "\nload_all_textures :: proc() -> bool {{\n")
+    fmt.fprintf(output, "\nload_all_textures :: proc() {{\n")
     defer fmt.fprintf(output, "}}")
 
     visit :: proc(output: os.Handle, path: string, root: string) -> os.Error {
+        if is_ignore(path) {
+            return nil
+        }
+
         stat := os.stat(path) or_return
         if stat.is_dir {
             dir_handle := os.open(path) or_return

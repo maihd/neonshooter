@@ -1,15 +1,26 @@
 package neonshooter_game
 
+import "core:math/rand"
 import "base:runtime"
 import "core:fmt"
 import rl "vendor:raylib"
 
 Game_State :: struct {
     entity_system: Entity_System,
+
     player: ^Entity_Player,
+    player_handle: Entity_Handle,
 
     fire_timer: f32,
     fire_rate: f32,
+
+    spawn_seeker_rate: int,
+    spawn_seeker_timer: f32,
+    spawn_seeker_interval: f32,
+
+    spawn_wanderer_rate: int,
+    spawn_wanderer_timer: f32,
+    spawn_wanderer_interval: f32,
 }
 
 game_state: ^Game_State
@@ -23,13 +34,18 @@ game_init :: proc() {
     game_state.fire_rate = 0.1
     game_state.fire_timer = 0.0
 
+    game_state.spawn_seeker_rate = 20
+    game_state.spawn_seeker_timer = 0.0
+    game_state.spawn_seeker_interval = 1.0
+
+    game_state.spawn_wanderer_rate = 30
+    game_state.spawn_wanderer_timer = 0.0
+    game_state.spawn_wanderer_interval = 1.0
+
     entity_system_init(&game_state.entity_system)
 
     // Preload
-    load_texture(Assets_Art_Player_Png)
-    load_texture(Assets_Art_Bullet_Png)
-    load_texture(Assets_Art_Seeker_Png)
-    load_texture(Assets_Art_Wanderer_Png)
+    load_all_textures()
 
     if game_state.player == nil {
         player_texture := load_texture(Assets_Art_Player_Png)
@@ -43,6 +59,7 @@ game_init :: proc() {
         }
         entity_handle := entity_system_add(&game_state.entity_system, player)
         game_state.player = entity_system_get(&game_state.entity_system, entity_handle, Entity_Player)
+        game_state.player_handle = entity_handle
     }
 }
 
@@ -132,6 +149,44 @@ game_update :: proc() {
             || bullet.position.y > f32(rl.GetScreenHeight()) 
         {
             entity_system_destroy(&game_state.entity_system, cast(^Entity)bullet)
+        }
+    }
+
+    game_state.spawn_seeker_timer += dt
+    if game_state.spawn_seeker_timer >= game_state.spawn_seeker_interval {
+        game_state.spawn_seeker_timer -= game_state.spawn_seeker_interval
+
+        if rand.float32_range(0, 100) <= f32(game_state.spawn_seeker_rate) {
+            texture := load_texture(Assets_Art_Seeker_Png)
+            seeker := Entity_Seeker {
+                hp = 10,
+                attack = 1,
+                defense = 1,
+
+                position = game_state.player.position, // @fixme for test
+                rotation = 0,
+                scale = vec2(1),
+                radius = f32(texture.width) * 0.65,
+
+                texture = texture,
+                tint = rl.WHITE,
+
+                velocity = vec2(0.0),
+                target = game_state.player_handle,
+
+                spawn_timer = 1.0,
+            }
+            entity_system_add(&game_state.entity_system, seeker)
+        }
+    }
+
+    seekers_iter := entity_system_iter_by_type(&game_state.entity_system, Entity_Seeker)
+    for seeker in seekers_iter->next() {
+        target := entity_system_get(&game_state.entity_system, seeker.target, Entity_Player)
+        if target != nil {
+            seeker.velocity = norm(target.position - seeker.position) * 10 // @fixme for test
+            seeker.rotation = angle(seeker.velocity)
+            seeker.position = seeker.position + seeker.velocity * dt
         }
     }
 }

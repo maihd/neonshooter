@@ -9,6 +9,7 @@ Entity_System :: struct {
     entities: [dynamic]Entity,
     free_entity: ^Entity,
     allocator: mem.Allocator,
+    entities_by_type: map[typeid][dynamic]Entity_Handle
 }
 
 Entity_Iterator :: struct($T: typeid) 
@@ -23,7 +24,6 @@ entity_system_init :: proc(entity_system: ^Entity_System, allocator := context.a
     assert(entity_system != nil)
 
     entity_system.entities = make(type_of(entity_system.entities), allocator = allocator, loc = loc)
-    reserve(&entity_system.entities, 128)
 
     entity_system.free_entity = nil
     entity_system.allocator = allocator
@@ -65,10 +65,13 @@ entity_system_add :: proc(entity_system: ^Entity_System, entity: Entity) -> Enti
         next_entity := (cast(^^Entity)entity_system.free_entity)^
         entity_system.free_entity = next_entity
 
+        entity_base := transmute(^Entity_Base)entity_ptr
+        generation := entity_base.generation
         entity_ptr^ = entity
+        entity_base.generation = generation
     } else {
-        new_len, _ := append(&entity_system.entities, entity)
-        entity_ptr = &entity_system.entities[new_len - 1]
+        append(&entity_system.entities, entity)
+        entity_ptr = &entity_system.entities[len(entity_system.entities) - 1]
     }
     
     index := mem.ptr_sub(entity_ptr, transmute(^Entity)raw_data(entity_system.entities))
@@ -95,9 +98,13 @@ entity_system_destroy :: proc(entity_system: ^Entity_System, entity: ^Entity) {
     entity_system.free_entity = entity
 }
 
-entity_system_get :: proc(entity_system: ^Entity_System, handle: Entity_Handle, $T: typeid) -> ^T 
+entity_system_get :: proc(entity_system: ^Entity_System, handle: Entity_Handle, $T: typeid) -> ^T
     where intrinsics.type_is_subtype_of(T, Entity_Base)
 {
+    if int(handle.index) >= len(entity_system.entities) {
+        return nil
+    }
+
     entity := &entity_system.entities[handle.index]
     entity_base := transmute(^Entity_Base)entity
 
