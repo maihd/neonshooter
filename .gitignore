@@ -5,9 +5,12 @@
 /*.so
 /*.dylib
 
+/*.o
+/*.obj
 /*.lib
 /*.exe
 /*.exp
+/common.dll
 /game.dll
 /game_*.dll
 

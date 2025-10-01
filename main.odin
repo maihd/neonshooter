@@ -41,7 +41,12 @@ main :: proc() {
 
     // rl.SetTargetFPS(60)
 
+    delta :: 1.0 / 60.0
+    accumulator := f32(0)
+
     for !rl.WindowShouldClose() {
+        free_all(context.temp_allocator)
+
         dll_time := os.last_write_time_by_name(game_api.lib_path) or_continue
         reload := game_api.dll_time != dll_time
         if reload {
@@ -56,7 +61,14 @@ main :: proc() {
             game_api_version += 1
         }
 
-        game_api.update()
+        
+        accumulator += rl.GetFrameTime()
+        num_ticks := int(accumulator / delta)
+        accumulator -= f32(num_ticks) * delta
+
+        for _ in 0..<num_ticks {
+            game_api.update(delta)
+        }
         
         rl.BeginDrawing()
         defer rl.EndDrawing()
@@ -75,7 +87,7 @@ build_game_dll :: proc() {
 Game_Api :: struct {
     init: proc(),
     deinit: proc(),
-    update: proc(),
+    update: proc(dt: f32),
     render: proc(),
     get_memory: proc() -> any,
     hot_reload: proc(memory: any),
@@ -123,7 +135,7 @@ load_game_api :: proc(path: string, api_version: int) -> (Game_Api, bool) {
 
         init = cast(proc "odin" ())(dynlib.symbol_address(lib, "game_init") or_else nil),
         deinit = cast(proc "odin" ())(dynlib.symbol_address(lib, "game_deinit") or_else nil),
-        update = cast(proc "odin" ())(dynlib.symbol_address(lib, "game_update") or_else nil),
+        update = cast(proc "odin" (f32))(dynlib.symbol_address(lib, "game_update") or_else nil),
         render = cast(proc "odin" ())(dynlib.symbol_address(lib, "game_render") or_else nil),
         get_memory = cast(proc "odin" () -> any)(dynlib.symbol_address(lib, "game_memory") or_else nil),
         hot_reload = cast(proc "odin" (any))(dynlib.symbol_address(lib, "game_hot_reload") or_else nil),

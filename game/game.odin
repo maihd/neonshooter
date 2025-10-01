@@ -57,9 +57,7 @@ game_deinit :: proc() {
 }
 
 @(export)
-game_update :: proc() {
-    dt := rl.GetFrameTime()
-
+game_update :: proc(dt: f32) {
     speed := f32(300)
 
     dir: Vec2;

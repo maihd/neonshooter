@@ -3,7 +3,7 @@ package neonshooter_game
 import rl "vendor:raylib"
 
 when ODIN_OS == .Darwin do foreign import common "../common.dylib"
-when ODIN_OS == .Windows do foreign import common "../common.dll"
+when ODIN_OS == .Windows do foreign import common "../common.lib"
 
 @(default_calling_convention = "odin")
 foreign common {
