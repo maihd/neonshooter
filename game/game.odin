@@ -146,11 +146,11 @@ game_update :: proc(dt: f32) {
             || bullet.position.x > f32(rl.GetScreenWidth()) \
             || bullet.position.y > f32(rl.GetScreenHeight()) 
         {
-            entity_system_destroy(&game_state.entity_system, cast(^Entity)bullet)
+            entity_system_destroy(&game_state.entity_system, bullet)
         }
     }
 
-    game_state.spawn_seeker_timer += dt
+    // game_state.spawn_seeker_timer += dt
     if game_state.spawn_seeker_timer >= game_state.spawn_seeker_interval {
         game_state.spawn_seeker_timer -= game_state.spawn_seeker_interval
 
