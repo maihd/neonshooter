@@ -27,10 +27,24 @@ main :: proc() {
     fmt.fprintf(f, "package neonshooter_game\n\n")
 
     gen_asset_path(f, asset_dir, exe_dir)
+    gen_load_all_assets_proc(f, asset_dir, exe_dir)
+}
+
+is_ignore :: proc(path: string) -> bool {
+    return slice.any_of([]string{ ".DS_Store", ".ds_Store"}, slashpath.ext(path))
+}
+
+var_name_from_path :: proc(path, root: string, allocator := context.allocator, loc := #caller_location) -> string {
+    var_name, _ := strings.replace(path, root, "", 1, allocator, loc)
+    var_name, _ = strings.replace(var_name, "/", "", 1, allocator, loc)
+    var_name, _ = strings.replace_all(var_name, "/", "_", allocator)
+    var_name, _ = strings.replace_all(var_name, ".", "_", allocator)
+    result, _ := strings.to_ada_case(var_name, allocator)
+    return result
 }
 
 gen_asset_path :: proc(output: os.Handle, path: string, root: string) -> os.Error {
-    if slice.any_of([]string{ ".DS_Store", ".ds_Store" }, slashpath.ext(path)) {
+    if is_ignore(path) {
         return nil
     }
 
@@ -55,13 +69,41 @@ gen_asset_path :: proc(output: os.Handle, path: string, root: string) -> os.Erro
             gen_asset_path(output, entry_abs_path, root)
         }
     } else {
-        var_name, _ := strings.replace(path, root, "", 1)
-        var_name, _ = strings.replace(var_name, "/", "", 1)
-        var_name, _ = strings.replace_all(var_name, "/", "_")
-        var_name, _ = strings.replace_all(var_name, ".", "_")
+        var_name := var_name_from_path(path, root)
 
-        fmt.fprintf(output, "%s :: `%s`\n", strings.to_ada_case(var_name), filepath.rel(root, path) or_else path)
+        fmt.fprintf(output, "%s :: `%s`\n", var_name, filepath.rel(root, path) or_else path)
     }
 
     return nil
+}
+
+gen_load_all_assets_proc :: proc(output: os.Handle, path: string, root: string) -> os.Error {
+    fmt.fprintf(output, "\nload_all_textures :: proc() {{\n")
+    defer fmt.fprintf(output, "}}")
+
+    visit :: proc(output: os.Handle, path: string, root: string) -> os.Error {
+        if is_ignore(path) {
+            return nil
+        }
+
+        stat := os.stat(path) or_return
+        if stat.is_dir {
+            dir_handle := os.open(path) or_return
+            defer os.close(dir_handle)
+
+            dir_entries := os.read_dir(dir_handle, -1) or_return
+            defer delete(dir_entries)
+
+            for entry in dir_entries {
+                visit(output, entry.fullpath, root)
+            }
+        } else {
+            var_name := var_name_from_path(path, root)
+            fmt.fprintf(output, "    _ = load_texture(%s)\n", var_name)
+        }
+
+        return nil
+    }
+    
+    return visit(output, path, root)
 }
