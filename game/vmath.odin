@@ -437,17 +437,17 @@ distsqr_f32 :: proc "contextless" (a, b: f32) -> f32 {
 }
 
 @(private = "file", require_results)
-distsqr_vec2 :: proc "contextless" (a, b: Vec2) -> Vec2 {
+distsqr_vec2 :: proc "contextless" (a, b: Vec2) -> f32 {
 	return lensqr(a - b)
 }
 
 @(private = "file", require_results)
-distsqr_vec3 :: proc "contextless" (a, b: Vec3) -> Vec3 {
+distsqr_vec3 :: proc "contextless" (a, b: Vec3) -> f32 {
 	return lensqr(a - b)
 }
 
 @(private = "file", require_results)
-distsqr_vec4 :: proc "contextless" (a, b: Vec4) -> Vec4 {
+distsqr_vec4 :: proc "contextless" (a, b: Vec4) -> f32 {
 	return lensqr(a - b)
 }
 

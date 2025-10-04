@@ -1,5 +1,6 @@
 package neonshooter_game
 
+import "core:math"
 import "core:math/rand"
 import "base:runtime"
 import "core:fmt"
@@ -8,7 +9,6 @@ import rl "vendor:raylib"
 Game_State :: struct {
     entity_system: Entity_System,
 
-    player: ^Entity_Player,
     player_handle: Entity_Handle,
 
     fire_timer: f32,
@@ -47,7 +47,7 @@ game_init :: proc() {
     // Preload
     load_all_textures()
 
-    if game_state.player == nil {
+    if game_state.player_handle == Entity_Handle(0) {
         player_texture := load_texture(Assets_Art_Player_Png)
         player := Entity_Player {
             texture = player_texture,
@@ -58,7 +58,6 @@ game_init :: proc() {
             hp = 100
         }
         entity_handle := entity_system_add(&game_state.entity_system, player)
-        game_state.player = entity_system_get(&game_state.entity_system, entity_handle, Entity_Player)
         game_state.player_handle = entity_handle
     }
 }
@@ -95,9 +94,10 @@ game_update :: proc(dt: f32) {
         dir.x += 1;
     }
 
-    game_state.player.position += speed * dir * dt
+    player := entity_system_get(&game_state.entity_system, game_state.player_handle, Entity_Player)
+    player.position += speed * dir * dt
     if lensqr(dir) > 0 {
-        game_state.player.rotation = angle(dir)
+        player.rotation = angle(dir)
     }
 
     entity_system_update(&game_state.entity_system, dt)
@@ -107,12 +107,12 @@ game_update :: proc(dt: f32) {
         if game_state.fire_timer >= game_state.fire_rate {
             game_state.fire_timer -= game_state.fire_rate
 
-            bullet_dir := norm(rl.GetMousePosition() - game_state.player.position)
+            bullet_dir := norm(rl.GetMousePosition() - player.position)
             bullet_vel := bullet_dir * 1000
 
             bullet_dir_angle := angle(bullet_dir)
-            bullet_pos1 := game_state.player.position + vec2_from_angle(bullet_dir_angle - 0.15) * (game_state.player.radius + 10)
-            bullet_pos2 := game_state.player.position + vec2_from_angle(bullet_dir_angle + 0.15) * (game_state.player.radius + 10)
+            bullet_pos1 := player.position + vec2_from_angle(bullet_dir_angle - 0.15) * (player.radius + 10)
+            bullet_pos2 := player.position + vec2_from_angle(bullet_dir_angle + 0.15) * (player.radius + 10)
 
             bullet1 := Entity_Bullet {
                 position = bullet_pos1,
@@ -120,6 +120,7 @@ game_update :: proc(dt: f32) {
                 rotation = bullet_dir_angle,
                 scale = vec2(1),
                 hp = 1,
+                attack = 1,
                 velocity = bullet_vel
             }
             entity_system_add(&game_state.entity_system, bullet1)
@@ -130,6 +131,7 @@ game_update :: proc(dt: f32) {
                 rotation = bullet_dir_angle,
                 scale = vec2(1),
                 hp = 1,
+                attack = 1,
                 velocity = bullet_vel
             }
             entity_system_add(&game_state.entity_system, bullet2)
@@ -146,7 +148,7 @@ game_update :: proc(dt: f32) {
             || bullet.position.x > f32(rl.GetScreenWidth()) \
             || bullet.position.y > f32(rl.GetScreenHeight()) 
         {
-            entity_system_destroy(&game_state.entity_system, cast(^Entity)bullet)
+            entity_system_destroy(&game_state.entity_system, bullet)
         }
     }
 
@@ -161,7 +163,7 @@ game_update :: proc(dt: f32) {
                 attack = 1,
                 defense = 1,
 
-                position = game_state.player.position, // @fixme for test
+                position = player.position, // @fixme for test
                 rotation = 0,
                 scale = vec2(1),
                 radius = f32(texture.width) * 0.65,
@@ -182,16 +184,38 @@ game_update :: proc(dt: f32) {
     for seeker in seekers_iter->next() {
         target := entity_system_get(&game_state.entity_system, seeker.target, Entity_Player)
         if target != nil {
-            seeker.velocity = norm(target.position - seeker.position) * 10 // @fixme for test
+            seeker.velocity = norm(target.position - seeker.position + vec2(math.F32_EPSILON)) * 10 // @fixme for test
             seeker.rotation = angle(seeker.velocity)
             seeker.position = seeker.position + seeker.velocity * dt
         }
+    }
+
+    bullets_iter = entity_system_iter_by_type(&game_state.entity_system, Entity_Bullet)
+    for bullet in bullets_iter->next() {
+        seekers_iter = entity_system_iter_by_type(&game_state.entity_system, Entity_Seeker)
+        for seeker in seekers_iter->next() {
+            dist := distsqr(bullet.position, seeker.position)
+            if dist <= (bullet.radius + seeker.radius) * (bullet.radius + seeker.radius) {
+                seeker.hp -= bullet.attack
+                if seeker.hp <= 0 {
+                    entity_system_destroy(&game_state.entity_system, seeker)
+                }
+                entity_system_destroy(&game_state.entity_system, bullet)
+                break
+            }
+        }
+    }
+
+    if rl.IsKeyPressed(.GRAVE) {
+        fmt.printf("entity_system.entities_by_type: %v\n", game_state.entity_system.entities_by_type)
     }
 }
 
 @(export)
 game_render :: proc() {
     entity_system_render(&game_state.entity_system)
+
+    rl.DrawText(rl.TextFormat("Enitities: %d", i32(len(game_state.entity_system.entities))), 10, 40, 16, rl.WHITE)
 }
 
 @(export)
