@@ -206,6 +206,8 @@ game_update :: proc(dt: f32) {
         }
     }
 
+    // entity_system_detroy_waiting_handles(&game_state.entity_system)
+
     if rl.IsKeyPressed(.GRAVE) {
         fmt.printf("entity_system.entities_by_type: %v\n", game_state.entity_system.entities_by_type)
     }

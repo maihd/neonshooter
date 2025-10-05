@@ -60,15 +60,16 @@ main :: proc() {
 
             game_api_version += 1
         }
-
         
-        accumulator += rl.GetFrameTime()
-        num_ticks := int(accumulator / delta)
-        accumulator -= f32(num_ticks) * delta
+        // accumulator += rl.GetFrameTime()
+        // num_ticks := int(accumulator / delta)
+        // accumulator -= f32(num_ticks) * delta
 
-        for _ in 0..<num_ticks {
-            game_api.update(delta)
-        }
+        // for _ in 0..<num_ticks {
+        //     game_api.update(delta)
+        // }
+
+        game_api.update(rl.GetFrameTime())
         
         rl.BeginDrawing()
         defer rl.EndDrawing()

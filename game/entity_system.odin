@@ -13,7 +13,8 @@ Entity_System :: struct {
     next_index: u32,    // This index point to elements of sparse_indices
 
     allocator: mem.Allocator,
-    entities_by_type: map[typeid]Entity_Iterator_Entry
+    entities_by_type: map[typeid]Entity_Iterator_Entry,
+    destroying_handles: [dynamic]Entity_Handle,
 }
 
 Entity_Iterator :: struct($T: typeid) 
@@ -33,8 +34,10 @@ Entity_Iterator_Entry :: struct {
 Sparse_Index :: struct {
     generation: u32,
     index_or_next: u32,     // This index point to elements of entities/handles
-    prev_by_type: u32,
-    next_by_type: u32,
+
+    entity_type: typeid,    // Type of entity
+    prev_by_type: u32,      // Previous entry index (same entity type)
+    next_by_type: u32,      // Next entry index (same entity type)
 }
 
 Entity_Handle :: bit_field u32 {
@@ -51,14 +54,19 @@ entity_system_init :: proc(entity_system: ^Entity_System, allocator := context.a
 
     entity_system.next_index = 0
     entity_system.allocator = allocator
+
+    entity_system.entities_by_type.allocator = allocator
+    entity_system.destroying_handles.allocator = allocator
 }
 
 entity_system_deinit :: proc(entity_system: ^Entity_System) {
     if entity_system != nil {
+        delete(entity_system.destroying_handles)
         delete(entity_system.entities_by_type)
         delete(entity_system.sparse_indices)
         delete(entity_system.handles)
         delete(entity_system.entities)
+
         entity_system^ = {}
     }
 }
@@ -72,9 +80,14 @@ entity_system_iter_by_type :: proc(entity_system: ^Entity_System, $T: typeid) ->
         entities = entity_system.entities[:],
         current = current,
         next = proc(self: ^Entity_Iterator(T)) -> (^T, bool) {
-            if self.current < u32(len(self.entity_system.sparse_indices)) {
+            for self.current < u32(len(self.entity_system.sparse_indices)) {
                 entry := self.entity_system.sparse_indices[self.current]
                 self.current = entry.next_by_type
+
+                handle := self.entity_system.handles[entry.index_or_next]
+                if handle.generation != entry.generation {
+                    continue
+                }
 
                 entity := transmute(^T)&self.entity_system.entities[entry.index_or_next]
                 return entity, true
@@ -88,6 +101,7 @@ entity_system_iter_by_type :: proc(entity_system: ^Entity_System, $T: typeid) ->
 entity_system_add :: proc(entity_system: ^Entity_System, entity: $T) -> (handle: Entity_Handle) 
     where intrinsics.type_is_subtype_of(T, Entity_Base)
 {
+
     entry_index := entity_system.next_index
     if entry_index < u32(len(entity_system.sparse_indices)) {
         entry := &entity_system.sparse_indices[entry_index]
@@ -102,6 +116,7 @@ entity_system_add :: proc(entity_system: ^Entity_System, entity: $T) -> (handle:
         entity_system.next_index = entry.index_or_next
         entry.index_or_next = u32(index)
     } else {
+        entry_index = u32(len(entity_system.sparse_indices))
         index := len(entity_system.handles)
         handle = Entity_Handle {
             index = entry_index,
@@ -113,13 +128,15 @@ entity_system_add :: proc(entity_system: ^Entity_System, entity: $T) -> (handle:
             generation = 0,
         }
         append(&entity_system.sparse_indices, entry)
-        entity_system.next_index += 1
+        entity_system.next_index = entry_index + 1
     }
 
     append(&entity_system.handles, handle)
     append(&entity_system.entities, entity)
 
     entry := &entity_system.sparse_indices[entry_index]
+    entry.entity_type = T
+
     iter_entry, ok := &entity_system.entities_by_type[T]
     if !ok {
         entity_system.entities_by_type[T] = {
@@ -129,7 +146,7 @@ entity_system_add :: proc(entity_system: ^Entity_System, entity: $T) -> (handle:
         iter_entry = &entity_system.entities_by_type[T]
     }
 
-    if iter_entry.tail != bits.U32_MAX {
+    if iter_entry.tail < u32(len(entity_system.sparse_indices)) {
         last_entry := &entity_system.sparse_indices[iter_entry.tail]
         last_entry.next_by_type = entry_index
         
@@ -167,8 +184,19 @@ entity_system_destroy_w_handle :: proc(using entity_system: ^Entity_System, hand
 
     entry_index := handle.index
     entry := &sparse_indices[entry_index]
-    entry.generation += 1
+    if handle.generation != entry.generation {
+        return
+    }
 
+    entity_system_destroy_w_handle_unsafe(entity_system, handle)
+}
+
+@(private = "file")
+entity_system_destroy_w_handle_unsafe :: proc(using entity_system: ^Entity_System, handle: Entity_Handle) {
+    entry_index := handle.index
+    entry := &sparse_indices[entry_index]
+
+    entry.generation += 1
     index := entry.index_or_next
 
     entry.index_or_next = next_index
@@ -197,25 +225,49 @@ entity_system_destroy_w_handle :: proc(using entity_system: ^Entity_System, hand
         next.prev_by_type = entry.prev_by_type
     }
 
-    count := 0
-    for k, &v in entities_by_type {
-        if v.head == entry_index {
-            assert(count == 0)
-
-            if v.head == v.tail || entry.next_by_type == bits.U32_MAX {
-                v.head = bits.U32_MAX
-                v.tail = bits.U32_MAX
-            } else {
-                v.head = entry.next_by_type
-            }
-            
-            count += 1
-        }
-    }   
+    iter := &entities_by_type[entry.entity_type]
+    if iter.head == entry_index {
+        iter.head = entry.next_by_type
+    } 
+    if iter.tail == entry_index {
+        iter.tail = entry.prev_by_type
+    }
 
     entry.prev_by_type = bits.U32_MAX
     entry.next_by_type = bits.U32_MAX
 }
+
+// entity_system_mark_destroy :: proc(entity_system: ^Entity_System, entity: $T) 
+//     where intrinsics.type_is_subtype_of(T, Entity_Base)
+// {
+//     index := mem.ptr_sub(transmute(^Entity)entity, transmute(^Entity)raw_data(entity_system.entities))
+//     if index < 0 || index >= len(entity_system.entities) {
+//         return
+//     }
+
+//     handle := entity_system.handles[index]
+//     entity_system_mark_destroy_w_handle(entity_system, handle)
+// }
+
+// entity_system_mark_destroy_w_handle :: proc(entity_system: ^Entity_System, handle: Entity_Handle) {
+//     if handle.index >= u32(len(entity_system.sparse_indices)) {
+//         return
+//     }
+
+//     entry := entity_system.sparse_indices[handle.index]
+//     if entry.generation != handle.generation {
+//         return
+//     }
+
+//     append(&entity_system.destroying_handles, handle)
+// }
+
+// entity_system_detroy_waiting_handles :: proc(entity_system: ^Entity_System) {
+//     for handle in entity_system.destroying_handles {
+//         entity_system_destroy_w_handle_unsafe(entity_system, handle)
+//     }
+//     clear(&entity_system.destroying_handles)
+// }
 
 entity_system_get :: proc(entity_system: ^Entity_System, handle: Entity_Handle, $T: typeid) -> ^T
     where intrinsics.type_is_subtype_of(T, Entity_Base)
@@ -228,7 +280,7 @@ entity_system_get :: proc(entity_system: ^Entity_System, handle: Entity_Handle, 
     entity := &entity_system.entities[entry.index_or_next]
     entity_base := transmute(^Entity_Base)entity
 
-    return entity_base.generation == int(handle.generation) ? transmute(^T)entity_base : nil
+    return entry.generation == handle.generation ? transmute(^T)entity_base : nil
 }
 
 entity_system_update :: proc(entity_system: ^Entity_System, dt: f32) {

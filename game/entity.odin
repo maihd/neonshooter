@@ -3,8 +3,6 @@ package neonshooter_game
 import rl "vendor:raylib"
 
 Entity_Base :: struct {
-    generation: int,
-
     // For rendering
 
     position: Vec2,
