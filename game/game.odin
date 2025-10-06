@@ -180,6 +180,33 @@ game_update :: proc(dt: f32) {
         }
     }
 
+    game_state.spawn_wanderer_timer += dt
+    if game_state.spawn_wanderer_timer >= game_state.spawn_wanderer_interval {
+        game_state.spawn_wanderer_timer -= game_state.spawn_wanderer_interval
+
+        if rand.float32_range(0, 100) <= f32(game_state.spawn_wanderer_rate) {
+            texture := load_texture(Assets_Art_Wanderer_Png)
+            wanderer := Entity_Wanderer {
+                hp = 10,
+                attack = 1,
+                defense = 1,
+
+                position = get_spawn_position(player, 100, 300),
+                rotation = 0,
+                scale = vec2(1),
+                radius = f32(texture.width) * 0.65,
+
+                texture = texture,
+                tint = rl.WHITE,
+
+                velocity = vec2(0.0),
+
+                spawn_timer = 1.0,
+            }
+            entity_system_add(&game_state.entity_system, wanderer)
+        }
+    }
+
     seekers_iter := entity_system_iter_by_type(&game_state.entity_system, Entity_Seeker)
     for seeker in seekers_iter->next() {
         target := entity_system_get(&game_state.entity_system, seeker.target, Entity_Player)
