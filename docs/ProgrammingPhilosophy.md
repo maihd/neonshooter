@@ -5,3 +5,8 @@ System-based programming and compression-oriented programming support theses pri
 
 ## Details of entity_system.odin
 Unlike ECS, the entity_system have one key rules just manage entities, iterations and finding. It's a system contains and manage entities, not a system of entities with architypes.
+Features of entity_system:
+- Handle based memory access
+- Fast iterations
+- Fast add and remove, predictable performance
+- Memory safety
