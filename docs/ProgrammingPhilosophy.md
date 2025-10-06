@@ -10,3 +10,4 @@ Features of entity_system:
 - Fast iterations
 - Fast add and remove, predictable performance
 - Memory safety
+- Supported fixed timestep update and rendering

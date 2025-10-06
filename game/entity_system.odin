@@ -1,5 +1,6 @@
 package neonshooter_game
 
+import "core:encoding/base32"
 import "core:math/bits"
 import "base:intrinsics"
 import "core:fmt"
@@ -8,6 +9,8 @@ import rl "vendor:raylib"
 
 Entity_System :: struct {
     entities: [dynamic]Entity,
+    prev_entities: [dynamic]Entity, // This is for rendering
+
     handles: [dynamic]Entity_Handle,
     sparse_indices: [dynamic]Sparse_Index, // Persistant size, never remove items
     next_index: u32,    // This index point to elements of sparse_indices
@@ -48,6 +51,8 @@ entity_system_init :: proc(entity_system: ^Entity_System, allocator := context.a
     assert(entity_system != nil)
 
     entity_system.entities.allocator = allocator
+    entity_system.prev_entities.allocator = allocator
+
     entity_system.handles.allocator = allocator
     entity_system.sparse_indices.allocator = allocator
 
@@ -65,6 +70,7 @@ entity_system_deinit :: proc(entity_system: ^Entity_System) {
         delete(entity_system.sparse_indices)
         delete(entity_system.handles)
         delete(entity_system.entities)
+        delete(entity_system.prev_entities)
 
         entity_system^ = {}
     }
@@ -131,6 +137,7 @@ entity_system_add :: proc(entity_system: ^Entity_System, entity: $T) -> (handle:
 
     append(&entity_system.handles, handle)
     append(&entity_system.entities, entity)
+    append(&entity_system.prev_entities, entity)
 
     entry := &entity_system.sparse_indices[entry_index]
     entry.entity_type = entity_typeid_to_enum(T)
@@ -195,6 +202,7 @@ entity_system_destroy_w_handle_unsafe :: proc(using entity_system: ^Entity_Syste
 
     unordered_remove(&handles, index)
     unordered_remove(&entities, index)
+    unordered_remove(&prev_entities, index)
 
     if index < u32(len(handles)) {
         re_entry_index := handles[index].index
@@ -275,31 +283,52 @@ entity_system_get :: proc(entity_system: ^Entity_System, handle: Entity_Handle, 
 }
 
 entity_system_update :: proc(entity_system: ^Entity_System, dt: f32) {
-    // Simulation
-
-    // Collisions
-    
+    mem.copy(raw_data(entity_system.prev_entities), raw_data(entity_system.entities), len(entity_system.entities) * size_of(Entity))
 }
 
-entity_system_render :: proc(entity_system: ^Entity_System) {
+entity_system_render :: proc(entity_system: ^Entity_System, alpha: f32) {
     for i in 0..<len(entity_system.entities) {
-        entity_base := cast(^Entity_Base)&entity_system.entities[i]
-        if entity_base.hp <= 0 {
-            continue
-        }
+        curr_entity := transmute(^Entity_Base)&entity_system.entities[i]
+        prev_entity := transmute(^Entity_Base)&entity_system.prev_entities[i]
 
-        w := f32(entity_base.texture.width)
-        h := f32(entity_base.texture.height)
-        sx := f32(entity_base.scale.x)
-        sy := f32(entity_base.scale.y)
+        entity := curr_entity^
+        entity.position = lerp(prev_entity.position, entity.position, alpha)
+        entity.rotation = lerp(prev_entity.rotation, entity.rotation, alpha)
+        entity.scale = lerp(prev_entity.scale, entity.scale, alpha)
+
+        w := f32(entity.texture.width)
+        h := f32(entity.texture.height)
+        sx := f32(entity.scale.x)
+        sy := f32(entity.scale.y)
         
         rl.DrawTexturePro(
-            texture = entity_base.texture,
+            texture = entity.texture,
             source = { 0, 0, w, h },
-            dest = { entity_base.position.x, entity_base.position.y, w * sx, h * sy },
+            dest = { entity.position.x, entity.position.y, w * sx, h * sy },
             origin = vec2(w, h) * 0.5,
-            rotation = degrees(entity_base.rotation),
+            rotation = degrees(entity.rotation),
             tint = rl.WHITE
         )
     }
+
+    // for i in 0..<len(entity_system.entities) {
+    //     entity_base := cast(^Entity_Base)&entity_system.entities[i]
+    //     if entity_base.hp <= 0 {
+    //         continue
+    //     }
+
+    //     w := f32(entity_base.texture.width)
+    //     h := f32(entity_base.texture.height)
+    //     sx := f32(entity_base.scale.x)
+    //     sy := f32(entity_base.scale.y)
+        
+    //     rl.DrawTexturePro(
+    //         texture = entity_base.texture,
+    //         source = { 0, 0, w, h },
+    //         dest = { entity_base.position.x, entity_base.position.y, w * sx, h * sy },
+    //         origin = vec2(w, h) * 0.5,
+    //         rotation = degrees(entity_base.rotation),
+    //         tint = rl.WHITE
+    //     )
+    // }
 }

@@ -94,13 +94,13 @@ game_update :: proc(dt: f32) {
         dir.x += 1;
     }
 
+    entity_system_update(&game_state.entity_system, dt)
+
     player := entity_system_get(&game_state.entity_system, game_state.player_handle, Entity_Player)
     player.position += speed * dir * dt
     if lensqr(dir) > 0 {
         player.rotation = angle(dir)
     }
-
-    entity_system_update(&game_state.entity_system, dt)
 
     if rl.IsMouseButtonDown(.LEFT) {
         game_state.fire_timer += dt
@@ -278,8 +278,8 @@ get_spawn_position :: proc(player: ^Entity_Player, min, max: f32) -> Vec2 {
 }
 
 @(export)
-game_render :: proc() {
-    entity_system_render(&game_state.entity_system)
+game_render :: proc(alpha: f32) {
+    entity_system_render(&game_state.entity_system, alpha)
 
     rl.DrawText(rl.TextFormat("Enitities: %d", i32(len(game_state.entity_system.entities))), 10, 40, 16, rl.WHITE)
 }
