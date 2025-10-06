@@ -163,7 +163,7 @@ game_update :: proc(dt: f32) {
                 attack = 1,
                 defense = 1,
 
-                position = player.position, // @fixme for test
+                position = get_spawn_position(player, 100, 300),
                 rotation = 0,
                 scale = vec2(1),
                 radius = f32(texture.width) * 0.65,
@@ -184,7 +184,7 @@ game_update :: proc(dt: f32) {
     for seeker in seekers_iter->next() {
         target := entity_system_get(&game_state.entity_system, seeker.target, Entity_Player)
         if target != nil {
-            seeker.velocity = norm(target.position - seeker.position + vec2(math.F32_EPSILON)) * 10 // @fixme for test
+            seeker.velocity = norm(target.position - seeker.position + vec2(math.F32_EPSILON)) * 100 // @fixme for test
             seeker.rotation = angle(seeker.velocity)
             seeker.position = seeker.position + seeker.velocity * dt
         }
@@ -211,6 +211,12 @@ game_update :: proc(dt: f32) {
     if rl.IsKeyPressed(.GRAVE) {
         fmt.printf("entity_system.entities_by_type: %v\n", game_state.entity_system.entities_by_type)
     }
+}
+
+get_spawn_position :: proc(player: ^Entity_Player, min, max: f32) -> Vec2 {
+    // base := transmute(^Entity_Base)player
+
+    return player.position + vec2_from_angle(rand.float32_range(0, math.PI * 2), rand.float32_range(min, max))
 }
 
 @(export)
