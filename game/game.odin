@@ -217,15 +217,46 @@ game_update :: proc(dt: f32) {
         }
     }
 
+    wanderers_iter := entity_system_iter_by_type(&game_state.entity_system, Entity_Wanderer)
+    for wanderer in wanderers_iter->next() {
+        dir := rand.float32_range(-0.3, 0.3)
+        wanderer.velocity = lerp(wanderer.velocity, vec2_from_angle(dir) * 30, 3 * dt)
+        wanderer.rotation = angle(wanderer.velocity)
+        wanderer.position = wanderer.position + wanderer.velocity * dt
+    }
+
     bullets_iter = entity_system_iter_by_type(&game_state.entity_system, Entity_Bullet)
     for bullet in bullets_iter->next() {
+        collided := false
+
         seekers_iter = entity_system_iter_by_type(&game_state.entity_system, Entity_Seeker)
         for seeker in seekers_iter->next() {
             dist := distsqr(bullet.position, seeker.position)
             if dist <= (bullet.radius + seeker.radius) * (bullet.radius + seeker.radius) {
+                collided = true
+
                 seeker.hp -= bullet.attack
                 if seeker.hp <= 0 {
                     entity_system_destroy(&game_state.entity_system, seeker)
+                }
+                entity_system_destroy(&game_state.entity_system, bullet)
+                break
+            }
+        }
+
+        if collided {
+            continue
+        }
+
+        wanderers_iter = entity_system_iter_by_type(&game_state.entity_system, Entity_Wanderer)
+        for wanderer in wanderers_iter->next() {
+            dist := distsqr(bullet.position, wanderer.position)
+            if dist <= (bullet.radius + wanderer.radius) * (bullet.radius + wanderer.radius) {
+                collided = true
+
+                wanderer.hp -= bullet.attack
+                if wanderer.hp <= 0 {
+                    entity_system_destroy(&game_state.entity_system, wanderer)
                 }
                 entity_system_destroy(&game_state.entity_system, bullet)
                 break

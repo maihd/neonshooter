@@ -1,5 +1,6 @@
 package neonshooter
 
+import "core:math/rand"
 import "core:strings"
 import "core:c/libc"
 import "core:path/slashpath"
