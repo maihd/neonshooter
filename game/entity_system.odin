@@ -13,8 +13,7 @@ Entity_System :: struct {
     next_index: u32,    // This index point to elements of sparse_indices
 
     allocator: mem.Allocator,
-    entities_by_type: map[typeid]Entity_Iterator_Entry,
-    destroying_handles: [dynamic]Entity_Handle,
+    entities_by_type: [Entity_Type]Entity_Iterator_Entry,
 }
 
 Entity_Iterator :: struct($T: typeid) 
@@ -35,7 +34,7 @@ Sparse_Index :: struct {
     generation: u32,
     index_or_next: u32,     // This index point to elements of entities/handles
 
-    entity_type: typeid,    // Type of entity
+    entity_type: Entity_Type,    // Type of entity
     prev_by_type: u32,      // Previous entry index (same entity type)
     next_by_type: u32,      // Next entry index (same entity type)
 }
@@ -55,14 +54,14 @@ entity_system_init :: proc(entity_system: ^Entity_System, allocator := context.a
     entity_system.next_index = 0
     entity_system.allocator = allocator
 
-    entity_system.entities_by_type.allocator = allocator
-    entity_system.destroying_handles.allocator = allocator
+    for &iter in entity_system.entities_by_type {
+        iter.head = bits.U32_MAX
+        iter.tail = bits.U32_MAX
+    }
 }
 
 entity_system_deinit :: proc(entity_system: ^Entity_System) {
     if entity_system != nil {
-        delete(entity_system.destroying_handles)
-        delete(entity_system.entities_by_type)
         delete(entity_system.sparse_indices)
         delete(entity_system.handles)
         delete(entity_system.entities)
@@ -72,13 +71,12 @@ entity_system_deinit :: proc(entity_system: ^Entity_System) {
 }
 
 entity_system_iter_by_type :: proc(entity_system: ^Entity_System, $T: typeid) -> Entity_Iterator(T) {
-    iter_entry, ok := entity_system.entities_by_type[T]
-    current := ok ? iter_entry.head : bits.U32_MAX
+    iter_entry := entity_system.entities_by_type[entity_typeid_to_enum(T)]
 
     return Entity_Iterator(T) {
         entity_system = entity_system,
         entities = entity_system.entities[:],
-        current = current,
+        current = iter_entry.head,
         next = proc(self: ^Entity_Iterator(T)) -> (^T, bool) {
             for self.current < u32(len(self.entity_system.sparse_indices)) {
                 entry := self.entity_system.sparse_indices[self.current]
@@ -135,16 +133,9 @@ entity_system_add :: proc(entity_system: ^Entity_System, entity: $T) -> (handle:
     append(&entity_system.entities, entity)
 
     entry := &entity_system.sparse_indices[entry_index]
-    entry.entity_type = T
+    entry.entity_type = entity_typeid_to_enum(T)
 
-    iter_entry, ok := &entity_system.entities_by_type[T]
-    if !ok {
-        entity_system.entities_by_type[T] = {
-            head = bits.U32_MAX,
-            tail = bits.U32_MAX,
-        }
-        iter_entry = &entity_system.entities_by_type[T]
-    }
+    iter_entry := &entity_system.entities_by_type[entry.entity_type]
 
     if iter_entry.tail < u32(len(entity_system.sparse_indices)) {
         last_entry := &entity_system.sparse_indices[iter_entry.tail]

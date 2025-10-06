@@ -1,4 +1,4 @@
-package gen_assets_path
+package scripts
 
 import "core:path/filepath"
 import "core:slice"

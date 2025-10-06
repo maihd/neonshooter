@@ -53,12 +53,3 @@ Entity_Seeker :: struct {
     velocity: Vec2,
     target: Entity_Handle,
 }
-
-// @any_entity
-Entity :: union {
-    Entity_Base,
-    Entity_Player,
-    Entity_Bullet,
-    Entity_Seeker,
-    Entity_Wanderer,
-}
