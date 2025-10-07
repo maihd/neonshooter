@@ -6,6 +6,11 @@ import "base:runtime"
 import "core:fmt"
 import rl "vendor:raylib"
 
+Game_Input :: struct {
+    fire_button_down: bool,
+    move_direction: Vec2,
+}
+
 Game_State :: struct {
     entity_system: Entity_System,
 
@@ -21,6 +26,13 @@ Game_State :: struct {
     spawn_wanderer_rate: int,
     spawn_wanderer_timer: f32,
     spawn_wanderer_interval: f32,
+
+    // Input
+    tick_input: Game_Input,
+
+    // Game loop and timer
+    accumulator: f32,
+    fixed_timestep: f32,
 }
 
 game_state: ^Game_State
@@ -41,6 +53,9 @@ game_init :: proc() {
     game_state.spawn_wanderer_rate = 30
     game_state.spawn_wanderer_timer = 0.0
     game_state.spawn_wanderer_interval = 1.0
+
+    game_state.fixed_timestep = 1.0 / 60.0
+    game_state.accumulator = 0
 
     entity_system_init(&game_state.entity_system)
 
@@ -74,10 +89,9 @@ game_deinit :: proc() {
 
 @(export)
 game_update :: proc(dt: f32) {
-    speed := f32(300)
+    // Update input
 
     dir: Vec2;
-
     if rl.IsKeyDown(.W) || rl.IsKeyDown(.UP) {
         dir.y -= 1;
     }
@@ -94,8 +108,34 @@ game_update :: proc(dt: f32) {
         dir.x += 1;
     }
 
-    entity_system_update(&game_state.entity_system, dt)
+    game_state.tick_input.move_direction = dir
+    game_state.tick_input.fire_button_down = rl.IsMouseButtonDown(.LEFT)
 
+    // Ticking the game
+
+    game_state.accumulator += dt
+    num_ticks := int(math.floor(game_state.accumulator / game_state.fixed_timestep))
+    game_state.accumulator -= f32(num_ticks) * game_state.fixed_timestep
+
+    if num_ticks > 0 {
+        game_state.tick_input.move_direction /= f32(num_ticks)
+
+        for i in 0..<num_ticks {
+            game_tick(game_state.fixed_timestep)
+        }
+
+        game_state.tick_input.move_direction = vec2(0)
+        game_state.tick_input.fire_button_down = false
+    }
+}
+
+@(private = "file")
+game_tick :: proc(dt: f32) {
+    speed := f32(300)
+
+    entity_system_update(&game_state.entity_system, dt)
+    
+    dir := game_state.tick_input.move_direction;
     player := entity_system_get(&game_state.entity_system, game_state.player_handle, Entity_Player)
     player.position += speed * dir * dt
     if lensqr(dir) > 0 {
@@ -278,7 +318,8 @@ get_spawn_position :: proc(player: ^Entity_Player, min, max: f32) -> Vec2 {
 }
 
 @(export)
-game_render :: proc(alpha: f32) {
+game_render :: proc() {
+    alpha := game_state.accumulator / game_state.fixed_timestep
     entity_system_render(&game_state.entity_system, alpha)
 
     rl.DrawText(rl.TextFormat("Enitities: %d", i32(len(game_state.entity_system.entities))), 10, 40, 16, rl.WHITE)
