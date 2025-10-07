@@ -11,7 +11,8 @@ main :: proc() {
     defer game.game_deinit()
 
     for !rl.WindowShouldClose() {
-        game.game_update()
+        delta := rl.GetFrameTime()
+        game.game_update(delta)
 
         rl.BeginDrawing()
         defer rl.EndDrawing()
