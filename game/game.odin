@@ -27,6 +27,8 @@ Game_State :: struct {
     spawn_wanderer_timer: f32,
     spawn_wanderer_interval: f32,
 
+    particle_system: Particle_System,
+
     // Input
     tick_input: Game_Input,
 
@@ -65,6 +67,7 @@ game_init :: proc() {
     game_state.accumulator = 0
 
     entity_system_init(&game_state.entity_system)
+    particle_system_init(&game_state.particle_system)
 
     // Preload
     load_all_textures()
@@ -89,6 +92,7 @@ game_deinit :: proc() {
     defer free(game_state)
 
     if game_state != nil {
+        particle_system_deinit(&game_state.particle_system)
         entity_system_deinit(&game_state.entity_system)
         unload_texture(Assets_Art_Player_Png)
     }
@@ -146,6 +150,7 @@ game_tick :: proc(dt: f32) {
     speed := f32(300)
 
     entity_system_update(&game_state.entity_system, dt)
+    particle_system_update(&game_state.particle_system, dt)
     
     dir := game_state.tick_input.move_direction;
     player := entity_system_get(&game_state.entity_system, game_state.player_handle, Entity_Player)
@@ -293,6 +298,22 @@ game_tick :: proc(dt: f32) {
 
                 seeker.hp -= bullet.attack
                 if seeker.hp <= 0 {
+                    for i in 0..<40 {
+                        dir_angle := rand.float32() * math.PI * 2
+                        paritcle := Particle {
+                            texture = load_texture(Assets_Art_Laser_Png),
+                            position = seeker.position,
+                            velocity = vec2_from_angle(dir_angle, 300),
+                            rotation = dir_angle,
+                            scale = vec2(1),
+                            decay = 0,
+                            duration = 0.5,
+                            life = 0.5,
+                            tint = rl.WHITE,
+                        }
+                        particle_system_spawn(&game_state.particle_system, paritcle)
+                    }
+
                     entity_system_destroy(&game_state.entity_system, seeker)
                 }
                 entity_system_destroy(&game_state.entity_system, bullet)
@@ -332,9 +353,6 @@ game_render :: proc() {
     alpha := game_state.accumulator / game_state.fixed_timestep
     entity_system_render(&game_state.entity_system, alpha)
 
-    rl.DrawText(rl.TextFormat("Enitities: %d", i32(len(game_state.entity_system.entities))), 10, 40, 16, rl.WHITE)
-    rl.DrawText("Press ` to toggle hitbox draw debug", 10, 70, 16, rl.WHITE)
-
     if .Hitbox in game_state.debug_flags {
         for &curr_entity, i in game_state.entity_system.entities {
             prev_entity := &game_state.entity_system.prev_entities[i]
@@ -346,6 +364,11 @@ game_render :: proc() {
             rl.DrawCircleLinesV(position, curr_base.radius, { 255, 255, 255, 156 })
         }
     }
+
+    particle_system_render(&game_state.particle_system, alpha)
+
+    rl.DrawText(rl.TextFormat("Enitities: %d", i32(len(game_state.entity_system.entities))), 10, 40, 16, rl.WHITE)
+    rl.DrawText("Press ` to toggle hitbox draw debug", 10, 70, 16, rl.WHITE)
 }
 
 @(export)
