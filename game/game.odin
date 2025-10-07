@@ -33,6 +33,13 @@ Game_State :: struct {
     // Game loop and timer
     accumulator: f32,
     fixed_timestep: f32,
+
+    // Debug
+    debug_flags: bit_set[Debug_Flags]
+}
+
+Debug_Flags :: enum {
+    Hitbox,
 }
 
 game_state: ^Game_State
@@ -89,6 +96,11 @@ game_deinit :: proc() {
 
 @(export)
 game_update :: proc(dt: f32) {
+    // Hot keys
+    if rl.IsKeyPressed(.GRAVE) {
+        game_state.debug_flags ~= { .Hitbox }
+    }
+
     // Update input
 
     dir: Vec2;
@@ -154,14 +166,17 @@ game_tick :: proc(dt: f32) {
             bullet_pos1 := player.position + vec2_from_angle(bullet_dir_angle - 0.15) * (player.radius + 10)
             bullet_pos2 := player.position + vec2_from_angle(bullet_dir_angle + 0.15) * (player.radius + 10)
 
+            texture := load_texture(Assets_Art_Bullet_Png)
+
             bullet1 := Entity_Bullet {
                 position = bullet_pos1,
-                texture = load_texture(Assets_Art_Bullet_Png),
+                texture = texture,
                 rotation = bullet_dir_angle,
                 scale = vec2(1),
                 hp = 1,
                 attack = 1,
-                velocity = bullet_vel
+                velocity = bullet_vel,
+                radius = f32(texture.width) * 0.2
             }
             entity_system_add(&game_state.entity_system, bullet1)
 
@@ -172,7 +187,8 @@ game_tick :: proc(dt: f32) {
                 scale = vec2(1),
                 hp = 1,
                 attack = 1,
-                velocity = bullet_vel
+                velocity = bullet_vel,
+                radius = f32(texture.width) * 0.2
             }
             entity_system_add(&game_state.entity_system, bullet2)
         }
@@ -303,12 +319,6 @@ game_tick :: proc(dt: f32) {
             }
         }
     }
-
-    // entity_system_detroy_waiting_handles(&game_state.entity_system)
-
-    if rl.IsKeyPressed(.GRAVE) {
-        fmt.printf("entity_system.entities_by_type: %v\n", game_state.entity_system.entities_by_type)
-    }
 }
 
 get_spawn_position :: proc(player: ^Entity_Player, min, max: f32) -> Vec2 {
@@ -323,6 +333,19 @@ game_render :: proc() {
     entity_system_render(&game_state.entity_system, alpha)
 
     rl.DrawText(rl.TextFormat("Enitities: %d", i32(len(game_state.entity_system.entities))), 10, 40, 16, rl.WHITE)
+    rl.DrawText("Press ` to toggle hitbox draw debug", 10, 70, 16, rl.WHITE)
+
+    if .Hitbox in game_state.debug_flags {
+        for &curr_entity, i in game_state.entity_system.entities {
+            prev_entity := &game_state.entity_system.prev_entities[i]
+
+            curr_base := transmute(^Entity_Base)&curr_entity
+            prev_base := transmute(^Entity_Base)prev_entity
+
+            position := lerp(prev_base.position, curr_base.position, alpha)
+            rl.DrawCircleLinesV(position, curr_base.radius, { 255, 255, 255, 156 })
+        }
+    }
 }
 
 @(export)
