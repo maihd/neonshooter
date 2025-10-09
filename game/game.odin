@@ -209,7 +209,7 @@ game_tick :: proc(dt: f32) {
             || bullet.position.x > f32(rl.GetScreenWidth()) \
             || bullet.position.y > f32(rl.GetScreenHeight()) 
         {
-            entity_system_destroy(&game_state.entity_system, bullet)
+            explose_bullet(bullet)
         }
     }
 
@@ -298,33 +298,9 @@ game_tick :: proc(dt: f32) {
 
                 seeker.hp -= bullet.attack
                 if seeker.hp <= 0 {
-                    texture := load_texture(Assets_Art_Laser_Png)
-
-                    hue1 := rand.float32_range(0.0, 6.0)
-                    hue2 := math.mod(hue1 + rand.float32_range(0.0, 2.0), 6.0)
-
-                    color1 := vec4_hsv(hue1, 0.5, 1.0)
-                    color2 := vec4_hsv(hue2, 0.5, 1.0)
-
-                    for i in 0..<120 {
-                        speed = rand.float32_range(0.2, 1.0) * 640
-                        dir_angle := rand.float32() * math.PI * 2
-                        paritcle := Particle {
-                            texture = texture,
-                            position = seeker.position,
-                            velocity = vec2_from_angle(dir_angle, speed),
-                            rotation = dir_angle,
-                            scale = vec2(1),
-                            decay = 0,
-                            duration = 1,
-                            life = 1,
-                            tint = color_from_vec4(lerp(color1, color2, rand.float32())),
-                        }
-                        particle_system_spawn(&game_state.particle_system, paritcle)
-                    }
-
-                    entity_system_destroy(&game_state.entity_system, seeker)
+                    explose_seeker(seeker)
                 }
+
                 entity_system_destroy(&game_state.entity_system, bullet)
                 break
             }
@@ -342,13 +318,103 @@ game_tick :: proc(dt: f32) {
 
                 wanderer.hp -= bullet.attack
                 if wanderer.hp <= 0 {
-                    entity_system_destroy(&game_state.entity_system, wanderer)
+                    explose_wanderer(wanderer)
                 }
                 entity_system_destroy(&game_state.entity_system, bullet)
                 break
             }
         }
     }
+}
+
+@(private = "file")
+explose_seeker :: proc(seeker: ^Entity_Seeker) {
+    texture := load_texture(Assets_Art_Laser_Png)
+
+    hue1 := rand.float32_range(0.0, 6.0)
+    hue2 := math.mod(hue1 + rand.float32_range(0.0, 2.0), 6.0)
+
+    color1 := vec4_hsv(hue1, 0.5, 1.0)
+    color2 := vec4_hsv(hue2, 0.5, 1.0)
+
+    for i in 0..<120 {
+        speed := rand.float32_range(0.2, 1.0) * 640
+        dir_angle := rand.float32() * math.PI * 2
+        paritcle := Particle {
+            texture = texture,
+            position = seeker.position,
+            velocity = vec2_from_angle(dir_angle, speed),
+            rotation = dir_angle,
+            scale = vec2(1),
+            decay = 0,
+            duration = 1,
+            life = 1,
+            tint = color_from_vec4(lerp(color1, color2, rand.float32())),
+        }
+        particle_system_spawn(&game_state.particle_system, paritcle)
+    }
+
+    entity_system_destroy(&game_state.entity_system, seeker)
+}
+
+@(private = "file")
+explose_wanderer :: proc(wanderer: ^Entity_Wanderer) {
+    texture := load_texture(Assets_Art_Laser_Png)
+
+    hue1 := rand.float32_range(0.0, 6.0)
+    hue2 := math.mod(hue1 + rand.float32_range(0.0, 2.0), 6.0)
+
+    color1 := vec4_hsv(hue1, 0.5, 1.0)
+    color2 := vec4_hsv(hue2, 0.5, 1.0)
+
+    for i in 0..<120 {
+        speed := rand.float32_range(0.2, 1.0) * 640
+        dir_angle := rand.float32() * math.PI * 2
+        paritcle := Particle {
+            texture = texture,
+            position = wanderer.position,
+            velocity = vec2_from_angle(dir_angle, speed),
+            rotation = dir_angle,
+            scale = vec2(1),
+            decay = 0,
+            duration = 1,
+            life = 1,
+            tint = color_from_vec4(lerp(color1, color2, rand.float32())),
+        }
+        particle_system_spawn(&game_state.particle_system, paritcle)
+    }
+
+    entity_system_destroy(&game_state.entity_system, wanderer)
+}
+
+@(private = "file")
+explose_bullet :: proc(bullet: ^Entity_Bullet) {
+    texture := load_texture(Assets_Art_Laser_Png)
+
+    hue1 := rand.float32_range(0.0, 6.0)
+    hue2 := math.mod(hue1 + rand.float32_range(0.0, 2.0), 6.0)
+
+    color1 := vec4_hsv(hue1, 0.5, 1.0)
+    color2 := vec4_hsv(hue2, 0.5, 1.0)
+
+    for i in 0..<120 {
+        speed := rand.float32_range(0.2, 1.0) * 640
+        dir_angle := rand.float32() * math.PI * 2
+        paritcle := Particle {
+            texture = texture,
+            position = bullet.position,
+            velocity = vec2_from_angle(dir_angle, speed),
+            rotation = dir_angle,
+            scale = vec2(1),
+            decay = 0,
+            duration = 1,
+            life = 1,
+            tint = color_from_vec4(lerp(color1, color2, rand.float32())),
+        }
+        particle_system_spawn(&game_state.particle_system, paritcle)
+    }
+
+    entity_system_destroy(&game_state.entity_system, bullet)
 }
 
 get_spawn_position :: proc(player: ^Entity_Player, min, max: f32) -> Vec2 {

@@ -1,5 +1,6 @@
 package neonshooter_game
 
+import "core:math"
 import "core:mem"
 import "core:fmt"
 import rl "vendor:raylib"
@@ -60,6 +61,27 @@ particle_system_update :: proc(particle_system: ^Particle_System, dt: f32) {
         particle.scale = particle.life / particle.duration
         particle.rotation = angle(particle.velocity)
         particle.tint.a = u8((particle.life / particle.duration) * 255)
+
+
+        if particle.position.x < 0 {
+            particle.position.x = 0
+            particle.velocity.x = abs(particle.velocity.x)
+        }
+
+        if particle.position.x > f32(rl.GetScreenWidth()) {
+            particle.position.x = f32(rl.GetScreenWidth())
+            particle.velocity.x = -abs(particle.velocity.x)
+        }
+
+        if particle.position.y < 0 { 
+            particle.position.y = 0
+            particle.velocity.y = abs(particle.velocity.y)
+        } 
+        
+        if particle.position.y > f32(rl.GetScreenHeight()) {
+            particle.position.y = f32(rl.GetScreenHeight())
+            particle.velocity.y = -abs(particle.velocity.y)
+        }
     }
 
     #reverse for i in particle_system.removing_particles {
