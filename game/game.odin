@@ -18,6 +18,8 @@ Game_State :: struct {
 
     player_handle: Entity_Handle,
 
+    player_life: int, 
+
     fire_timer: f32,
     fire_rate: f32,
 
@@ -65,6 +67,8 @@ game_init :: proc() {
         zoom = 1.0
     }
 
+    game_state.player_life = 3
+
     game_state.fire_rate = 0.1
     game_state.fire_timer = 0.0
 
@@ -93,7 +97,9 @@ game_init :: proc() {
             rotation = 0,
             scale = {1, 1},
             radius = f32(player_texture.width),
-            hp = 100
+            hp = 10,
+            attack = 1,
+            defense = 0,
         }
         entity_handle := entity_system_add(&game_state.entity_system, player)
         game_state.player_handle = entity_handle
@@ -222,7 +228,7 @@ game_tick :: proc(dt: f32) {
                 rotation = bullet_dir_angle,
                 scale = vec2(1),
                 hp = 1,
-                attack = 1,
+                attack = player.attack,
                 velocity = bullet_vel,
                 radius = f32(texture.width) * 0.2
             }
@@ -234,7 +240,7 @@ game_tick :: proc(dt: f32) {
                 rotation = bullet_dir_angle,
                 scale = vec2(1),
                 hp = 1,
-                attack = 1,
+                attack = player.attack,
                 velocity = bullet_vel,
                 radius = f32(texture.width) * 0.2
             }
@@ -264,7 +270,7 @@ game_tick :: proc(dt: f32) {
             texture := load_texture(Assets_Art_Seeker_Png)
             seeker := Entity_Seeker {
                 hp = 10,
-                attack = 1,
+                attack = 10,
                 defense = 1,
 
                 position = get_spawn_position(player, 100, 300),
@@ -292,7 +298,7 @@ game_tick :: proc(dt: f32) {
             texture := load_texture(Assets_Art_Wanderer_Png)
             wanderer := Entity_Wanderer {
                 hp = 10,
-                attack = 1,
+                attack = 10,
                 defense = 1,
 
                 position = get_spawn_position(player, 100, 300),
@@ -368,6 +374,49 @@ game_tick :: proc(dt: f32) {
             }
         }
     }
+
+    check_player_collisions()
+}
+
+@(private = "file")
+check_player_collisions :: proc() {
+    player := entity_system_get(&game_state.entity_system, game_state.player_handle, Entity_Player)
+    if player != nil {
+        seekers_iter := entity_system_iter_by_type(&game_state.entity_system, Entity_Seeker)
+        for seeker in seekers_iter->next() {
+            dist := distsqr(player.position, seeker.position)
+            collided := dist <= (player.radius + seeker.radius) * (player.radius + seeker.radius)
+            if collided {
+                player.hp -= math.min(1, seeker.attack - player.defense)
+                explose_seeker(seeker)
+                
+                if player.hp <= 0 {
+                    explode_player()
+                    return
+                }
+            }
+        }
+
+        wanderers_iter := entity_system_iter_by_type(&game_state.entity_system, Entity_Wanderer)
+        for wanderer in wanderers_iter->next() {
+            dist := distsqr(player.position, wanderer.position)
+            collided := dist <= (player.radius + wanderer.radius) * (player.radius + wanderer.radius)
+            if collided {
+                player.hp -= math.min(1, wanderer.attack - player.defense)
+                explose_wanderer(wanderer)
+
+                if player.hp <= 0 {
+                    explode_player()
+                    return
+                }
+            }
+        }
+    }
+}
+
+@(private = "file")
+explode_player :: proc() {
+    fmt.printf("Explode player...\n")
 }
 
 @(private = "file")

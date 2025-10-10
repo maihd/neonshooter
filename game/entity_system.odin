@@ -247,7 +247,12 @@ entity_system_get :: proc(entity_system: ^Entity_System, handle: Entity_Handle, 
     entity := &entity_system.entities[entry.index_or_next]
     entity_base := transmute(^Entity_Base)entity
 
-    return entry.generation == handle.generation ? transmute(^T)entity_base : nil
+    if entry.generation == handle.generation {
+        assert(!GAME_DEBUGGING || entry.entity_type == entity_typeid_to_enum(T))
+        return transmute(^T)entity_base
+    }
+
+    return nil
 }
 
 entity_system_update :: proc(entity_system: ^Entity_System, dt: f32) {
