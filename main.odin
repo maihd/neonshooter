@@ -1,5 +1,6 @@
 package neonshooter
 
+import "core:mem"
 import "base:runtime"
 import "core:math"
 import "core:math/rand"
@@ -12,6 +13,20 @@ import "core:dynlib"
 import rl "vendor:raylib"
 
 main :: proc() {
+    track: mem.Tracking_Allocator
+    mem.tracking_allocator_init(&track, context.allocator)
+    context.allocator = mem.tracking_allocator(&track)
+
+    defer {
+        if len(track.allocation_map) > 0 {
+            fmt.eprintf("=== %v allocations not freed: ===\n", len(track.allocation_map))
+            for _, entry in track.allocation_map {
+                fmt.eprintf("- %v bytes @ %v\n", entry.size, entry.location)
+            }
+        }
+        mem.tracking_allocator_destroy(&track)
+    }
+
     rl.SetConfigFlags({ .VSYNC_HINT })
 
     rl.InitWindow(800, 600, "Neon Shooter - Odin + Raylib");
@@ -50,12 +65,10 @@ main :: proc() {
         reload := game_api.dll_time != dll_time
         if reload {
             new_api := load_game_api(game_api.lib_path, game_api_version) or_continue
-            memory := game_api.get_memory()
+            new_api.hot_reload(game_api.get_memory())
 
             unload_game_api(game_api)
-
             game_api = new_api
-            game_api.hot_reload(memory)
 
             game_api_version += 1
         }

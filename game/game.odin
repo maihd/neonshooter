@@ -452,7 +452,7 @@ explose_bullet :: proc(bullet: ^Entity_Bullet) {
             decay = 0,
             duration = 1,
             life = 1,
-            tint = color_from_vec4(lerp(color1, color2, rand.float32())),
+            tint = color_from_vec4({ 0.6, 1.0, 1.0, 1.0 }),
         }
         particle_system_spawn(&game_state.particle_system, paritcle)
     }
@@ -461,8 +461,6 @@ explose_bullet :: proc(bullet: ^Entity_Bullet) {
 }
 
 get_spawn_position :: proc(player: ^Entity_Player, min, max: f32) -> Vec2 {
-    // base := transmute(^Entity_Base)player
-
     return player.position + vec2_from_angle(rand.float32_range(0, math.PI * 2), rand.float32_range(min, max))
 }
 
@@ -495,19 +493,22 @@ game_render :: proc() {
     rl.DrawText("Press ` to toggle hitbox draw debug", 10, 130, 16, rl.WHITE)
 }
 
-@(export)
-game_memory :: proc() -> runtime.Raw_Any {
-    fmt.printf("Return game_state to main program...\n")
+// Handle hot reloading
+when GAME_DEBUGGING {
+    @(export)
+    game_memory :: proc() -> runtime.Raw_Any {
+        fmt.printf("Return game_state to main program...\n")
 
-    // fmt.printf("game_state: %p\n", game_state)
-    return runtime.Raw_Any { data = game_state, id = type_of(game_state) }
-}
+        // fmt.printf("game_state: %p\n", game_state)
+        return runtime.Raw_Any { data = game_state, id = type_of(game_state) }
+    }
 
-@(export)
-game_hot_reload :: proc(memory: runtime.Raw_Any) {
-    fmt.printf("Reload game_state from main program...\n")
-    // fmt.printf("raw_any.type: %v\n", memory.id)
-    // fmt.printf("raw_any.data: %v\n", memory.data)
+    @(export)
+    game_hot_reload :: proc(memory: runtime.Raw_Any) {
+        fmt.printf("Reload game_state from main program...\n")
+        // fmt.printf("raw_any.type: %v\n", memory.id)
+        // fmt.printf("raw_any.data: %v\n", memory.data)
 
-    game_state = transmute(^Game_State)memory.data
+        game_state = transmute(^Game_State)memory.data
+    }
 }

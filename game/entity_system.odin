@@ -236,38 +236,6 @@ entity_system_destroy_w_handle_unsafe :: proc(using entity_system: ^Entity_Syste
     entry.next_by_type = bits.U32_MAX
 }
 
-// entity_system_mark_destroy :: proc(entity_system: ^Entity_System, entity: $T) 
-//     where intrinsics.type_is_subtype_of(T, Entity_Base)
-// {
-//     index := mem.ptr_sub(transmute(^Entity)entity, transmute(^Entity)raw_data(entity_system.entities))
-//     if index < 0 || index >= len(entity_system.entities) {
-//         return
-//     }
-
-//     handle := entity_system.handles[index]
-//     entity_system_mark_destroy_w_handle(entity_system, handle)
-// }
-
-// entity_system_mark_destroy_w_handle :: proc(entity_system: ^Entity_System, handle: Entity_Handle) {
-//     if handle.index >= u32(len(entity_system.sparse_indices)) {
-//         return
-//     }
-
-//     entry := entity_system.sparse_indices[handle.index]
-//     if entry.generation != handle.generation {
-//         return
-//     }
-
-//     append(&entity_system.destroying_handles, handle)
-// }
-
-// entity_system_detroy_waiting_handles :: proc(entity_system: ^Entity_System) {
-//     for handle in entity_system.destroying_handles {
-//         entity_system_destroy_w_handle_unsafe(entity_system, handle)
-//     }
-//     clear(&entity_system.destroying_handles)
-// }
-
 entity_system_get :: proc(entity_system: ^Entity_System, handle: Entity_Handle, $T: typeid) -> ^T
     where intrinsics.type_is_subtype_of(T, Entity_Base)
 {
@@ -310,25 +278,4 @@ entity_system_render :: proc(entity_system: ^Entity_System, alpha: f32) {
             tint = rl.WHITE
         )
     }
-
-    // for i in 0..<len(entity_system.entities) {
-    //     entity_base := cast(^Entity_Base)&entity_system.entities[i]
-    //     if entity_base.hp <= 0 {
-    //         continue
-    //     }
-
-    //     w := f32(entity_base.texture.width)
-    //     h := f32(entity_base.texture.height)
-    //     sx := f32(entity_base.scale.x)
-    //     sy := f32(entity_base.scale.y)
-        
-    //     rl.DrawTexturePro(
-    //         texture = entity_base.texture,
-    //         source = { 0, 0, w, h },
-    //         dest = { entity_base.position.x, entity_base.position.y, w * sx, h * sy },
-    //         origin = vec2(w, h) * 0.5,
-    //         rotation = degrees(entity_base.rotation),
-    //         tint = rl.WHITE
-    //     )
-    // }
 }
