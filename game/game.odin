@@ -6,6 +6,8 @@ import "base:runtime"
 import "core:fmt"
 import rl "vendor:raylib"
 
+GAME_DEBUGGING :: #config(GAME_DEBUGGING, true)
+
 Game_Input :: struct {
     fire_button_down: bool,
     move_direction: Vec2,
@@ -27,12 +29,16 @@ Game_State :: struct {
     spawn_wanderer_timer: f32,
     spawn_wanderer_interval: f32,
 
+    // Rendering
+    camera: rl.Camera2D,
     particle_system: Particle_System,
 
     // Input
     tick_input: Game_Input,
 
     // Game loop and timer
+    tick_count: int,
+    frame_count: int,
     accumulator: f32,
     fixed_timestep: f32,
 
@@ -50,6 +56,13 @@ game_state: ^Game_State
 game_init :: proc() {
     if game_state == nil {
         game_state = new(Game_State)
+    }
+
+    game_state.camera = rl.Camera2D {
+        target = {},
+        offset = {},
+        rotation = 0.0,
+        zoom = 1.0
     }
 
     game_state.fire_rate = 0.1
@@ -94,12 +107,13 @@ game_deinit :: proc() {
     if game_state != nil {
         particle_system_deinit(&game_state.particle_system)
         entity_system_deinit(&game_state.entity_system)
-        unload_texture(Assets_Art_Player_Png)
     }
 }
 
 @(export)
 game_update :: proc(dt: f32) {
+    game_state.frame_count += 1
+
     // Hot keys
     if rl.IsKeyPressed(.GRAVE) {
         game_state.debug_flags ~= { .Hitbox }
@@ -137,7 +151,16 @@ game_update :: proc(dt: f32) {
         game_state.tick_input.move_direction /= f32(num_ticks)
 
         for i in 0..<num_ticks {
-            game_tick(game_state.fixed_timestep)
+            when GAME_DEBUGGING {
+                can_ticks := rl.IsWindowFocused()
+            } else {
+                can_ticks := true
+            }
+
+            if can_ticks {
+                game_state.tick_count += 1
+                game_tick(game_state.fixed_timestep)
+            }
         }
 
         game_state.tick_input.move_direction = vec2(0)
@@ -152,14 +175,34 @@ game_tick :: proc(dt: f32) {
     entity_system_update(&game_state.entity_system, dt)
     particle_system_update(&game_state.particle_system, dt)
     
-    dir := game_state.tick_input.move_direction;
+    dir := game_state.tick_input.move_direction
+    if lensqr(dir) > 0 {
+        dir = norm(dir)
+    }
+
     player := entity_system_get(&game_state.entity_system, game_state.player_handle, Entity_Player)
     player.position += speed * dir * dt
     if lensqr(dir) > 0 {
         player.rotation = angle(dir)
     }
 
-    if rl.IsMouseButtonDown(.LEFT) {
+    if player.position.x - player.radius < 0 {
+        player.position.x = player.radius
+    }
+
+    if player.position.x + player.radius > f32(rl.GetScreenWidth()) {
+        player.position.x = f32(rl.GetScreenWidth()) - player.radius
+    }
+
+    if player.position.y - player.radius < 0 {
+        player.position.y = player.radius
+    }
+
+    if player.position.y + player.radius > f32(rl.GetScreenHeight()) {
+        player.position.y = f32(rl.GetScreenHeight()) - player.radius
+    }
+
+    if game_state.tick_input.fire_button_down {
         game_state.fire_timer += dt
         if game_state.fire_timer >= game_state.fire_rate {
             game_state.fire_timer -= game_state.fire_rate
@@ -397,7 +440,7 @@ explose_bullet :: proc(bullet: ^Entity_Bullet) {
     color1 := vec4_hsv(hue1, 0.5, 1.0)
     color2 := vec4_hsv(hue2, 0.5, 1.0)
 
-    for i in 0..<120 {
+    for i in 0..<30 {
         speed := rand.float32_range(0.2, 1.0) * 640
         dir_angle := rand.float32() * math.PI * 2
         paritcle := Particle {
@@ -425,41 +468,46 @@ get_spawn_position :: proc(player: ^Entity_Player, min, max: f32) -> Vec2 {
 
 @(export)
 game_render :: proc() {
-    alpha := game_state.accumulator / game_state.fixed_timestep
-    entity_system_render(&game_state.entity_system, alpha)
+    rl.BeginMode2D(game_state.camera)
+    {
+        alpha := game_state.accumulator / game_state.fixed_timestep
+        entity_system_render(&game_state.entity_system, alpha)
 
-    if .Hitbox in game_state.debug_flags {
-        for &curr_entity, i in game_state.entity_system.entities {
-            prev_entity := &game_state.entity_system.prev_entities[i]
+        if .Hitbox in game_state.debug_flags {
+            for &curr_entity, i in game_state.entity_system.entities {
+                prev_entity := &game_state.entity_system.prev_entities[i]
 
-            curr_base := transmute(^Entity_Base)&curr_entity
-            prev_base := transmute(^Entity_Base)prev_entity
+                curr_base := transmute(^Entity_Base)&curr_entity
+                prev_base := transmute(^Entity_Base)prev_entity
 
-            position := lerp(prev_base.position, curr_base.position, alpha)
-            rl.DrawCircleLinesV(position, curr_base.radius, { 255, 255, 255, 156 })
+                position := lerp(prev_base.position, curr_base.position, alpha)
+                rl.DrawCircleLinesV(position, curr_base.radius, { 255, 255, 255, 156 })
+            }
         }
+
+        particle_system_render(&game_state.particle_system, alpha)
     }
+    rl.EndMode2D()
 
-    particle_system_render(&game_state.particle_system, alpha)
-
-    rl.DrawText(rl.TextFormat("Enitities: %d", i32(len(game_state.entity_system.entities))), 10, 40, 16, rl.WHITE)
-    rl.DrawText("Press ` to toggle hitbox draw debug", 10, 70, 16, rl.WHITE)
+    rl.DrawText(rl.TextFormat("Ticks: %d", i32(game_state.tick_count)), 10, 40, 16, rl.WHITE)
+    rl.DrawText(rl.TextFormat("Frames: %d", i32(game_state.frame_count)), 10, 70, 16, rl.WHITE)
+    rl.DrawText(rl.TextFormat("Enitities: %d", i32(len(game_state.entity_system.entities))), 10, 100, 16, rl.WHITE)
+    rl.DrawText("Press ` to toggle hitbox draw debug", 10, 130, 16, rl.WHITE)
 }
 
 @(export)
 game_memory :: proc() -> runtime.Raw_Any {
+    fmt.printf("Return game_state to main program...\n")
+
     // fmt.printf("game_state: %p\n", game_state)
     return runtime.Raw_Any { data = game_state, id = type_of(game_state) }
 }
 
 @(export)
 game_hot_reload :: proc(memory: runtime.Raw_Any) {
+    fmt.printf("Reload game_state from main program...\n")
     // fmt.printf("raw_any.type: %v\n", memory.id)
     // fmt.printf("raw_any.data: %v\n", memory.data)
 
     game_state = transmute(^Game_State)memory.data
-
-    if game_state == nil {
-        game_init()
-    }
 }

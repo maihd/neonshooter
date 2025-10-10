@@ -1,5 +1,6 @@
 package neonshooter
 
+import "base:runtime"
 import "core:math"
 import "core:math/rand"
 import "core:strings"
@@ -49,10 +50,10 @@ main :: proc() {
         reload := game_api.dll_time != dll_time
         if reload {
             new_api := load_game_api(game_api.lib_path, game_api_version) or_continue
-            
+            memory := game_api.get_memory()
+
             unload_game_api(game_api)
 
-            memory := game_api.get_memory()
             game_api = new_api
             game_api.hot_reload(memory)
 
@@ -81,8 +82,8 @@ Game_Api :: struct {
     deinit: proc(),
     update: proc(dt: f32),
     render: proc(),
-    get_memory: proc() -> any,
-    hot_reload: proc(memory: any),
+    get_memory: proc() -> runtime.Raw_Any,
+    hot_reload: proc(memory: runtime.Raw_Any),
 
     lib: dynlib.Library,
     lib_path: string,
@@ -129,8 +130,8 @@ load_game_api :: proc(path: string, api_version: int) -> (Game_Api, bool) {
         deinit = cast(proc "odin" ())(dynlib.symbol_address(lib, "game_deinit") or_else nil),
         update = cast(proc "odin" (f32))(dynlib.symbol_address(lib, "game_update") or_else nil),
         render = cast(proc "odin" ())(dynlib.symbol_address(lib, "game_render") or_else nil),
-        get_memory = cast(proc "odin" () -> any)(dynlib.symbol_address(lib, "game_memory") or_else nil),
-        hot_reload = cast(proc "odin" (any))(dynlib.symbol_address(lib, "game_hot_reload") or_else nil),
+        get_memory = cast(proc "odin" () -> runtime.Raw_Any)(dynlib.symbol_address(lib, "game_memory") or_else nil),
+        hot_reload = cast(proc "odin" (runtime.Raw_Any))(dynlib.symbol_address(lib, "game_hot_reload") or_else nil),
     }
 
     if api.init == nil || api.deinit == nil || api.update == nil || api.render == nil \ 
