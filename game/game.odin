@@ -114,6 +114,8 @@ game_deinit :: proc() {
         particle_system_deinit(&game_state.particle_system)
         entity_system_deinit(&game_state.entity_system)
     }
+
+    unload_all_textures()
 }
 
 @(export)

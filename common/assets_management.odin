@@ -36,3 +36,13 @@ unload_texture_w_path :: proc(path: string) {
 
     delete_key(&textures, path)
 }
+
+@export
+unload_all_textures :: proc() {
+    for _, texture in textures {
+        rl.UnloadTexture(texture)
+    }
+
+    delete(textures)
+    textures = nil
+}

@@ -11,6 +11,8 @@ foreign common {
 
     @(private = "file")
     unload_texture_w_path :: proc(path: string) ---
+
+    unload_all_textures :: proc() ---
 }
 
 unload_texture :: proc { unload_texture_w_path }
