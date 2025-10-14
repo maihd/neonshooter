@@ -6,7 +6,7 @@ import rl "vendor:raylib"
 
 textures: map[string]rl.Texture
 
-// @export
+@export
 load_texture :: proc(path: string) -> rl.Texture {
     rl.TraceLog(.DEBUG, "load_texture")
 
@@ -27,7 +27,7 @@ load_texture :: proc(path: string) -> rl.Texture {
     return result
 }
 
-// @export
+@export
 unload_texture_w_path :: proc(path: string) {
     result, found := textures[path]
     if found {
