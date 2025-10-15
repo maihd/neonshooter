@@ -27,4 +27,4 @@ void main() {
     result = vec3(1.0) - exp(-result * 0.5f);
     result = pow(result, vec3(1.0 / 2.2));
     finalColor = vec4(result, 1.0);
-};
+}

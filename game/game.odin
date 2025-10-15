@@ -34,6 +34,7 @@ Game_State :: struct {
     // Rendering
     camera: rl.Camera2D,
     particle_system: Particle_System,
+    post_processing: Post_Processing,
 
     // Input
     tick_input: Game_Input,
@@ -63,7 +64,7 @@ game_init :: proc() {
     game_state.camera = rl.Camera2D {
         target = {},
         offset = {},
-        rotation = 0.0,
+        rotation = 180,
         zoom = 1.0
     }
 
@@ -85,6 +86,7 @@ game_init :: proc() {
 
     entity_system_init(&game_state.entity_system)
     particle_system_init(&game_state.particle_system)
+    post_processing_init(&game_state.post_processing)
 
     // Preload
     load_all_textures()
@@ -111,6 +113,7 @@ game_deinit :: proc() {
     defer free(game_state)
 
     if game_state != nil {
+        post_processing_deinit(&game_state.post_processing)
         particle_system_deinit(&game_state.particle_system)
         entity_system_deinit(&game_state.entity_system)
     }
@@ -517,7 +520,8 @@ get_spawn_position :: proc(player: ^Entity_Player, min, max: f32) -> Vec2 {
 
 @(export)
 game_render :: proc() {
-    rl.BeginMode2D(game_state.camera)
+    post_processing_begin(&game_state.post_processing)
+    // rl.BeginMode2D(game_state.camera)
     {
         alpha := game_state.accumulator / game_state.fixed_timestep
         entity_system_render(&game_state.entity_system, alpha)
@@ -536,7 +540,8 @@ game_render :: proc() {
 
         particle_system_render(&game_state.particle_system, alpha)
     }
-    rl.EndMode2D()
+    // rl.EndMode2D()
+    post_processing_end(&game_state.post_processing)
 
     rl.DrawText(rl.TextFormat("Ticks: %d", i32(game_state.tick_count)), 10, 40, 16, rl.WHITE)
     rl.DrawText(rl.TextFormat("Frames: %d", i32(game_state.frame_count)), 10, 70, 16, rl.WHITE)
