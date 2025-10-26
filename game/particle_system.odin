@@ -91,7 +91,11 @@ particle_system_update :: proc(particle_system: ^Particle_System, dt: f32) {
     clear(&particle_system.removing_particles)
 }
 
-particle_system_render :: proc(particle_system: ^Particle_System, alpha: f32) {
+particle_system_render :: proc(particle_system: ^Particle_System, alpha: f32, blend := true) {
+    if blend {
+        rl.BeginBlendMode(.ADDITIVE)
+    }
+
     for curr_particle, i in particle_system.particles {
         prev_particle := particle_system.prev_particles[i]
         
@@ -114,5 +118,9 @@ particle_system_render :: proc(particle_system: ^Particle_System, alpha: f32) {
             rotation = degrees(particle.rotation),
             tint = particle.tint
         )
+    }
+
+    if blend {
+        rl.EndBlendMode()
     }
 }
