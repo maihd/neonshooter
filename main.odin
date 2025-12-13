@@ -10,7 +10,9 @@ import "core:path/slashpath"
 import "core:fmt"
 import "core:os"
 import "core:dynlib"
+
 import rl "vendor:raylib"
+import "seh"
 
 main :: proc() {
     track: mem.Tracking_Allocator
@@ -74,15 +76,23 @@ main :: proc() {
         }
         
         delta := rl.GetFrameTime()
-        game_api.update(delta)
-        
-        rl.BeginDrawing()
-        defer rl.EndDrawing()
 
-        rl.ClearBackground(rl.BLACK)
-        defer rl.DrawFPS(10, 10)
+        seh_ctx := seh.begin()
+        defer seh.end(seh_ctx)
 
-        game_api.render()
+        if seh_ctx.code == .None {
+            game_api.update(delta)
+            
+            rl.BeginDrawing()
+            defer rl.EndDrawing()
+
+            rl.ClearBackground(rl.BLACK)
+            defer rl.DrawFPS(10, 10)
+
+            game_api.render()
+        } else {
+            fmt.printf("SEH Exception occurred: %v\n", seh_ctx.code)
+        }
     }
 }
 
