@@ -10,7 +10,14 @@ using System.Collections;
 class Enemy : Entity
 {
 	private int timeUntilStart = 60;
-	private append List<Coroutine> behaviours = .() ~ ClearAndDeleteItems!(_);
+	private append List<Coroutine> behaviours = .() ~ {
+        for (var b in behaviours)
+        {
+            delete b.Callback;
+        }
+
+        ClearAndDeleteItems!(_);
+    };
 
 	public bool isActive => timeUntilStart <= 0;
 

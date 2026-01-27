@@ -1,5 +1,5 @@
 FileVersion = 1
-Projects = {NeonShooter = {Path = "."}, raylib-beef = "*", "Beef.Linq" = {Path = "Beef.Linq/src"}, minicoro-beef = {Path = "minicoro-beef"}, Raylib = {Path = "raylib-beef"}}
+Projects = {NeonShooter = {Path = "."}, raylib-beef = "*", "Beef.Linq" = {Path = "Beef.Linq"}, minicoro-beef = {Path = "minicoro-beef"}, Raylib = {Path = "raylib-beef"}}
 
 [Workspace]
 StartupProject = "NeonShooter"
