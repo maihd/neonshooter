@@ -28,6 +28,7 @@ class Program : Raylib.RaylibApp
 		Art.Load();
 		Audios.Load();
 		GameRoot.Init();
+        SceneManager.Init();
 
 		BloomComponent.Load();
 		PixelizerComponent.Load();
@@ -50,6 +51,7 @@ class Program : Raylib.RaylibApp
 		PixelizerComponent.Unload();
 		BloomComponent.Unload();
 		
+        SceneManager.Shutdown();
 		GameRoot.Deinit();
 		Audios.Unload();
 		Art.Unload();
@@ -62,6 +64,7 @@ class Program : Raylib.RaylibApp
 
 		Input.Update();
 
+        // Debug tools and commands
 		if (Raylib.IsKeyPressed(.KEY_GRAVE))
 		{
 			isPause = !isPause;
