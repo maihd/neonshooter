@@ -1,3 +1,5 @@
+#+feature using-stmt
+
 package neonshooter_game
 
 import "core:encoding/base32"
