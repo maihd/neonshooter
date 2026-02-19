@@ -78,7 +78,7 @@ entity_system_update :: proc(entity_system: ^Entity_System, dt: f32) {
         mem.copy(src, dst, len)
     }
     
-    entity_system_process_entities(entity_system)
+    entity_system_process_entities(entity_system, dt)
 }
 
 entity_system_render :: proc(entity_system: ^Entity_System, alpha: f32) {

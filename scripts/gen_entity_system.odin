@@ -147,15 +147,21 @@ main :: proc() {
                     entities_vars_decl := make([dynamic]string)
 
                     for param, i in proc_lit.type.params.list {
-                        type := param.type.derived.(^ast.Pointer_Type)
-                        ident := type.elem.derived.(^ast.Ident)
-                        name := ident.name
-                        
-                        append(&params, fmt.tprintf("transmute(^%s)entity_%d", name, i))
+                        if type, ok := param.type.derived.(^ast.Pointer_Type); ok {
+                            ident := type.elem.derived.(^ast.Ident)
+                            type_name := ident.name
+                            
+                            append(&params, fmt.tprintf("transmute(^%s)&entity_%d", type_name, i))
 
-                        append(&entity_vars, fmt.tprintf("entity_%d", i))
-                        append(&entities_vars, fmt.tprintf("entities_%d", i))
-                        append(&entities_vars_decl, fmt.tprintf("entities_%d := storage.entities[.%s]", i, name))
+                            append(&entity_vars, fmt.tprintf("entity_%d", i))
+                            append(&entities_vars, fmt.tprintf("entities_%d", i))
+                            append(&entities_vars_decl, fmt.tprintf("entities_%d := storage.entities[.%s]", i, type_name))
+                        } else {
+                            name, ok := get_name(param.names)
+                            if ok && (name == "dt" || name == "delta" || name == "delta_time") {
+                                append(&params, fmt.tprintf("%s", name))
+                            }
+                        }
                     }
 
                     // fmt.printf("%s(%s)\n", proc_name, strings.join(param_types[:], ", "))
@@ -169,11 +175,12 @@ main :: proc() {
 
                     ident_level := 0
                     for entities_var, i in entities_vars {
-                        append(&open_fors, fmt.tprintf("%sfor %s in %s {{", strings.repeat("    ", ident_level + 2), entity_vars[i], entities_var))
+                        append(&open_fors, fmt.tprintf("%sfor &%s in %s {{", strings.repeat("    ", ident_level + 2), entity_vars[i], entities_var))
                         ident_level += 1
                     }
 
-                    proc_call_line := fmt.tprintf("%s%s(%s)", strings.repeat("    ", ident_level + 2), proc_name, strings.join(params[:], ", "))
+                    proc_call_line := fmt.tprintf("%sis_break := %s(%s)", strings.repeat("    ", ident_level + 2), proc_name, strings.join(params[:], ", "))
+                    proc_call_line = fmt.tprintf("%s\n%sif is_break do break", proc_call_line, strings.repeat("    ", ident_level + 2))
 
                     for entity_var in entities_vars {
                         ident_level -= 1
@@ -183,7 +190,8 @@ main :: proc() {
                     proc_call := fmt.tprintf("{{\n        %s\n%s\n%s\n%s\n    }}",
                         strings.join(entities_vars_decl[:], "\n        "),
                         strings.join(open_fors[:], "\n"), 
-                        proc_call_line, strings.join(close_fors[:], "\n")
+                        proc_call_line, 
+                        strings.join(close_fors[:], "\n")
                     )
                     
                     append(&proc_calls, proc_call)
@@ -215,7 +223,7 @@ main :: proc() {
 
 package neonshooter_game
 
-entity_system_process_entities :: proc(storage: ^Entity_Storage) {{
+entity_system_process_entities :: proc(storage: ^Entity_Storage, dt: f32) {{
     %s
 }}
     `, strings.join(proc_calls[:], "\n\n    "))
