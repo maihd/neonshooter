@@ -97,7 +97,8 @@ main :: proc() {
 }
 
 build_game_dll :: proc() {
-    libc.system("odin build game -build-mode:dll -define:RAYLIB_SHARED=true")
+    libc.system("odin build game -build-mode:dll -define:RAYLIB_SHARED=true -custom-attribute:entity")
+    // libc.system("node scripts/compile-dll.js")
 }
 
 Game_Api :: struct {

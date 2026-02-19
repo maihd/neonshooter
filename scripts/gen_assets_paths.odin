@@ -18,7 +18,7 @@ main :: proc() {
 
     f, _ := os.open(
         path = slashpath.join({exe_dir, "game", "assets_path.odin"}), 
-        flags = os.O_CREATE | os.O_TRUNC | os.O_WRONLY, 
+        perm = os.O_CREATE | os.O_TRUNC | os.O_WRONLY, 
         mode = 0o644,
     )
     defer os.close(f)

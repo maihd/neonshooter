@@ -23,21 +23,21 @@ Entity_Base :: struct {
     defense: int,
 }
 
-// @entity
+@entity
 Entity_Player :: struct {
     using base: Entity_Base,
 
 
 }
 
-// @entity
+@entity
 Entity_Bullet :: struct {
     using base: Entity_Base,
 
     velocity: Vec2,
 }
 
-// @entity
+@entity
 Entity_Wanderer :: struct {
     using base: Entity_Base,
     
@@ -46,7 +46,7 @@ Entity_Wanderer :: struct {
     next_direction_interval: f32,
 }
 
-// @entity
+@entity
 Entity_Seeker :: struct {
     using base: Entity_Base,
 
