@@ -369,7 +369,7 @@ log2 :: linalg.log2
 log10 :: linalg.log10
 
 sqrt :: glsl.sqrt
-fsqrt :: glsl.inversesqrt
+frsqrt :: glsl.inversesqrt
 
 cos :: glsl.cos
 sin :: glsl.sin
@@ -390,7 +390,27 @@ atanh :: glsl.tanh
 
 length :: glsl.length
 dist :: glsl.distance
-norm :: glsl.normalize
+norm :: proc{norm_f32, norm_vec2, norm_vec3, norm_vec4}
+
+@(private = "file", require_results)
+norm_f32 :: proc "contextless" (x: f32) -> f32 {
+	return 1.0
+}
+
+@(private = "file", require_results)
+norm_vec2 :: proc "contextless" (v: Vec2) -> Vec2 {
+	return v * frsqrt(lensqr_vec2(v))
+}
+
+@(private = "file", require_results)
+norm_vec3 :: proc "contextless" (v: Vec3) -> Vec3 {
+	return v * frsqrt(lensqr_vec3(v))
+}
+
+@(private = "file", require_results)
+norm_vec4 :: proc "contextless" (v: Vec4) -> Vec4 {
+	return v * frsqrt(lensqr_vec4(v))
+}
 
 dot :: glsl.dot
 cross :: glsl.cross

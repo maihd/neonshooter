@@ -1,5 +1,6 @@
 package neonshooter_game
 
+import "core:fmt"
 import rl "vendor:raylib"
 import "core:math"
 import "core:math/rand"
@@ -8,6 +9,11 @@ import "core:math/rand"
 _process_bullet_movement :: proc(bullet: ^Entity_Bullet, dt: f32) -> bool {
     bullet.position += bullet.velocity * dt
     bullet.rotation = angle(bullet.velocity)
+
+    assert(!math.is_nan(bullet.position.x))
+    assert(!math.is_nan(bullet.position.y))
+    assert(!math.is_inf(bullet.position.x))
+    assert(!math.is_inf(bullet.position.y))
 
     if bullet.position.x < 0 \
         || bullet.position.y < 0 \

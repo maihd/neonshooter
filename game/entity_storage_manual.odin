@@ -4,7 +4,7 @@ import "core:mem"
 import "base:intrinsics"
 
 Sparse_Index :: struct {
-    generation: u32,
+    generation: u32,        // Generation of entity, same value as valid handle
     index_or_next: u32,     // This index point to elements of entities/handles
 }
 
@@ -111,12 +111,14 @@ entity_storage_add :: proc(entity_storage: ^Entity_Storage, entity: $T) -> (hand
             generation = 0,
         }
         append(&entity_storage.sparse_indices[type], entry)
-        entity_storage.next_index[handle.type] = entry_index + 1
+        entity_storage.next_index[type] = entry_index + 1
     }
 
+    any_entity := Any_Entity(entity)
+
     append(&entity_storage.handles[type], handle)
-    append(&entity_storage.entities[type], entity)
-    append(&entity_storage.prev_entities[type], entity)
+    append(&entity_storage.entities[type], any_entity)
+    append(&entity_storage.prev_entities[type], any_entity)
 
     // entry := &entity_storage.sparse_indices[type][entry_index]
     // entry.entity_type = type
@@ -129,7 +131,7 @@ entity_storage_destroy :: proc(entity_storage: ^Entity_Storage, entity: ^$T)
 {
     type := entity_type_from_typeid(T)
 
-    index := mem.ptr_sub(transmute(^Entity_Base)entity, transmute(^Entity_Base)raw_data(entity_storage.entities[type]))
+    index := mem.ptr_sub(transmute(^Any_Entity)entity, transmute(^Any_Entity)raw_data(entity_storage.entities[type]))
     if index < 0 || index >= len(entity_storage.entities[type]) {
         return
     }
