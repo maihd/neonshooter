@@ -8,7 +8,7 @@
 [x] Watch folder and auto build after folder game change: use `node --watch-path=./game scripts/compile-dll.js`
 [x] Player and movement
 [x] Simple for good texture management
-[-] Simple for good entity management
+[+] Simple for good entity management
     - Manual entity storage manage procs
     - Entity system
     - Generating entity storage

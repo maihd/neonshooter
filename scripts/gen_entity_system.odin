@@ -1,5 +1,6 @@
 package scripts
 
+import "core:slice"
 import "core:os/os2"
 import "core:strings"
 import "core:fmt"
@@ -230,6 +231,43 @@ entity_system_process_entities :: proc(storage: ^Entity_Storage, dt: f32) {{
     write_ok = os2.write_entire_file_from_string("game/entity_processors.odin", entity_system_text)
     if write_ok != nil {
         fmt.eprintf("Error write to file `game/entity_processors.odin`")
+    }
+
+    // Generate Entity_Type converter
+
+    type_to_enum_lines, _ := slice.mapper(entity_types[:], proc(x: string) -> string {
+        return fmt.tprintf("if T == %s do return .%s", x, x)
+    })
+    enum_to_type_lines, _ := slice.mapper(entity_types[:], proc(x: string) -> string {
+        return fmt.tprintf("case .%s: return %s", x, x)
+    })
+    entity_type_converters_text := fmt.tprintf(`
+// This is generated file, DONOT EDIT!
+
+package neonshooter_game
+
+entity_type_from_typeid :: proc($T: typeid) -> Entity_Type {{
+    %s
+
+    return .%s
+}}
+
+entity_type_to_typeid :: proc(type: Entity_Type) -> typeid {{
+    switch type {{
+        %s
+    }}
+
+    return %s
+}}
+    `, 
+    strings.join(type_to_enum_lines[:], "\n    "),
+    len(entity_types) > 0 ? entity_types[0] : "nil",
+    strings.join(enum_to_type_lines[:], "\n        "),
+    len(entity_types) > 0 ? entity_types[0] : "nil",
+    )
+    write_ok = os2.write_entire_file_from_string("game/entity_type_converters.odin", entity_type_converters_text)
+    if write_ok != nil {
+        fmt.eprintf("Error write to file `game/entity_type_converters.odin`")
     }
 }
 

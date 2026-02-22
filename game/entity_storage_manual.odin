@@ -41,43 +41,6 @@ entity_storage_deinit :: proc(entity_storage: ^Entity_Storage) {
     }
 }
 
-entity_type_from_typeid :: proc($T: typeid) -> Entity_Type
-    where intrinsics.type_is_subtype_of(T, Entity_Base)
-{
-    if T == Entity_Bullet {
-        return .Entity_Bullet
-    }
-
-    if T == Entity_Player {
-        return .Entity_Player
-    }
-
-    if T == Entity_Wanderer {
-        return .Entity_Wanderer
-    }
-
-    return .Entity_Seeker
-}
-
-entity_type_to_typeid :: proc(type: Entity_Type) -> typeid
-{
-    switch type {
-        case .Entity_Bullet:
-            return Entity_Bullet
-
-        case .Entity_Player:
-            return Entity_Player
-
-        case .Entity_Wanderer:
-            return Entity_Wanderer
-
-        case .Entity_Seeker:
-            return Entity_Seeker
-    }
-
-    return Entity_Base
-}
-
 entity_storage_add :: proc(entity_storage: ^Entity_Storage, entity: $T) -> (handle: Entity_Handle) 
     where intrinsics.type_is_subtype_of(T, Entity_Base)
 {
@@ -119,9 +82,6 @@ entity_storage_add :: proc(entity_storage: ^Entity_Storage, entity: $T) -> (hand
     append(&entity_storage.handles[type], handle)
     append(&entity_storage.entities[type], any_entity)
     append(&entity_storage.prev_entities[type], any_entity)
-
-    // entry := &entity_storage.sparse_indices[type][entry_index]
-    // entry.entity_type = type
 
     return
 }
