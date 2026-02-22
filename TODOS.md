@@ -8,15 +8,25 @@
 [x] Watch folder and auto build after folder game change: use `node --watch-path=./game scripts/compile-dll.js`
 [x] Player and movement
 [x] Simple for good texture management
-[x] Simple for good entity management
-[ ] Bullet and shooting
+[-] Simple for good entity management
+    - Manual entity storage manage procs
+    - Entity system
+    - Generating entity storage
+    - Generating all entities processing proc
+    - Generating Entity_Type converter
+[x] Bullet and shooting
+[x] Base enemies: Seeker and Wanderer
 [ ] Advanced: Watch folder and auto build after folder game change: use dmon, bindings from C, having UI for show that game compiling
 [ ] Advanced: Load and find texture with hash
-[ ] Advanced: Handle based entity management
-[ ] Advanced: Action system 
-[ ] Advanced: Based on the action system, define spline path for mobs to moving
+[ ] Advanced: Space Warp mesh
+[ ] Advanced: Black hole
+[ ] Advanced: Game scene handling
+[ ] Advanced: Audio
+[ ] Advanced: UI
+[x] Advanced: Handle based entity management
 [ ] Advanced: Boss
 [ ] Advanced: Music rythm-based mobs spawning
-[ ] Advanced: Game scene handling
-[ ] Advanced: Write simple framework or project template for making game with Odin
+[ ] Advanced: Action system 
+[ ] Advanced: Based on the action system, define spline path for mobs to moving
+[x] Advanced: Write simple framework or project template for making game with Odin
 [ ] Advanced: Write docs and tutorials for making game with Odin
