@@ -1,32 +1,31 @@
 package neonshooter_game
 
-import "core:math"
-import "core:mem"
-import "core:fmt"
-import rl "vendor:raylib"
 
-Particle :: struct {
-    position: Vec2,
-    rotation: f32,
-    scale: Vec2,
-    tint: rl.Color,
-    velocity: Vec2,
-    decay: f32,
-    duration: f32,
-    life: f32,
-    texture: rl.Texture,
+import rl "vendor:raylib"
+import gxm "../gxm"
+
+
+Particle :: struct #align(64) {
+    position:   gxm.Vec2,       // offset 0
+    scale:      gxm.Vec2,       // offset 8
+    velocity:   gxm.Vec2,       // offset 16
+    rotation:   f32,      		// offset 20
+    decay:      f32,      		// offset 32
+    duration:   f32,      		// offset 36
+    life:       f32,      		// offset 40
+    tint:       rl.Color,       // offset 44
+    texture:    rl.Texture,     // offset 48
 }
+#assert(size_of(Particle) == 64, "Size of particle must be 60.")
+
+MAX_NUM_PARTICLES :: 10 * 1024
 
 Particle_System :: struct {
-    particles: [dynamic]Particle,
-    prev_particles: [dynamic]Particle,
-    removing_particles: [dynamic]int,
+    particles:      #soa[MAX_NUM_PARTICLES]Particle,
+    num_particles:  i32,
 }
 
-particle_system_init :: proc(particle_system: ^Particle_System, allocator := context.allocator) {
-    particle_system.particles.allocator = allocator
-    particle_system.prev_particles.allocator = allocator 
-    particle_system.removing_particles.allocator = allocator
+particle_system_init :: proc(particle_system: ^Particle_System) {
 }
 
 particle_system_deinit :: proc(particle_system: ^Particle_System) {
@@ -34,61 +33,40 @@ particle_system_deinit :: proc(particle_system: ^Particle_System) {
         return
     }
 
-    delete(particle_system.particles)
-    delete(particle_system.prev_particles)
-    delete(particle_system.removing_particles)
-
     particle_system^ = {}
 }
 
 particle_system_spawn :: proc(particle_system: ^Particle_System, particle: Particle) {
-    append(&particle_system.particles, particle)
-    append(&particle_system.prev_particles, particle)
+    particle_system.particles[particle_system.num_particles] = particle
+    particle_system.num_particles += 1
 }
 
 particle_system_update :: proc(particle_system: ^Particle_System, dt: f32) {
-    mem.copy(raw_data(particle_system.prev_particles), raw_data(particle_system.particles), len(particle_system.particles) * size_of(Particle))
-    
-    for &particle, i in particle_system.particles {
+    len := particle_system.num_particles
+    for idx := i32(0); idx < len; idx += 1 {
+        particle := &particle_system.particles[idx]
+
         particle.life -= dt
         if particle.life <= 0 {
-            append(&particle_system.removing_particles, i)
+            particle_system.num_particles -= 1
+            particle_system.particles[idx] = particle_system.particles[particle_system.num_particles]
+
+            len -= 1
+            idx -= 1
+
             continue
         }
 
-        particle.position += particle.velocity * dt
-        particle.velocity -= particle.velocity * particle.decay * dt
-        particle.scale = particle.life / particle.duration
-        particle.rotation = angle(particle.velocity)
-        particle.tint.a = u8((particle.life / particle.duration) * 255)
-
-
-        if particle.position.x < 0 {
-            particle.position.x = 0
-            particle.velocity.x = abs(particle.velocity.x)
-        }
-
-        if particle.position.x > f32(rl.GetScreenWidth()) {
-            particle.position.x = f32(rl.GetScreenWidth())
-            particle.velocity.x = -abs(particle.velocity.x)
-        }
-
-        if particle.position.y < 0 { 
-            particle.position.y = 0
-            particle.velocity.y = abs(particle.velocity.y)
-        } 
+        gxm.integrate(&particle.position, particle.velocity, dt)
+        gxm.decay(&particle.velocity, particle.decay, dt)
+        // gxm.smooth_damp(&particle.position, )
         
-        if particle.position.y > f32(rl.GetScreenHeight()) {
-            particle.position.y = f32(rl.GetScreenHeight())
-            particle.velocity.y = -abs(particle.velocity.y)
-        }
-    }
+        particle.scale      = gxm.vec2(particle.life / particle.duration)
+        particle.rotation   = gxm.angle(particle.velocity)
+        particle.tint.a     = u8((particle.life / particle.duration) * 255)
 
-    #reverse for i in particle_system.removing_particles {
-        unordered_remove(&particle_system.particles, i)
-        unordered_remove(&particle_system.prev_particles, i)
+        gxm.bounce_in_bbox(&particle.position, &particle.velocity, game_state.world_bbox)
     }
-    clear(&particle_system.removing_particles)
 }
 
 particle_system_render :: proc(particle_system: ^Particle_System, alpha: f32, blend := true) {
@@ -96,27 +74,24 @@ particle_system_render :: proc(particle_system: ^Particle_System, alpha: f32, bl
         rl.BeginBlendMode(.ADDITIVE)
     }
 
-    for curr_particle, i in particle_system.particles {
-        prev_particle := particle_system.prev_particles[i]
-        
-        particle := curr_particle
-        particle.position = lerp(prev_particle.position, curr_particle.position, alpha)
-        particle.rotation = lerp(prev_particle.rotation, curr_particle.rotation, alpha)
-        particle.scale = lerp(prev_particle.scale, curr_particle.scale, alpha)
-        particle.tint = rl.ColorLerp(prev_particle.tint, curr_particle.tint, alpha)
+    for i in 0..<particle_system.num_particles {
+        particle := particle_system.particles[i]
 
-        w := f32(particle.texture.width)
-        h := f32(particle.texture.height)
-        sx := f32(particle.scale.x)
-        sy := f32(particle.scale.y)
+        w   := f32(particle.texture.width)
+        h   := f32(particle.texture.height)
+        sx  := f32(particle.scale.x)
+        sy  := f32(particle.scale.y)
+
+        pos := particle.position
+        dst := rl.Rectangle{ pos.x, pos.y, w * sx, h * sy }
         
         rl.DrawTexturePro(
-            texture = particle.texture,
-            source = { 0, 0, w, h },
-            dest = { particle.position.x, particle.position.y, w * sx, h * sy },
-            origin = vec2(w, h) * 0.5,
-            rotation = degrees(particle.rotation),
-            tint = particle.tint
+            texture     = particle.texture,
+            source      = { 0, 0, w, h },
+            dest        = dst,
+            origin      = [2]f32{w, h} * 0.5,
+            rotation    = gxm.degrees(particle.rotation),
+            tint        = particle.tint
         )
     }
 

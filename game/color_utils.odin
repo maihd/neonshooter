@@ -3,7 +3,7 @@ package neonshooter_game
 import "core:math"
 import rl "vendor:raylib"
 
-vec4_hsv :: proc(h, s, v: f32) -> Vec4 {
+vec4_hsv :: proc(h, s, v: f32) -> [4]f32 {
     if (h == 0 && s == 0) {
         return { v, v, v, 1.0 };
     }
@@ -20,6 +20,6 @@ vec4_hsv :: proc(h, s, v: f32) -> Vec4 {
     else            do return { c + m, m    , x + m, 1.0 }
 }
 
-color_from_vec4 :: proc(v: Vec4) -> rl.Color {
+color_from_vec4 :: proc(v: [4]f32) -> rl.Color {
     return { u8(v.x * 255), u8(v.y * 255), u8(v.z * 255), u8(v.w * 255) }
 }

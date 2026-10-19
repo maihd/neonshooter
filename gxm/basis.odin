@@ -1,6 +1,4 @@
-package neonshooter_game
-
-import "base:builtin"
+package gxm
 
 import "core:fmt"
 import "core:math"
@@ -23,8 +21,6 @@ UVec4 :: [4]u32
 Mat2 :: matrix[2, 2]f32
 Mat3 :: matrix[3, 3]f32
 Mat4 :: matrix[4, 4]f32
-
-Quat :: quaternion128
 
 // ----------------------------------------
 // Constructors
@@ -63,7 +59,7 @@ vec3_new :: proc "contextless" (x, y, z: f32) -> Vec3 {
 }
 
 @(private, require_results)
-vec3_from_vec2 :: proc "contextless" (v: Vec2, z: f32) -> Vec3 {
+vec3_from_vec2 :: proc "contextless" (#no_broadcast v: Vec2, z: f32 = 0.0) -> Vec3 {
 	return Vec3{v.x, v.y, z}
 }
 
@@ -89,12 +85,12 @@ vec4_new1 :: proc "contextless" (s: f32) -> Vec4 {
 }
 
 @(private, require_results)
-vec4_from_vec2 :: proc "contextless" (v: Vec2, z: f32, w: f32) -> Vec4 {
+vec4_from_vec2 :: proc "contextless" (#no_broadcast v: Vec2, z: f32 = 0.0, w: f32 = 0.0) -> Vec4 {
 	return Vec4{v.x, v.y, z, w}
 }
 
 @(private, require_results)
-vec4_from_vec3 :: proc "contextless" (v: Vec3, w: f32) -> Vec4 {
+vec4_from_vec3 :: proc "contextless" (#no_broadcast v: Vec3, w: f32 = 0.0) -> Vec4 {
 	return Vec4{v.x, v.y, v.z, w}
 }
 
@@ -116,6 +112,11 @@ ivec2_new1 :: proc "contextless" (s: i32) -> IVec2 {
 }
 
 @(private, require_results)
+ivec2_from_vec2 :: proc "contextless" (v: Vec2) -> IVec2 {
+	return IVec2{i32(v.x), i32(v.y)}
+}
+
+@(private, require_results)
 ivec2_from_ivec3 :: proc "contextless" (v: IVec3) -> IVec2 {
 	return IVec2{v.x, v.y}
 }
@@ -128,6 +129,7 @@ ivec2_from_ivec4 :: proc "contextless" (v: IVec4) -> IVec2 {
 ivec2 :: proc {
 	ivec2_new,
 	ivec2_new1,
+	ivec2_from_vec2,
 	ivec2_from_ivec3,
 	ivec2_from_ivec4,
 }
@@ -138,7 +140,7 @@ ivec3_new :: proc "contextless" (x, y, z: i32) -> IVec3 {
 }
 
 @(private, require_results)
-ivec3_from_ivec2 :: proc "contextless" (v: IVec2, z: i32) -> IVec3 {
+ivec3_from_ivec2 :: proc "contextless" (#no_broadcast v: IVec2, z: i32 = 0.0) -> IVec3 {
 	return IVec3{v.x, v.y, z}
 }
 
@@ -164,12 +166,16 @@ ivec4_new1 :: proc "contextless" (s: i32) -> IVec4 {
 }
 
 @(private, require_results)
-ivec4_from_ivec2 :: proc "contextless" (v: IVec2, z: i32, w: i32) -> IVec4 {
+ivec4_from_ivec2 :: proc "contextless" (
+	#no_broadcast v: IVec2,
+	z: i32 = 0.0,
+	w: i32 = 0.0,
+) -> IVec4 {
 	return IVec4{v.x, v.y, z, w}
 }
 
 @(private, require_results)
-ivec4_from_ivec3 :: proc "contextless" (v: IVec3, w: i32) -> IVec4 {
+ivec4_from_ivec3 :: proc "contextless" (#no_broadcast v: IVec3, w: i32 = 0.0) -> IVec4 {
 	return IVec4{v.x, v.y, v.z, w}
 }
 
@@ -213,7 +219,7 @@ uvec3_new :: proc "contextless" (x, y, z: u32) -> UVec3 {
 }
 
 @(private, require_results)
-uvec3_from_uvec2 :: proc "contextless" (v: UVec2, z: u32) -> UVec3 {
+uvec3_from_uvec2 :: proc "contextless" (#no_broadcast v: UVec2, z: u32 = 0.0) -> UVec3 {
 	return UVec3{v.x, v.y, z}
 }
 
@@ -239,12 +245,16 @@ uvec4_new1 :: proc "contextless" (s: u32) -> UVec4 {
 }
 
 @(private, require_results)
-uvec4_from_uvec2 :: proc "contextless" (v: UVec2, z: u32, w: u32) -> UVec4 {
+uvec4_from_uvec2 :: proc "contextless" (
+	#no_broadcast v: UVec2,
+	z: u32 = 0.0,
+	w: u32 = 0.0,
+) -> UVec4 {
 	return UVec4{v.x, v.y, z, w}
 }
 
 @(private, require_results)
-uvec4_from_uvec3 :: proc "contextless" (v: UVec3, w: u32) -> UVec4 {
+uvec4_from_uvec3 :: proc "contextless" (#no_broadcast v: UVec3, w: u32 = 0.0) -> UVec4 {
 	return UVec4{v.x, v.y, v.z, w}
 }
 
@@ -341,83 +351,70 @@ mat4 :: proc {
 // Procedures from core:math
 // ----------------------------------------
 
-exp :: glsl.exp
-exp2 :: glsl.exp2
+// @todo(maihd): export only what I used?
 
-abs :: glsl.abs
-sign :: glsl.sign
+exp 	:: glsl.exp
+exp2 	:: glsl.exp2
 
-min :: glsl.min
-max :: glsl.max
-lerp :: glsl.lerp
-clamp :: glsl.clamp
+abs 	:: glsl.abs
+sign 	:: glsl.sign
 
-step :: glsl.step
-smoothstep :: glsl.smoothstep
+min 	:: glsl.min
+max 	:: glsl.max
+lerp 	:: glsl.lerp
+clamp 	:: glsl.clamp
 
-mod :: glsl.mod
-fract :: glsl.fract
-trunc :: glsl.trunc
+step 		:: glsl.step
+smoothstep 	:: glsl.smoothstep
 
-ceil :: glsl.ceil
-round :: glsl.round
-floor :: glsl.floor
+mod 	:: glsl.mod
+fract 	:: glsl.fract
+trunc 	:: glsl.trunc
 
-pow :: glsl.pow
-log :: glsl.log
-log2 :: linalg.log2
-log10 :: linalg.log10
+ceil 	:: glsl.ceil
+round 	:: glsl.round
+floor 	:: glsl.floor
 
-sqrt :: glsl.sqrt
-frsqrt :: glsl.inversesqrt
+pow 	:: glsl.pow
+log 	:: glsl.log
+log2 	:: linalg.log2
+log10 	:: linalg.log10
 
-cos :: glsl.cos
-sin :: glsl.sin
-tan :: glsl.tan
+sqrt 	:: glsl.sqrt
+rsqrt 	:: glsl.inversesqrt
 
-acos :: glsl.acos
-asin :: glsl.asin
-atan :: glsl.atan
-atan2 :: glsl.atan2
+fsqrt 	:: glsl.sqrt
+frsqrt 	:: glsl.inversesqrt
 
-cosh :: glsl.cosh
-sinh :: glsl.sinh
-tanh :: glsl.tanh
+cos 	:: glsl.cos
+sin 	:: glsl.sin
+tan 	:: glsl.tan
 
-acosh :: glsl.cosh
-asinh :: glsl.sinh
-atanh :: glsl.tanh
+acos 	:: glsl.acos
+asin 	:: glsl.asin
+atan 	:: glsl.atan
+atan2 	:: glsl.atan2
 
-length :: glsl.length
-dist :: glsl.distance
-norm :: proc{norm_f32, norm_vec2, norm_vec3, norm_vec4}
+cosh 	:: glsl.cosh
+sinh 	:: glsl.sinh
+tanh 	:: glsl.tanh
 
-@(private = "file", require_results)
-norm_f32 :: proc "contextless" (x: f32) -> f32 {
-	return 1.0
-}
+acosh 	:: glsl.cosh
+asinh 	:: glsl.sinh
+atanh 	:: glsl.tanh
 
-@(private = "file", require_results)
-norm_vec2 :: proc "contextless" (v: Vec2) -> Vec2 {
-	return v * frsqrt(lensqr_vec2(v))
-}
+len 	:: glsl.length
+dist 	:: glsl.distance
+norm 	:: glsl.normalize
 
-@(private = "file", require_results)
-norm_vec3 :: proc "contextless" (v: Vec3) -> Vec3 {
-	return v * frsqrt(lensqr_vec3(v))
-}
-
-@(private = "file", require_results)
-norm_vec4 :: proc "contextless" (v: Vec4) -> Vec4 {
-	return v * frsqrt(lensqr_vec4(v))
-}
-
-dot :: glsl.dot
-cross :: glsl.cross
+dot 	:: glsl.dot
+cross 	:: glsl.cross
 
 reflect :: glsl.reflect
 refract :: glsl.refract
 faceforward :: glsl.faceForward
+
+catmull_rom :: linalg.catmull_rom
 
 // ----------------------------------------
 // Custom procedures
@@ -427,57 +424,57 @@ faceforward :: glsl.faceForward
 // distsqr
 
 @(private = "file", require_results)
-lensqr_f32 :: proc "contextless" (x: f32) -> f32 {
+lensq_f32 :: proc "contextless" (x: f32) -> f32 {
 	return x * x
 }
 
 @(private = "file", require_results)
-lensqr_vec2 :: proc "contextless" (v: Vec2) -> f32 {
+lensq_vec2 :: proc "contextless" (v: Vec2) -> f32 {
 	return v.x * v.x + v.y * v.y
 }
 
 @(private = "file", require_results)
-lensqr_vec3 :: proc "contextless" (v: Vec3) -> f32 {
+lensq_vec3 :: proc "contextless" (v: Vec3) -> f32 {
 	return v.x * v.x + v.y * v.y + v.z * v.z
 }
 
 @(private = "file", require_results)
-lensqr_vec4 :: proc "contextless" (v: Vec4) -> f32 {
+lensq_vec4 :: proc "contextless" (v: Vec4) -> f32 {
 	return v.x * v.x + v.y * v.y + v.z * v.z + v.w * v.w
 }
 
-lensqr :: proc {
-	lensqr_f32,
-	lensqr_vec2,
-	lensqr_vec3,
-	lensqr_vec4,
+lensq :: proc {
+	lensq_f32,
+	lensq_vec2,
+	lensq_vec3,
+	lensq_vec4,
 }
 
 @(private = "file", require_results)
-distsqr_f32 :: proc "contextless" (a, b: f32) -> f32 {
-	return lensqr(a - b)
+distsq_f32 :: proc "contextless" (a, b: f32) -> f32 {
+	return lensq(a - b)
 }
 
 @(private = "file", require_results)
-distsqr_vec2 :: proc "contextless" (a, b: Vec2) -> f32 {
-	return lensqr(a - b)
+distsq_vec2 :: proc "contextless" (a, b: Vec2) -> f32 {
+	return lensq(a - b)
 }
 
 @(private = "file", require_results)
-distsqr_vec3 :: proc "contextless" (a, b: Vec3) -> f32 {
-	return lensqr(a - b)
+distsq_vec3 :: proc "contextless" (a, b: Vec3) -> f32 {
+	return lensq(a - b)
 }
 
 @(private = "file", require_results)
-distsqr_vec4 :: proc "contextless" (a, b: Vec4) -> f32 {
-	return lensqr(a - b)
+distsq_vec4 :: proc "contextless" (a, b: Vec4) -> f32 {
+	return lensq(a - b)
 }
 
-distsqr :: proc {
-	distsqr_f32,
-	distsqr_vec2,
-	distsqr_vec3,
-	distsqr_vec4,
+distsq :: proc {
+	distsq_f32,
+	distsq_vec2,
+	distsq_vec3,
+	distsq_vec4,
 }
 
 // ----------------------------------------
@@ -570,16 +567,52 @@ mat4_perspective_infinite :: glsl.mat4PerspectiveInfinite
 // Quality of life procedures
 // ----------------------------------------
 
+TAU :: 6.28318530717958647692528676655900576
+PI 	:: 3.14159265358979323846264338327950288
+E 	:: 2.71828182845904523536
+e 	:: E
+
+F32_EPSILON :: 1e-6		// Bigger than math.F32_EPSILON, but reasonable for gameplay
+F64_EPSILON :: 1e-14	// Bigger than math.F64_EPSILON, but reasonable for gameplay
+
+// tcos :: linalg.cos
+
 degrees :: glsl.degrees
 radians :: glsl.radians
 
-angle :: proc(v: Vec2) -> f32 {
-    return atan2(v.y, v.x)
+turn_to_rad :: proc "contextless" (turns: f32) -> f32 {
+	return 2 * PI * turns
 }
 
-vec2_from_angle :: proc(angle_rads: f32, length: f32 = 1.0) -> Vec2 {
-	s, c := math.sincos(angle_rads)
+rad_to_turn :: proc "contextless" (radians: f32) -> f32 {
+	return radians / (2 * PI)
+}
+
+turn_to_deg :: proc "contextless" (turns: f32) -> f32 {
+	return turns * 360
+}
+
+deg_to_turn :: proc "contextless" (degrees: f32) -> f32 {
+	return degrees / 360
+}
+
+angle :: proc "contextless" (v: Vec2) -> f32 {
+	return atan2(v.y, v.x)
+}
+
+turns :: proc "contextless" (v: Vec2) -> f32 {
+	return rad_to_turn(angle(v))
+}
+
+vec2_from_rad :: proc "contextless" (rad: f32, length: f32 = 1.0) -> Vec2 {
+	s, c := math.sincos(rad)
 	return vec2(c, s) * length
 }
 
-// tcos :: linalg.cos
+vec2_from_deg :: proc "contextless" (deg: f32, length: f32 = 1.0) -> Vec2 {
+	return vec2_from_rad(radians(deg), length)
+}
+
+vec2_from_turn :: proc "contextless" (turn: f32, length: f32 = 1.0) -> Vec2 {
+	return vec2_from_rad(turn_to_rad(turn), length)
+}

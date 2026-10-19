@@ -16,3 +16,8 @@
 
 /main
 /main.exe
+
+/temp
+
+NeonShooter.*
+NeonShooterDebug.*

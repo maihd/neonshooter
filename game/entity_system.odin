@@ -1,112 +1,191 @@
-#+feature using-stmt
-
 package neonshooter_game
 
-import "core:encoding/base32"
-import "core:math/bits"
-import "base:intrinsics"
-import "core:fmt"
-import "core:mem"
 import rl "vendor:raylib"
+import gxm "../gxm"
 
 Entity_System :: struct {
-    using storage: Entity_Storage
+    entities: Entities,
 }
 
-Entity_Iterator :: struct($T: typeid) {
-    entities: []Any_Entity,
-    current: int,
-    next: #type proc(self: ^Entity_Iterator(T)) -> (^T, bool)
+entity_system_init :: proc "contextless" (entity_system: ^Entity_System) {
+    assert_contextless(entity_system != nil)
+
+    entities_init(&entity_system.entities)
 }
 
-entity_system_init :: proc(entity_system: ^Entity_System, allocator := context.allocator) {
-    assert(entity_system != nil)
-
-    entity_storage_init(entity_system)
+entity_system_deinit :: proc "contextless" (entity_system: ^Entity_System) {
 }
 
-entity_system_deinit :: proc(entity_system: ^Entity_System) {
-    entity_storage_deinit(entity_system)
-}
-
-entity_system_iter_by_type :: proc(entity_system: ^Entity_System, $T: typeid) -> Entity_Iterator(T) {
-    return Entity_Iterator(T) {
-        entities = entity_system.entities[entity_type_from_typeid(T)][:],
-        current = 0,
-        next = proc(self: ^Entity_Iterator(T)) -> (^T, bool) {
-            if self.current < len(self.entities) {
-                self.current += 1
-                return transmute(^T)&self.entities[self.current - 1], true
-            }
-
-            return nil, false
-        }
-    }
-}
-
-entity_system_add :: proc(entity_system: ^Entity_System, entity: $T) -> (handle: Entity_Handle) 
-    where intrinsics.type_is_subtype_of(T, Entity_Base)
+entity_system_add :: proc "contextless" (entity_system: ^Entity_System, entity: Entity) -> Entity_Handle
 {
-    handle = entity_storage_add(entity_system, entity)
-    return
+    handle, _entity := entities_new(&entity_system.entities, entity.kind)
+
+    _entity^   = entity
+    _entity.id = handle
+
+    return handle
 }
 
-entity_system_destroy :: proc(entity_system: ^Entity_System, entity: ^$T) 
-    where intrinsics.type_is_subtype_of(T, Entity_Base)
+entity_system_destroy :: proc "contextless" (entity_system: ^Entity_System, handle: Entity_Handle)
 {
-    entity_storage_destroy(entity_system, entity)
+    entities_remove(&entity_system.entities, handle)
 }
 
-entity_system_destroy_w_handle :: proc(using entity_system: ^Entity_System, handle: Entity_Handle) {
-    entity_storage_destroy_w_handle(entity_system, handle)
-}
-
-entity_system_get :: proc(entity_system: ^Entity_System, handle: Entity_Handle, $T: typeid) -> ^T
-    where intrinsics.type_is_subtype_of(T, Entity_Base)
+entity_system_get :: proc "contextless" (entity_system: ^Entity_System, handle: Entity_Handle) -> ^Entity
 {
-    return entity_storage_get(entity_system, handle, T)
+    return entities_get(&entity_system.entities, handle)
+}
+
+check_collision_layer :: proc "contextless" (a: ^Entity, b: ^Entity) -> bool {
+    a_hits_b := a.layer in b.layer_mask
+    b_hits_a := b.layer in a.layer_mask
+
+    return a_hits_b || b_hits_a
+}
+
+check_collision :: proc "contextless" (a: ^Entity, b: ^Entity) -> bool {
+    dist 	:= gxm.distsq(a.position, b.position)
+    range 	:= gxm.dot(gxm.vec2(a.radius), gxm.vec2(b.radius))
+    return dist <= range
 }
 
 entity_system_update :: proc(entity_system: ^Entity_System, dt: f32) {
-    for i in 0..<len(Entity_Type) {
-        idx := Entity_Type(i)
-    
-        src := raw_data(entity_system.prev_entities[idx])
-        dst := raw_data(entity_system.entities[idx])
-        len := len(entity_system.entities[idx]) * size_of(Any_Entity)
-
-        mem.copy(src, dst, len)
+    {
+        bullet_idx := 0
+        for bullet, _ in entities_of_kind(&entity_system.entities, .Entity_Bullet, &bullet_idx) {
+            exploded := action_move_bullet(bullet, dt)
+            if exploded {
+            	bullet_idx -= 1
+                // entities_iter_step_back(&iter_bullet)
+            }
+        }
     }
-    
-    entity_system_process_entities(entity_system, dt)
+
+    {
+        iter_seeker := entities_iter_by_kind(&entity_system.entities, .Entity_Seeker)
+        for seeker, _ in entities_it(&iter_seeker) {
+            action_move_seeker(seeker, dt)
+        }
+    }
+
+    {
+        iter_wanderer := entities_iter_by_kind(&entity_system.entities, .Entity_Wanderer)
+        for wanderer, _ in entities_it(&iter_wanderer) {
+            action_move_wanderer(wanderer, dt)
+        }
+    }
+
+
+    for a_idx := i32(0); a_idx < entity_system.entities.num_items; a_idx += 1 {
+        a := &entity_system.entities.items[a_idx]
+
+        b_loop: for b_idx := a_idx + 1; b_idx < entity_system.entities.num_items; b_idx += 1 {
+            b := &entity_system.entities.items[b_idx]
+
+            if check_collision_layer(a, b) && check_collision(a, b) {
+                if a.kind == .Entity_Bullet {
+                    b.hp -= b.attack
+                    if b.hp <= 0 {
+                        #partial switch b.kind {
+                        case .Entity_Seeker:
+                            explose_seeker(b)
+                            b_idx -= 1
+
+                        case .Entity_Wanderer:
+                            explose_wanderer(b)
+                            b_idx -= 1
+                        }
+                    }
+
+                    explose_bullet(a)
+                    a_idx -= 1
+                    break b_loop
+                }
+
+                if b.kind == .Entity_Bullet {
+                    a.hp -= b.attack
+                    if a.hp <= 0 {
+                        #partial switch a.kind {
+                        case .Entity_Seeker:
+                            explose_seeker(a)
+                            a_idx -= 1
+                            break b_loop
+
+                        case .Entity_Wanderer:
+                            explose_wanderer(a)
+                            a_idx -= 1
+                            break b_loop
+                        }
+                    }
+
+                    explose_bullet(b)
+                    b_idx -= 1
+                    continue b_loop
+                }
+
+                if a.kind == .Entity_Player {
+                    a.hp -= min(1, b.attack - a.defense)
+                    if a.hp <= 0 {
+                        explode_player()
+                        return
+                    }
+
+                    #partial switch b.kind {
+                    case .Entity_Seeker:
+                        explose_seeker(b)
+                        b_idx -= 1
+                        break b_loop
+
+                    case .Entity_Wanderer:
+                        explose_wanderer(b)
+                        b_idx -= 1
+                        break b_loop
+                    }
+                }
+
+                if b.kind == .Entity_Player {
+                    b.hp -= min(1, a.attack - b.defense)
+                    if b.hp <= 0 {
+                        explode_player()
+                        return
+                    }
+
+                    #partial switch a.kind {
+                    case .Entity_Seeker:
+                        explose_seeker(a)
+                        a_idx -= 1
+                        break b_loop
+
+                    case .Entity_Wanderer:
+                        explose_wanderer(a)
+                        a_idx -= 1
+                        break b_loop
+                    }
+                }
+            }
+        }
+    }
 }
 
-entity_system_render :: proc(entity_system: ^Entity_System, alpha: f32) {
-    for type_index in 0..<len(Entity_Type) {
-        type := Entity_Type(type_index)
+entity_system_render :: proc "contextless" (entity_system: ^Entity_System, alpha: f32) {
+    for i in 0..<entity_system.entities.num_items {
+        entity := &entity_system.entities.items[i]
 
-        for i in 0..<len(entity_system.entities[type]) {
-            curr_entity := transmute(^Entity_Base)&entity_system.entities[type][i]
-            prev_entity := transmute(^Entity_Base)&entity_system.prev_entities[type][i]
+        w   := f32(entity.texture.width)
+        h   := f32(entity.texture.height)
+        sx  := entity.scale.x
+        sy  := entity.scale.y
 
-            entity := curr_entity^
-            entity.position = lerp(prev_entity.position, entity.position, alpha)
-            entity.rotation = lerp(prev_entity.rotation, entity.rotation, alpha)
-            entity.scale = lerp(prev_entity.scale, entity.scale, alpha)
-
-            w := f32(entity.texture.width)
-            h := f32(entity.texture.height)
-            sx := f32(entity.scale.x)
-            sy := f32(entity.scale.y)
-            
-            rl.DrawTexturePro(
-                texture = entity.texture,
-                source = { 0, 0, w, h },
-                dest = { entity.position.x, entity.position.y, w * sx, h * sy },
-                origin = vec2(w, h) * 0.5,
-                rotation = degrees(entity.rotation),
-                tint = rl.WHITE
-            )
-        }
+        pos := entity.position
+        dst := rl.Rectangle{ pos.x, pos.y, w * sx, h * sy }
+        
+        rl.DrawTexturePro(
+            texture     = entity.texture,
+            source      = { 0, 0, w, h },
+            dest        = dst,
+            origin      = [2]f32{w, h} * 0.5,
+            rotation    = gxm.degrees(entity.rotation),
+            tint        = rl.WHITE
+        )
     }
 }
