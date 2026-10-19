@@ -9,6 +9,7 @@ Porting versions (git branching)
 - Written in C with [Raylib](https://github.com/maihd/neonshooter/tree/raylib) (Missing menus and HUD)
 - Written in Lua with Love2D, enemy behaviour with synatic.lua (Planning)
 - Written in [Odin + SDL3 (GPU, TTF, Image)](https://github.com/maihd/neonshooter/tree/odin-sdl3)
+- Written in [Odin + Raylib + Hot Reloading](https://github.com/maihd/neonshooter/tree/odin-raylib)
 
 Meta
 ----
