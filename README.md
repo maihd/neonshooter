@@ -2,16 +2,16 @@ Neon Vector Art Shooter
 -----------------------
 Geometry Wars inspired shooter. Tutorial can be found [here](https://gamedevelopment.tutsplus.com/series/cross-platform-vector-shooter-xna--gamedev-10559) (in XNA).
 
-Porting versions (git branching)
---------------------------------
-- Written in C++ with custom game engine called [Mojo Engine](https://github.com/maihd/neonshooter/tree/mojo) (Missing features)
-- Written in Beef with custom game engine called [Mojo Engine](https://github.com/maihd/neonshooter/tree/mojo-beef) (WIP)
-- Written in C with [Raylib](https://github.com/maihd/neonshooter/tree/raylib) (Missing menus and HUD)
-- Written in Lua with Love2D, enemy behaviour with synatic.lua (Planning)
-- Written in [Odin + SDL3 (GPU, TTF, Image)](https://github.com/maihd/neonshooter/tree/odin-sdl3)
-- Written in [Odin + Raylib + Hot Reloading](https://github.com/maihd/neonshooter/tree/odin-raylib)
+Changes & Implementations
+-------------------------
+- Language: Odin + Raylib
+- Coding style: Pure pre-allocating
+- Gameplay loop: fixed-time step
+- Entities architecture: Fat struct (large arrays of things)
+- Development: Hot Reload, Snapshotting, Crash report
+- Math: custom math for gameplay (core:math/linalg + utils)
 
 Meta
 ----
 License: NO
-Copyright: 2020-2025 @ MaiHD
+Copyright: 2020-2026 @ MaiHD
